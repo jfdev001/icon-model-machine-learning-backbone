@@ -1,0 +1,119 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -eu
+unset CDPATH
+ulimit -c 0
+
+script_dir=$(cd "$(dirname "$0")"; pwd)
+icon_dir=$(cd "${script_dir}/../.."; pwd)
+
+NVHPC_ROOT='/p/software/jedi/stages/2024/software/NVHPC/24.3-CUDA-12'
+GCC_ROOT='/p/software/jedi/stages/2024/software/GCCcore/12.3.0'
+
+STDCPP_ROOT=${GCC_ROOT}
+STDCPP_LIBS='-lstdc++'
+
+MPI_ROOT='/p/software/jedi/stages/2024/software/OpenMPI/4.1.6-NVHPC-24.3-CUDA-12'
+
+HDF5_ROOT='/p/software/jedi/stages/2024/software/HDF5/1.14.2-nvompic-2023a'
+HDF5_LIBS='-lhdf5'
+
+NETCDF_ROOT='/p/software/jedi/stages/2024/software/netCDF/4.9.2-nvompic-2023a'
+# long list of netcdf deps, not handled by pkg-config like eccodes
+NETCDF_extra_ldflags='-L/p/software/jedi/stages/2024/software/zstd/1.5.5-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/Szip/2.1.1-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/PnetCDF/1.12.3-nvompic-2023a/lib -L/p/software/jedi/stages/2024/software/libxml2/2.11.4-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/HDF5/1.14.2-nvompic-2023a/lib -L/p/software/jedi/stages/2024/software/cURL/8.0.1-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/bzip2/1.0.8-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/Blosc/1.21.5-GCCcore-12.3.0/lib -L/p/software/jedi/stages/2024/software/CUDA/12/lib'
+NETCDF_LIBS='-lnetcdf -lhdf5_hl -lhdf5 -lm -lz -lblosc -lzstd -lbz2 -lsz -lcurl -lpnetcdf -lxml2'
+
+NETCDFF_ROOT='/p/software/jedi/stages/2024/software/netCDF-Fortran/4.6.1-nvompic-2023a'
+NETCDFF_LIBS='-lnetcdff'
+
+BLAS_LAPACK_LIBS='-llapack -lblas -fortranlibs'
+
+ECCODES_ROOT='/p/software/jedi/stages/2024/software/ecCodes/2.31.0-nvompic-2023a'
+ECCODES_extra_ldflags="$(PKG_CONFIG_PATH=${ECCODES_ROOT}/lib64/pkgconfig:${PKG_CONFIG_PATH-} pkg-config --libs-only-L --libs-only-other --static eccodes)"
+ECCODES_LIBS="$(PKG_CONFIG_PATH=${ECCODES_ROOT}/lib64/pkgconfig:${PKG_CONFIG_PATH-} pkg-config --libs-only-l --static eccodes)"
+
+FYAML_ROOT='/p/software/jedi/stages/2024/software/libfyaml/0.9-GCCcore-12.3.0'
+FYAML_LIBS='-lfyaml'
+
+XML2_ROOT='/p/software/jedi/stages/2024/software/libxml2/2.11.4-GCCcore-12.3.0'
+XML2_LIBS='-lxml2'
+
+extra_ldflags='-L/p/software/jedi/stages/2024/software/OpenSSL/1.1/lib'
+
+################################################################################
+
+MODULES='Stages/2024 NVHPC/24.3-CUDA-12 OpenMPI/4.1.6 netCDF-Fortran/4.6.1 ecCodes/2.31.0 libfyaml/.0.9 CMake'
+BUILD_ENV="module --force purge; module load ${MODULES}; module list;"
+
+CC="${MPI_ROOT}/bin/mpicc"
+CFLAGS='-g -O2'
+
+ICON_YAC_CFLAGS='-fortranlibs'
+
+CPPFLAGS="-I${HDF5_ROOT}/include -I${NETCDF_ROOT}/include -I${ECCODES_ROOT}/include -I${FYAML_ROOT}/include -I${XML2_ROOT}/include/libxml2"
+
+CXX="${NVHPC_ROOT}/Linux_aarch64/24.3/compilers/bin/nvc++"
+CXXFLAGS='-g -O2'
+
+FC="${MPI_ROOT}/bin/mpifort"
+FCFLAGS="-I${NETCDFF_ROOT}/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays -Minfo=accel,inline -acc=gpu,verystrict -gpu=cc90"
+
+CUDACXX="${NVHPC_ROOT}/Linux_aarch64/24.3/compilers/bin/nvcc"
+CUDAFLAGS="-ccbin=${CXX} -arch=sm_90 -g -O3"
+
+LDFLAGS="-L${STDCPP_ROOT}/lib64 ${extra_ldflags} ${NETCDF_extra_ldflags} -L${HDF5_ROOT}/lib -L${NETCDF_ROOT}/lib64 -L${NETCDFF_ROOT}/lib ${ECCODES_extra_ldflags} -L${ECCODES_ROOT}/lib64 -L${FYAML_ROOT}/lib"
+
+LIBS="-c++libs -nvmalloc -cuda ${STDCPP_LIBS} ${XML2_LIBS} ${BLAS_LAPACK_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS} ${ECCODES_LIBS} ${FYAML_LIBS}"
+
+EXTRA_CONFIG_ARGS='--enable-gpu --enable-mpi-gpu --disable-mpi-checks --disable-parallel-netcdf'
+EXTRA_CONFIG_ARGS+=' --enable-realloc-buf --enable-pgi-inlib'
+
+################################################################################
+
+"${icon_dir}/configure" \
+BUILD_ENV="${BUILD_ENV}" \
+CC="${CC}" \
+CFLAGS="${CFLAGS}" \
+CPPFLAGS="${CPPFLAGS}" \
+CXX="${CXX}" \
+CXXFLAGS="${CXXFLAGS}" \
+CUDACXX="${CUDACXX}" \
+CUDAFLAGS="${CUDAFLAGS}" \
+FC="${FC}" \
+FCFLAGS="${FCFLAGS}" \
+ICON_YAC_CFLAGS="${ICON_YAC_CFLAGS}" \
+LDFLAGS="${LDFLAGS}" \
+LIBS="${LIBS}" \
+${EXTRA_CONFIG_ARGS} \
+"$@"
+
+for arg in "$@"; do
+  case $arg in
+    -help | --help | --hel | --he | -h | -help=r* | --help=r* | --hel=r* | --he=r* | -hr* | -help=s* | --help=s* | --hel=s* | --he=s* | -hs*)
+      test -n "${EXTRA_CONFIG_ARGS}" && echo '' && echo "This wrapper script ('$0') calls the configure script with the following extra arguments, which might override the default values listed above: ${EXTRA_CONFIG_ARGS}"
+      exit 0 ;;
+  esac
+done
+
+# Copy runscript-related files when building out-of-source:
+if test $(pwd) != $(cd "${icon_dir}"; pwd); then
+  echo "Copying runscript input files from the source directory..."
+  rsync -uavz ${icon_dir}/run . --exclude='*.in' --exclude='.*' --exclude='standard_*' --exclude=mkexp --exclude='*.log'
+  ln -sf -t run/ ${icon_dir}/run/{standard_*,mkexp}
+  ln -sf set-up.info run/SETUP.config
+  rsync -uavz ${icon_dir}/externals . --exclude='.git' --exclude='*.f90' --exclude='*.F90' --exclude='*.c' --exclude='*.h' --exclude='*.Po' --exclude='tests' --exclude='*.mod' --exclude='*.o'
+  rsync -uavz ${icon_dir}/make_runscripts .
+  rsync -uavz ${icon_dir}/scripts .
+  ln -sf ${icon_dir}/data
+  ln -sf ${icon_dir}/vertical_coord_tables
+fi

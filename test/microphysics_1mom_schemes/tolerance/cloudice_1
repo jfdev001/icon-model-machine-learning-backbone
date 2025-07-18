@@ -1,0 +1,13 @@
+time,,0,0,0
+statistic,,max,mean,min
+file_ID,variable,,,
+NetCDF:cloudice_1.nc,cli,3.947147947071979e-19,3.028139076884355e-20,0.0
+NetCDF:cloudice_1.nc,clw,5.354229749955886e-20,6.776263584345175e-22,0.0
+NetCDF:cloudice_1.nc,hus,9.999529570053652e-17,0.0,0.0
+NetCDF:cloudice_1.nc,pri,0.0,0.0,0.0
+NetCDF:cloudice_1.nc,prr,8.605636509027889e-19,2.2446325109109056e-20,0.0
+NetCDF:cloudice_1.nc,prs,0.0,0.0,0.0
+NetCDF:cloudice_1.nc,qr,1.3822992112133495e-18,7.792480278938409e-20,0.0
+NetCDF:cloudice_1.nc,qrsflux,0.0,0.0,0.0
+NetCDF:cloudice_1.nc,qs,3.1643540327951407e-18,1.4230006596558373e-19,0.0
+NetCDF:cloudice_1.nc,ta,1.0054646967674067e-14,1.5481207060662399e-15,1.011244650943822e-14

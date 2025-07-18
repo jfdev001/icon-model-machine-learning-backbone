@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+set -eu
+
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+SPACK_VERSION=$(cat $SCRIPT_DIR/SPACK_TAG_MCH)
+BUILD_DIR=$(pwd)
+ENV_TAG=$(cat $SCRIPT_DIR/MCH_ENV_TAG)
+BUILD_TRHEADS=16
+
+$SCRIPT_DIR/spack_install $SPACK_VERSION mch_cpu_mixed $BUILD_DIR $ENV_TAG $BUILD_TRHEADS

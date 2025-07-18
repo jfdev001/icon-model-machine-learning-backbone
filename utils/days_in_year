@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+###############################################################################
+# calculation of the number of days in the year
+# depending on the calendar type: 0 - no leap years
+#                                 1 - realistic
+#                                'n'- equal months of n days
+#
+#   initial version                     Veronika Gayer, M&D,  January 2006
+#   corrected the 400 year cycle                              June 12, 2006
+###############################################################################
+function usage
+{
+echo "USAGE:"
+echo "${script_name} [ -c calendar ] -- year"
+echo ""
+echo "    calendar - 0: no leap years;"
+echo "               1: proleptic gregorian (default)"
+echo "             'n': equal months of 'n' days"
+echo "    year -     year"
+exit 1
+}
+###############################################################################
+set -e
+script_name=`basename $0`
+script_dir=`dirname $0`
+#
+#-- Find out calendar type ( -c)
+#
+# default calendar type: 1 (proleptic gregorian calendar)
+calendar_type=1
+
+while getopts :c:h: opt; do
+  case ${opt} in
+    c) calendar_type=${OPTARG} ;;
+    h) usage ;;
+    ?) echo "$0: ERROR - option '-$OPTARG' not supported"; usage ;;
+  esac
+done
+shift $((OPTIND-1))
+
+year=$1
+[ "${year}" != "" ] || usage
+
+if [ ${calendar_type} = 0 ]; then
+  dpy=365
+elif [ ${calendar_type} = 1 ]; then
+  if [ ${year} -ge 4 ] || [ ${year} -le -4 ]; then          # to allow for set -e
+    (( yr1 = year / 4 ))
+    (( yr1 = yr1 * 4 ))
+  else
+    yr1=0
+  fi
+  if [ ${year} -ge 100 ] || [ ${year} -le -100 ]; then
+    (( yr2 = year / 100 ))
+    (( yr2 = yr2 * 100 ))
+  else
+    yr2=0
+  fi
+  if [ ${year} -ge 400 ] || [ ${year} -le -400 ]; then
+    (( yr3 = year / 400 ))
+    (( yr3 = yr3 * 400 ))
+  else
+    yr3=0
+  fi
+  if [ ${year} -eq ${yr1} ] && \
+     ( [ ${year} -ne ${yr2} ] || [ ${year} -eq ${yr3} ] ); then
+    dpy=366
+  else
+    dpy=365
+  fi
+else
+  (( dpy = calendar_type * 12 ))
+fi
+echo "${dpy}"
+exit

@@ -1,0 +1,25 @@
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+tests:
+  - name: c2sm_clm_r13b03_seaice
+    machines:
+      - name: balfrin
+      - name: santis
+    refgen: ['balfrin_cpu_nvidia','balfrin_cpu_nvidia_mixed']
+    tags: ['atm', 'merge2rc','probtest']
+    checksuite_modes:
+      - balfrin: 't'
+      - santis: 'b'
+    ensemble_num:
+      - balfrin_cpu_nvidia: [47,16,6,21,20,15,4,27,7,45,44]
+      - balfrin_cpu_nvidia_mixed: [36,7,6,35,33,3,20]
+    tolerance_factor:
+      - balfrin: 5

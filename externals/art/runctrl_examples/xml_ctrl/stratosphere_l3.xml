@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tracers SYSTEM "tracers.dtd">
+<tracers>
+  <chemtracer id="TRCH4" full="FALSE" chemtr="TRUE">
+    <!-- lifetime for tracer with exact name "TRCH4" fixed in file art/chemistry/mo_art_chem_utils.f90-->
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">1.604E-2</mol_weight>
+    <?source_lifetime Hayman et al., ACP, 2014 ?>
+    <lifetime type="real">286977600</lifetime>
+    <!-- c_solve: lt, OH, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO;2.*TRH2O</products>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+    <init_mode type="int">0</init_mode>
+    <init_name type="char">CH4</init_name>
+  </chemtracer>
+  <chemtracer id="TRCO" full="FALSE" chemtr="TRUE">
+    <!-- lifetime for tracer with exact name "TRCO" fixed in file art/chemistry/mo_art_chem_utils.f90-->
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">2.801E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">5184000</lifetime>
+    <!-- c_solve: lt, OH, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO2</products>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+     <transport type="char">hadv52aero</transport>
+    <init_mode type="int">0</init_mode>
+    <init_name type="char">CO</init_name>
+ </chemtracer>
+  <chemtracer id="TRCO2" full="FALSE" chemtr="TRUE">
+    <!-- lifetime for tracer with exact name "TRCO2" fixed in file art/chemistry/mo_art_chem_utils.f90-->
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">4.401E-2</mol_weight>
+    <?source_lifetime Houghton et al., IPCC, Cambridge University Press, 2001 ?>
+    <lifetime type="real">3153600000</lifetime>
+    <!-- c_solve: lt, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO</products>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+  </chemtracer>
+  <chemtracer id="TRH2O" full="FALSE" chemtr="TRUE">
+    <!-- lifetime for tracer with exact name "TRH2O" fixed in file art/chemistry/mo_art_chem_utils.f90-->
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">1.802E-2</mol_weight>
+    <?source_lifetime Just a placeholder (not used in the code) ?>
+    <lifetime type="real">2592000000</lifetime>
+    <!-- c_solve: lt, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+    <init_mode type="int">0</init_mode>
+    <init_name type="char">H2O</init_name>
+  </chemtracer>
+  <chemtracer id="TRCHBr3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">2.527E-1</mol_weight>
+    <?source_lifetime Rieger et al., GMD, 2015 ?>
+    <lifetime type="real">2073600</lifetime>
+    <!-- c_solve: lt, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+  </chemtracer>
+  <chemtracer id="TRCH2Br2"  full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">1.738E-1</mol_weight>
+    <?source_lifetime Rieger et al., GMD, 2015 ?>
+    <lifetime type="real">10627200</lifetime>
+    <!-- c_solve: lt, passive possible -->
+    <c_solve type="char">lt</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+  </chemtracer>
+  <chemtracer id="TR_cold">
+    <unit type="char">none</unit>
+    <mol_weight type="real">1.000E+0</mol_weight>
+    <lifetime type="real">432000</lifetime>
+    <!-- c_solve: cold possible -->
+    <c_solve type="char">cold</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+  </chemtracer>
+  <chemtracer id="TRO3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">4.800E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">1576800</lifetime>
+    <!-- c_solve: lt, linoz, linozV3, passive possible -->
+    <c_solve type="char">linoz</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <feedback type="int"> 1 </feedback>
+    <transport type="char">hadv52aero</transport> 
+    <init_mode type="int">0</init_mode>
+    <init_name type="char">O3</init_name>
+  </chemtracer>
+  <chemtracer id="TRN2O" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">4.401E-2</mol_weight>
+    <?source_lifetime Wypych, 2017, Atlas of Material Damage?>
+    <lifetime type="real">4730400000</lifetime>
+    <!-- c_solve: lt, simnoy, passive possible -->
+    <c_solve type="char">simnoy</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+    <init_mode type="int">0</init_mode>
+    <init_name type="char">N2O</init_name>  
+   </chemtracer>
+  <chemtracer id="TRNOy" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">mol mol-1</unit>
+    <mol_weight type="real">6.301E-1</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">259200</lifetime>
+    <!-- c_solve: lt, simnoy, passive possible -->
+    <c_solve type="char">simnoy</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+    <cnoyn2o_tropo type="char">EXTP</cnoyn2o_tropo>
+    <ubc type="char">UBC</ubc>
+  </chemtracer>
+  <chemtracer id="TRAGE" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <unit type="char">none</unit>
+    <mol_weight type="real">1.000E+0</mol_weight>
+    <?source_lifetime Just a placeholder, not used in the code?>
+    <lifetime type="real">25920000</lifetime>
+    <!-- c_solve: lt, passive possible -->
+    <c_solve type="char">passive</c_solve>
+    <!-- lfeedback=1, if nested simulation -->
+    <lfeedback type='int'>0</lfeedback>
+    <transport type="char">hadv52aero</transport>
+  </chemtracer>
+</tracers>

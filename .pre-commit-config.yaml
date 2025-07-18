@@ -1,0 +1,84 @@
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: CC0-1.0
+# ---------------------------------------------------------------
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        exclude: |
+          (?x)^(
+            # Exclude external files:
+            LICENSES/.*
+          )$
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+      - id: cmake-format
+        args:
+          - --in-place
+          - --dangle-parens=True
+          - --max-lines-hwrap=0
+          - --keyword-case=upper
+          - --autosort=True
+          - --first-comment-is-literal=True
+        exclude: |
+          (?x)^(
+            # Exclude external files:
+            test/microphysics_1mom_schemes/cmake/Modules/FindNetCDF.cmake
+          )$
+  - repo: https://gitlab.dkrz.de/icon/ci-tooling/icon-openacc-beautifier.git
+    rev: v1.1.0
+    hooks:
+      - id: icon-openacc-beautifier
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=80]
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.1.0
+    hooks:
+      - id: black
+        args: [--line-length=80]
+        exclude: |
+          (?x)^(
+            # Exclude broken and outdated (e.g. Python 2) files:
+            schedulers/ecmwf/gen/date_calc.py |
+            scripts/buildbot_scripts/py/MainPage.py |
+            scripts/buildbot_scripts/py/exp_plot.py |
+            scripts/buildbot_scripts/py/reference_page.py |
+            scripts/building/build_all |
+            scripts/code_processing/check_style.py |
+            scripts/git_scripts/gitreview |
+            scripts/postprocessing/tools/analyze_io_files.py |
+            scripts/postprocessing/tools/plotTimers.py |
+            scripts/preprocessing/estimate.py |
+            scripts/preprocessing/sky4icon.py
+          )$
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v20.1.0
+    hooks:
+      - id: clang-format
+        types_or: [c++, c, cuda]
+        exclude: |
+          (?x)^(
+            # Exclude .h files that are not C/C++ headers:
+            schedulers/ecmwf/include/.*\.h
+          )$
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    hooks:
+      - id: reuse
+        stages: [manual]
+        always_run: true
+        verbose: true

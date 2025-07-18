@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: CC0-1.0
+# ---------------------------------------------------------------
+
+#=============================================================================
+
+# --------------------------------
+#SBATCH --account=mh0156
+#SBATCH --qos=buildbot
+#SBATCH --job-name=exp.mkexp_log_monitoring.run
+#SBATCH --partition=compute
+#SBATCH --nodes=1
+#SBATCH --output=LOG.exp.mkexp_log_monitoring.run.run.o
+#SBATCH --exclusive
+#SBATCH --time=00:20:00
+
+#=============================================================================
+set -x
+ulimit -s unlimited
+#=============================================================================
+
+#=============================================================================
+# directories with absolute paths
+# -------------------------------
+thisdir=$(pwd)
+basedir="${thisdir%/*}"
+export basedir
+
+mon_dir="${mon_dir:=${basedir}/monitoring}"
+#=============================================================================
+
+if [ -d $mon_dir ]; then
+    echo "$mon_dir exists."
+else
+    echo "$mon_dir does not exist."
+    exit 1
+fi
+
+# Check if the log_plotting dir exists
+expdir=("$mon_dir"/*/)
+
+if [ -d "$expdir"/log_plotting ]; then
+    echo "$expdir/log_plotting exists."
+else
+    echo "$expdir/log_plotting does not exist."
+    exit 1
+fi
+
+# Check if the log_plotting dir has an index.html file
+
+if [ -e "$expdir"/log_plotting/index.html ]; then
+    echo "The index.html file exists."
+else
+    echo "$expdir/log_plotting/index.html does not exist."
+    exit 1
+fi
+
+# Check if the log_plotting dir contains at least 5 files
+
+FILE_COUNT=$(find "$expdir"/log_plotting -maxdepth 1 -type f | wc -l)
+
+if [ "$FILE_COUNT" -gt 5 ]; then
+    echo "$expdir/log_plotting contains 5 files or more"
+else
+    echo "$expdir/log_plotting contains less then 5 files"
+    exit 1
+fi
+
+# Check if each csv file has at least 5 lines of content
+
+if [ -d "$expdir"/timer_data ]; then
+    echo "$expdir/timer_data exists."
+else
+    echo "$expdir/timer_data does not exist."
+    exit 1
+fi
+
+csv_files=("$expdir/timer_data/*")
+
+function csv_header {
+    head=$(head -n 1 $1 )
+    correct_head=$2
+    if [ "$head" = "$correct_head" ]; then
+        echo "$1 has the correct header"
+    else
+        echo "$1 has an incorrect header"
+        exit 1
+    fi
+}
+
+function csv_contents {
+    LINE_COUNT=$(wc -l < "$1")  # Extract the line count
+
+    if [ "$LINE_COUNT" -ge 5 ]; then
+        echo "$1 contains 5 lines of content or more"
+    else
+        echo "$1 contains less then 5 lines of content"
+        exit 1
+    fi
+}
+
+for csv_file in ${csv_files}; do
+
+    substring=$(echo ${csv_file} | rev | cut -d . -f 2 | rev)
+    if [ "$substring" = "exp_status" ]; then
+        csv_header $csv_file ",sdpd,run_start,run_end,sim_start,sim_end,job_id,exp_id"
+        # We are not checking for the content here since the exp_status is often shorter. E.g. if there are only two jobs.
+
+    elif [ "$substring" = "wind_speed" ]; then
+        csv_header $csv_file ",dates,vn,level_vn,w,level_w,exp_name,job_id"
+        csv_contents $csv_file
+
+    elif [ "$substring" = "timer_report" ]; then
+        csv_header $csv_file ",rank,name,#calls,t_min(s),min_rank,t_avg(s),t_max(s),max_rank,total_min(s),total_min_rank,total_max(s),total_max_rank,total_avg(s),ranks,exp_name,job_id"
+        csv_contents $csv_file
+    fi
+done

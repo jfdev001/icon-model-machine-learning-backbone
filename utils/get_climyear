@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#------------------------------------------------------------------------------
+# get_climyear
+#------------------------------------------------------------------------------
+#  - find out the correct year of the available forcing data:
+#      -> For years within the range of available climate forcing data we uses
+#         the corresponding climate data year.
+#      -> For years outside the range of available forcing data we use cyclic
+#         forcing with the first/last climate forcing years available.
+#
+# input parameters:
+#   run_year          - simulated year
+#   initial_climyear  - first year of available climate data
+#   final_climyear    - last year of available climate data
+#   cycle_period      - number of years used for cyclic forcing (outside tha range of availabe forcing data)
+#
+# $Id: get_climyear $
+#------------------------------------------------------------------------------
+PROGRAM=$(basename $0)
+
+if [ -z "$4" ]
+then
+    exec >&2
+    echo "Oops: invalid number of parameters"
+    echo "Usage: $PROGRAM run_year initial_climyear final_climyear cycle_period"
+    exit 1
+fi
+
+year=$1
+initial_climyear=$2
+final_climyear=$3
+period=$4
+
+if [[ ${year} < ${initial_climyear} ]]; then
+    (( climyear = ${initial_climyear} + (( ${year} - ${initial_climyear} ) % ${period} + ${period}) % ${period} ))
+elif [[ ${year} > ${final_climyear} ]]; then
+    (( climyear = ${final_climyear} + ((${year} - ${final_climyear}) % ${period} - ${period}) % ${period} ))
+else
+    climyear=${year}
+fi
+
+echo ${climyear}

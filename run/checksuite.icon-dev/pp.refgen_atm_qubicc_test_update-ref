@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# set experiment specific variables
+
+base_exp=atm_qubicc_test_update_base
+
+check_script=checksuite.icon-dev/check.${base_exp%_test_update_base}
+
+# TYPES is a list of names identifying the files <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT> to be checked.
+# get TYPES from the main check script
+grep 'TYPES=' $check_script > ${check_script}_TYPES
+. ./${check_script}_TYPES
+
+update_file_ids=$TYPES
+
+. ./add_refgen_routines
+
+# move data for update test
+store_model_output
+
+status=$?
+echo $status > pp.${EXPNAME}.run.final_status
+exit $status

@@ -1,0 +1,98 @@
+#!/bin/ksh
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+# _bb_table_Description_  Test experiment for QUINCY in canopy mode running standalone in ICON-Land
+# _bb_table_Model_        QUINCY in canopy mode running standalone in ICON-Land
+
+#--------------------------------------------------------------------------------
+#
+# 1. Define the experiment and the files to be checked
+#
+# EXPERIMENT is the name of the experiment, that defines the experiment descriptor
+# file run/exp.<EXPERIMENT>. EXPERIMENT is used also for:
+# - the output  directory name : experiments/<EXPERIMENT>
+# - the output  file names     : <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT>
+# - the restart directory name : <EXPERIMENT>_restart_atm_<DATE>.mfr
+#
+export EXPERIMENT='land_quincy_canopy_R2B4_test'
+
+# TYPES is a list of names identifying the files <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT>
+# to be checked.
+#
+export TYPES=''
+TYPES="$TYPES lnd_basic_ml"      # basic output
+
+# DATES is a list of dates identifying the files <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT>
+# to be checked.
+#
+export DATES=''
+#DATES="$DATES 19790101T000000Z"                                    # date  of initialization
+DATES="$DATES 19010101T003000Z 19010101T010000Z 19010101T013000Z \
+              19010101T020000Z 19010101T023000Z 19010101T030000Z"  # dates of time steps
+
+# RESTART_DATE defines the date and time from which restarts should be performed.
+#
+export RESTART_DATE='19010101T020000Z'
+
+#--------------------------------------------------------------------------------
+#
+# 2. Define the checksuite mode
+#
+# u = update test
+# r = restart test
+# n = nproma test
+# m = mpi test
+# o = omp test
+# t = tolerance test
+#
+# default: MD='rnmo'
+#
+export MD='rnmo'
+
+builder="unknown"
+[[ $BB_NAME ]] && builder=$(echo ${BB_NAME} | tr '[:upper:]' '[:lower:]')
+
+case $builder in
+    levante_gcc)
+        MD='m' # currently nproma fails (follow up issues)
+        ;;
+    levante_nag)
+        MD='m' # currently nproma fails (follow up issues)
+        ;;
+    levante_intel_hybrid)
+        MD='mor' # currently nproma  fails (follow up issues)
+        ;;
+    levante_gpu*)
+        # MPI test fails. nproma test is invalid (comment copied from atm_nwp_jsbach_test -- not tested)
+        MD='r'
+        ;;
+esac
+
+#--------------------------------------------------------------------------------
+#
+# 3. Launch the checksuite from run/
+#
+module load cdo || true
+
+rundir=`pwd`
+cd "${basedir}/run/checksuite.icon-dev"
+
+./icon-dev.checksuite
+STATUS=$?
+
+check_final_status $STATUS "$EXPERIMENT"
+
+
+#--------------------------------------------------------------------------------
+exit

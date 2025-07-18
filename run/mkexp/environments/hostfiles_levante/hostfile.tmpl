@@ -1,0 +1,66 @@
+#%#- ICON
+#%#-
+#%#- ------------------------------------------
+#%#- Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+#%#- Contact information: icon-model.org
+#%#- See AUTHORS.TXT for a list of authors
+#%#- See LICENSES/ for license information
+#%#- SPDX-License-Identifier: BSD-3-Clause
+#%#- ------------------------------------------
+#%#-
+#-----------------------------------------------------------------------------
+# Hostfile Generation for ?    #TDOD JD: FILL
+#
+# $Id: run/mkexp/environments/hostfiles_levante/hostfile.tmpl 1 2025-01-09 k202123 $
+#
+mpi_atm_io_procs=%{namelists.NAMELIST_atm.parallel_nml.num_io_procs}
+mpi_oce_io_procs=%{namelists.NAMELIST_oce.parallel_nml.num_io_procs}
+
+export SLURM_HOSTFILE=$EXPDIR/hst_file
+
+function fill_hostfile(){
+   total=$1
+   nio=$2
+   direction=$3
+
+   block=$((mpi_procs_pernode/%{2 if JOB.hardware_threads is set else 4}))
+
+   if [ $direction -eq 0 ] ; then
+     frst_block=0
+     last_block=$(( ($total/$no_of_nodes) % $block ))
+   else
+     last_block=0
+     frst_block=$(( ($total/$no_of_nodes) % $block ))
+   fi
+
+   iohsts=""
+   left=$total
+   while [ $left -gt $nio ] ; do
+     for hst in $(nodeset -e $SLURM_NODELIST); do
+       myblock=$block
+       if [ $left -le $(($last_block*$no_of_nodes)) ] ; then
+         myblock=$last_block
+       else
+         if [ $left -gt $(($total - $frst_block*$no_of_nodes)) ] ; then
+           myblock=$frst_block
+         fi
+       fi
+       if [ $left -le $(($myblock*$nio)) ] ; then
+         myblock=$(($myblock - 1))
+         iohsts="$iohsts $hst"
+       fi
+       for ib in $(seq 1 $myblock); do
+         echo "$hst"
+         left=$(($left - 1))
+       done
+     done
+   done
+   for hst in $iohsts; do
+     echo "$hst"
+   done
+}
+
+fill_hostfile $mpi_atm_procs $mpi_atm_io_procs 0 > $SLURM_HOSTFILE
+fill_hostfile $mpi_oce_procs $mpi_oce_io_procs 1 >> $SLURM_HOSTFILE
+
+#-----------------------------------------------------------------------------

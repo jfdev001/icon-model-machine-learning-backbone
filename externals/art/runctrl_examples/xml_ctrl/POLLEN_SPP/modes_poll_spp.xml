@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE modes SYSTEM "modes.dtd">
+
+<modes>
+  <pollen id="pollalnu">
+    <kind type="char">poll</kind>
+    <diam type="real">2.38E-5</diam>
+    <rho type="real">860.0</rho>
+    <doy_start_season type="int">1</doy_start_season>
+    <doy_end_season type="int">146</doy_end_season>
+    <icoag type="int">0</icoag>
+  </pollen>
+  <pollen id="pollbetu">
+    <kind type="char">poll</kind>
+    <diam type="real">2.30E-5</diam>
+    <rho type="real">810.0</rho>
+    <doy_start_season type="int">1</doy_start_season>
+    <doy_end_season type="int">146</doy_end_season>
+    <icoag type="int">0</icoag>
+    <spp type="char">spp_pollbetu</spp>
+  </pollen>
+  <pollen id="pollpoac">
+    <kind type="char">poll</kind>
+    <diam type="real">2.60E-5</diam>
+    <rho type="real">980.0</rho>
+    <doy_start_season type="int">60</doy_start_season>
+    <doy_end_season type="int">305</doy_end_season>
+    <icoag type="int">0</icoag>
+  </pollen>
+  <radio id="Cs_137">
+    <kind type="char">radio</kind>
+    <imis type="int">373</imis>
+    <halflife type="real">0.0</halflife>
+    <vdep_const type="real">0.0015</vdep_const>
+    <fac_wetdep type="real">3.4E-5</fac_wetdep>
+    <exp_wetdep type="real">0.59</exp_wetdep>
+    <icoag type="int">0</icoag>
+  </radio>
+  <aerosol id="spp_pollbetu">              
+    <kind type="char">2mom</kind>          
+    <d_gn type="real">0.844E-6</d_gn>      
+    <d_gm type="real">1.160E-6</d_gm>      
+    <sigma_g type="real">1.385E+0</sigma_g>
+    <rho type="real">810.0</rho>           
+    <condensation type="int">0</condensation>
+    <icoag type="int">0</icoag>
+    <!-- lut_optics added, as lart_diag_out=.true.
+         uses 'blank' optics, as iart_ari=0 and no radiative diagnostic intented -->
+    <lut_optics type="char">blank</lut_optics>
+  </aerosol>                               
+</modes>

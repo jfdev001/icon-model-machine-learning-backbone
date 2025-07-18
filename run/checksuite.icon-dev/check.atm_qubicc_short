@@ -1,0 +1,54 @@
+#!/bin/ksh
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+# Marco Giorgetta, MPI-M
+# Check if the original qubicc experiment still works after modifications.
+# Here the output format is switched from Netcdf (nc) to GRIB (grb).
+#
+exp_original=atm_qubicc_test
+modification=short
+#
+#--------------------------------------------------------------------------------
+#
+# 1. Define the experiment and the files to be checked
+
+# EXPERIMENT contains the name of the modified experiment
+#
+export EXPERIMENT=${exp_original}_${modification}
+
+# construct the experiment
+#
+# shorten from 4 to 2 minutes
+sed s/'end_date=1979-01-01T00:04:00Z'/'end_date=1979-01-01T00:02:00Z'/ exp.$exp_original > exp.$EXPERIMENT
+
+#--------------------------------------------------------------------------------
+#
+# 2. Define the checksuite mode
+
+export MD='b' # base check only
+
+#--------------------------------------------------------------------------------
+#
+# 3. Launch the checksuite
+
+rundir=`pwd`
+cd checksuite.icon-dev
+
+./icon-dev.checksuite
+STATUS=$?
+
+check_final_status $STATUS "$EXPERIMENT"
+
+#--------------------------------------------------------------------------------
+exit

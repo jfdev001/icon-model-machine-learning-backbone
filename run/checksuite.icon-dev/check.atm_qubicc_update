@@ -1,0 +1,73 @@
+#!/bin/ksh
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+# Marco Giorgetta, MPI-M
+# Check if the original qubicc experiment reproduces the results
+# of a stored reference simulation.
+#
+exp_original=atm_qubicc_test
+modification=update
+#
+check_script=checksuite.icon-dev/check.${exp_original%_test}
+#
+#--------------------------------------------------------------------------------
+#
+# 1. Define the experiment and the files to be checked
+
+# EXPERIMENT contains the name of the modified experiment
+#
+export EXPERIMENT=${exp_original}_${modification}
+
+# construct the experiment
+#
+rm -f exp.$EXPERIMENT
+ln -s exp.$exp_original exp.$EXPERIMENT
+
+# TYPES is a list of names identifying the files <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT> to be checked.
+# get TYPES from the main check script
+grep 'TYPES=' $check_script > ${check_script}_TYPES
+. ./${check_script}_TYPES
+
+# DATES is a list of dates identifying the files <EXPERIMENT>_<TYPE>_<DATE>.<FORMAT> to be checked.
+# get DATES from main check script
+grep 'DATES=' $check_script > ${check_script}_DATES
+. ./${check_script}_DATES
+
+# REFERENCE model directory and reference experiment for update test
+#
+export OVERWRITE=no
+reference_dir=2025-04-08.icon-mpim.713c10594275
+[[ ! -z $BB_NAME ]] && builder=$(echo ${BB_NAME} | tr '[:upper:]' '[:lower:]') # new buildbot
+export REFERENCE=$icon_data_rootFolder/buildbot_data/ref/${reference_dir}/${builder}
+
+#--------------------------------------------------------------------------------
+#
+# 2. Define the checksuite mode
+
+export MD='u' # update test
+
+#--------------------------------------------------------------------------------
+#
+# 3. Launch the checksuite
+
+rundir=`pwd`
+cd checksuite.icon-dev
+
+./icon-dev.checksuite
+STATUS=$?
+
+check_final_status $STATUS "$EXPERIMENT"
+
+#--------------------------------------------------------------------------------
+exit

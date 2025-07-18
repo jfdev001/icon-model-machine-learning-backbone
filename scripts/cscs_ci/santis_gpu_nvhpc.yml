@@ -1,0 +1,21 @@
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+#
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+include:
+  - scripts/cscs_ci/remote.yml
+  - scripts/cscs_ci/recipes.yml
+
+create-pipeline:
+  extends: .santis_create_common
+  variables:
+    BUILDER: santis_gpu_nvhpc
+
+trigger-icon-ci:
+  extends: .trigger_common

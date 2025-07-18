@@ -1,0 +1,22 @@
+--- # ICON probtest tolerance data
+# This file can be parsed using yaml
+# Data is stored in <icon_data_rootFolder>/buildbot_data/ref/<experiment_hash>
+icon_data_rootFolder: /scratch/mch/jenkins/icon/pool/data/ICON
+builder: balfrin_cpu_nvidia
+# The list below maps each experiment to its current experiment_hash
+"c2sm_clm_r13b03_seaice": bd1271813ffe2b1d2b3606d8835ab482aa6c4ffe
+"mch_ch_r04b09_dace": 42c26655546f4163527730caf4b0a1b995016df7
+"mch_icon-ch1_small": 9e6eff3e67662c7723d7e3837c8bdfa7bf2c4f4b
+"mch_icon-ch2_small": 482b0bd7969d2a055a1fc0f0c07efce52846e9fe
+"mch_kenda-ch1_dev2_small": a11f694f1ace8ae8699f00ac8d9a9f4a8204eed9
+"mch_kenda-ch1_dev_small": 19dafd2eb2dadb976cf956ae6d6ddbadcbc58f5d
+"mch_kenda-ch1_small": 16bda05ab18e5dc80de0c2906b6958f1d58f0c25
+"mch_opr_r04b07": 55b4cbbe96c33cbca5e08182aa7217b86ca4e406
+"mch_opr_r04b07_lhn_00": 19dff8b2566359a7d8127f689bf1e6d10068c39f
+"mch_opr_r04b07_lhn_12_emvorado": 47b3d1814982f5f6270251ae929b99c5983e6cb9
+"mch_opr_r04b07_nest": e35f41202efbfbf3197a9b2c2e997388e80d70ba
+"mch_opr_r04b07_sstice_inst": 97dc7d49248b102759959b834722015dbefa4153
+"mch_opr_r19b07_lpi": f4fffb671f220dcb3fc375f1b9c037d072260517
+"mch_opr_r19b07_midnight": 906911740b4f1105568e8d20a23d153323f3781d
+"mch_opr_r19b07_turb": 5b0d70f9a26385f5ac01a18049d0fc568dd6bf00
+"mch_pollen_test": 03908a79f6c9695a7c63a2457e6d14c46ef18304

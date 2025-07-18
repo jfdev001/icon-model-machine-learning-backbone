@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# abort on error
+set -euo pipefail
+
+cd $(dirname "${BASH_SOURCE[0]}")
+
+addexp="./addexp"
+#############################################################################
+##
+## create wave list
+##
+#############################################################################
+## create list for the ocean surface wave model
+
+listname=${1:-wave}
+./rmlist $listname
+./create_all_builders $listname
+./set_builder_flags Inactive --builders "$(./lslist $listname --builders-only)" --list $listname
+./set_builder_flags Active --builders "levante_gcc levante_intel levante_intel_hybrid levante_nag dwd_nec_hybrid" --list $listname
+
+# wave model tests, including coupled atmo-wave tests
+#
+$addexp "checksuite.nwp/nwpexp.run_ICON_18_R2B4_waves_adv_nophys"         --builders "levante_intel_hybrid levante_nag dwd_nec_hybrid"  --list $listname
+$addexp "checksuite.nwp/nwpexp.run_ICON_21_R2B4_waves_standalone_restart" --builders "levante_intel_hybrid dwd_nec_hybrid"  --list $listname
+$addexp "checksuite.icon-dev/check.waves_R2B4_global_no_forcing"          --builders "dwd_nec_hybrid levante_intel_hybrid levante_nag" --list $listname
+# coupled tests
+$addexp "checksuite.nwp/nwpexp.run_ICON_23_R2B4_atmo_waves_coupled"       --builders "levante_gcc levante_intel" --list $listname --runflags "queue=compute"
+$addexp "checksuite.nwp/nwpexp.run_ICON_28_R2B6_IAU_atmo_waves_coupled"   --builders "dwd_nec_coupling" --list $listname
+
+#lets see the list
+./lslist $listname
+#-----------------------------------------------------------

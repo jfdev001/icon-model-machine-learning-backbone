@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -eu
+unset CDPATH
+ulimit -c 0
+
+script_dir=$(cd "$(dirname "$0")"; pwd)
+icon_dir=$(cd "${script_dir}/../.."; pwd)
+
+NVHPC_ROOT="/apps/ACC/NVIDIA-HPC-SDK/24.5/Linux_x86_64/24.5"
+MPI_ROOT="/apps/ACC/NVIDIA-HPC-SDK/24.5/Linux_x86_64/24.5/comm_libs/12.4/hpcx/hpcx-2.19/ompi"
+
+HDF5_ROOT="/apps/ACC/HDF5/1.14.1-2/NVIDIA/NVHPCX"
+HDF5_LIBS='-lhdf5_hl -lhdf5'
+
+NETCDF_ROOT="/apps/ACC/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1/NVIDIA/NVHPCX"
+NETCDF_LIBS='-lnetcdf'
+
+NETCDFF_ROOT="/apps/ACC/NETCDF/c-4.9.2_fortran-4.6.1_cxx4-4.3.1/NVIDIA/NVHPCX"
+NETCDFF_LIBS='-lnetcdff'
+
+MKL_ROOT="/gpfs/apps/MN5/GPP/ONEAPI/2023.0.0/mkl/2023.0.0"
+SVML_ROOT="/gpfs/apps/MN5/GPP/ONEAPI/2023.2.0/compiler/latest/linux/compiler/lib/intel64_lin/"
+BLAS_LAPACK_BUILD_ENV="export LD_LIBRARY_PATH=\"${MKL_ROOT}/lib/intel64:${SVML_ROOT}:\${LD_LIBRARY_PATH}\""
+BLAS_LAPACK_LDFLAGS="-L${MKL_ROOT}/lib/intel64 -L${SVML_ROOT}"
+BLAS_LAPACK_LIBS='-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lsvml'
+
+ECCODES_ROOT='/apps/ACC/ECCODES/2.34.1/GCC/NOMPI'
+ECCODES_LIBS='-leccodes'
+
+FYAML_ROOT='/gpfs/projects/ehpc01/models/icon/libs/libfyaml'
+FYAML_LIBS='-lfyaml'
+
+XML2_ROOT='/usr'
+XML2_LIBS='-lxml2'
+
+################################################################################
+
+BUILD_ENV="module purge; module load cmake; export LD_LIBRARY_PATH=\"{MPI_ROOT}/lib:${HDF5_ROOT}/lib:${NETCDF_ROOT}/lib:${NETCDFF_ROOT}/lib:${ECCODES_ROOT}/lib64:${FYAML_ROOT}/lib:\${LD_LIBRARY_PATH}\"; export \"PATH=${NVHPC_ROOT}/compilers/bin:\${PATH}\" ;${BLAS_LAPACK_BUILD_ENV};"
+
+CC="${MPI_ROOT}/bin/mpicc"
+CFLAGS='-g -O2'
+
+# Let YAC find LAPACK with the C compiler:
+ICON_YAC_CFLAGS='-fortranlibs'
+
+CPPFLAGS="-I${HDF5_ROOT}/include -I${NETCDF_ROOT}/include -I${ECCODES_ROOT}/include -I${FYAML_ROOT}/include -I${XML2_ROOT}/include/libxml2"
+
+FC="${MPI_ROOT}/bin/mpif90"
+FCFLAGS="-I${NETCDFF_ROOT}/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays"
+
+LDFLAGS="-c++libs -L${HDF5_ROOT}/lib -L${NETCDF_ROOT}/lib -L${NETCDFF_ROOT}/lib -L${ECCODES_ROOT}/lib64 -L${FYAML_ROOT}/lib ${BLAS_LAPACK_LDFLAGS}"
+LIBS="-Wl,--as-needed ${XML2_LIBS} ${FYAML_LIBS} ${ECCODES_LIBS} ${BLAS_LAPACK_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS}"
+
+# The compiler does not inject RPATHs to several runtime libraries
+# therefore we generate the required flags
+# based on the LD_LIBRARY_PATH variable set by the modules that are loaded in
+# BUILD_ENV:
+extra_rpath_dirs=$(unset LD_LIBRARY_PATH; { set +eu; eval "${BUILD_ENV}"; set -eu; } >/dev/null; echo "${LD_LIBRARY_PATH}")
+ICON_LDFLAGS="-Wl,--disable-new-dtags -Wl,--as-needed -Wl,-rpath,${extra_rpath_dirs}"
+
+MPI_LAUNCH=srun
+
+EXTRA_CONFIG_ARGS='--enable-grib2 --enable-openmp --disable-mpi-checks '
+
+# The compiler fails one of the YAC configure-time tests, which we suppress and
+# hope for the best:
+EXTRA_CONFIG_ARGS+=' yac_cv_fc_is_contiguous_works=yes'
+
+################################################################################
+
+"${icon_dir}/configure" \
+BUILD_ENV="${BUILD_ENV}" \
+CC="${CC}" \
+CFLAGS="${CFLAGS}" \
+CPPFLAGS="${CPPFLAGS}" \
+FC="${FC}" \
+FCFLAGS="${FCFLAGS}" \
+ICON_YAC_CFLAGS="${ICON_YAC_CFLAGS}" \
+ICON_LDFLAGS="${ICON_LDFLAGS}" \
+LDFLAGS="${LDFLAGS}" \
+LIBS="${LIBS}" \
+MPI_LAUNCH="${MPI_LAUNCH}" \
+${EXTRA_CONFIG_ARGS} \
+"$@"
+
+for arg in "$@"; do
+  case $arg in
+    -help | --help | --hel | --he | -h | -help=r* | --help=r* | --hel=r* | --he=r* | -hr* | -help=s* | --help=s* | --hel=s* | --he=s* | -hs*)
+      test -n "${EXTRA_CONFIG_ARGS}" && echo '' && echo "This wrapper script ('$0') calls the configure script with the following extra arguments, which might override the default values listed above: ${EXTRA_CONFIG_ARGS}"
+      exit 0 ;;
+  esac
+done
+
+# Copy runscript-related files when building out-of-source:
+if test $(pwd) != $(cd "${icon_dir}"; pwd); then
+  echo "Copying runscript input files from the source directory..."
+  rsync -uavz ${icon_dir}/run . --exclude='*.in' --exclude='.*' --exclude='standard_*' --exclude=mkexp
+  ln -sf -t run/ ${icon_dir}/run/{standard_*,mkexp}
+  ln -sf set-up.info run/SETUP.config
+  rsync -uavz ${icon_dir}/externals . --exclude='.git' --exclude='*.f90' --exclude='*.F90' --exclude='*.c' --exclude='*.h' --exclude='*.Po' --exclude='tests' --exclude='*.mod' --exclude='*.o'
+  rsync -uavz ${icon_dir}/make_runscripts .
+  rsync -uavz ${icon_dir}/scripts .
+  ln -sf ${icon_dir}/data
+  ln -sf ${icon_dir}/vertical_coord_tables
+fi

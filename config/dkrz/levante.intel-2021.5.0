@@ -1,0 +1,145 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -eu
+unset CDPATH
+ulimit -c 0
+
+script_dir=$(cd "$(dirname "$0")"; pwd)
+icon_dir=$(cd "${script_dir}/../.."; pwd)
+
+################################################################################
+
+gcc_root='/sw/spack-levante/gcc-11.2.0-bcn7mb'
+stdcpp_libs='-lstdc++'
+
+mpi_root='/sw/spack-levante/openmpi-4.1.2-yfwe6t'
+
+zlib_libs='-lz'
+
+hdf5_root='/sw/spack-levante/hdf5-1.12.1-tvymb5'
+hdf5_libs='-lhdf5_hl_fortran -lhdf5_fortran -lhdf5'
+
+netcdf_root='/sw/spack-levante/netcdf-c-4.8.1-2k3cmu'
+netcdf_libs='-lnetcdf'
+
+netcdff_root='/sw/spack-levante/netcdf-fortran-4.5.3-k6xq5g'
+netcdff_libs='-lnetcdff'
+
+netlib_lapack_root='/sw/spack-levante/netlib-lapack-3.9.1-rwhcz7'
+blas_lapack_libs='-llapack -lblas'
+
+eccodes_root='/sw/spack-levante/eccodes-2.27.0-dphsnu'
+eccodes_libs='-leccodes_f90 -leccodes'
+# For whatever reason, the provided libeccodes.so, which might not be needed for
+# a particular configuration, contains symbols of the standard libm.so, which is
+# needed for every configuration. The following avoids the redundant dependency
+# on libeccodes.so:
+eccodes_libs="-lm ${eccodes_libs}"
+
+fyaml_root='/sw/spack-levante/libfyaml-0.7.12-fvbhgo'
+fyaml_libs='-lfyaml'
+
+xml2_root='/usr'
+xml2_libs='-lxml2'
+
+################################################################################
+
+BUILD_ENV="export LD_LIBRARY_PATH=\"${gcc_root}/lib64:${hdf5_root}/lib:${netcdf_root}/lib:${netcdff_root}/lib:${netlib_lapack_root}/lib64:${eccodes_root}/lib64:${fyaml_root}/lib:\${LD_LIBRARY_PATH}\"; export PATH=\"${gcc_root}/bin:${hdf5_root}/bin:\${PATH}\";"
+
+arch='-m64 -march=core-avx2 -mtune=core-avx2'
+
+CC="${mpi_root}/bin/mpicc"
+CFLAGS="${arch} -g -gdwarf-4 -pc64 -ip -fma -qno-opt-dynamic-align"
+ICON_CFLAGS='-O3 -ftz'
+ICON_BUNDLED_CFLAGS='-O2 -ftz'
+
+CXX=$("${mpi_root}/bin/mpicxx" -show | sed 's: .*$::')
+CXXFLAGS="${CFLAGS} -O2 -ftz"
+
+CPPFLAGS="-I${hdf5_root}/include -I${netcdf_root}/include -I${eccodes_root}/include -I${fyaml_root}/include -I${xml2_root}/include/libxml2"
+
+FC="${mpi_root}/bin/mpif90"
+FCFLAGS="-I${hdf5_root}/include -I${netcdff_root}/include -I${eccodes_root}/include ${arch} -g -gdwarf-4 -pc64 -fp-model source -traceback"
+ICON_FCFLAGS='-O3 -ftz -assume realloc_lhs -ip -fma -align array64byte -qoverride-limits'
+
+ICON_OCEAN_FCFLAGS='-O3 -assume norealloc_lhs -reentrancy threaded -qopt-report-file=stdout -qopt-report=0 -qopt-report-phase=vec'
+ICON_OCEAN_PATH='src/hamocc:src/ocean:src/sea_ice'
+
+ICON_ECRAD_FCFLAGS='-qno-opt-dynamic-align -no-fma -fpe0'
+
+LDFLAGS="-L${gcc_root}/lib64 -L${hdf5_root}/lib -L${netcdf_root}/lib -L${netcdff_root}/lib -L${netlib_lapack_root}/lib64 -L${eccodes_root}/lib64 -L${fyaml_root}/lib -Wl,--disable-new-dtags -Wl,--as-needed"
+LIBS="${xml2_libs} ${fyaml_libs} ${eccodes_libs} ${blas_lapack_libs} ${netcdff_libs} ${netcdf_libs} ${hdf5_libs} ${zlib_libs} ${stdcpp_libs}"
+
+AR="$($CC -show | sed 's: .*$::;s:/[^/]*$::')/xiar"
+
+MPI_LAUNCH="${mpi_root}/bin/mpiexec"
+
+EXTRA_CONFIG_ARGS="\
+--enable-art \
+--enable-bundled-python=mtime \
+--enable-comin \
+--enable-ecrad \
+--enable-fcgroup-OCEAN \
+--enable-grib2 \
+--enable-intel-consistency \
+--enable-loop-exchange \
+--enable-parallel-netcdf \
+--enable-quincy \
+--enable-vectorized-lrtm \
+--enable-waves \
+--enable-yaxt \
+"
+
+################################################################################
+
+"${icon_dir}/configure" \
+AR="${AR}" \
+BUILD_ENV="${BUILD_ENV}" \
+CC="${CC}" \
+CFLAGS="${CFLAGS}" \
+CPPFLAGS="${CPPFLAGS}" \
+CXX="${CXX}" \
+FC="${FC}" \
+FCFLAGS="${FCFLAGS}" \
+ICON_BUNDLED_CFLAGS="${ICON_BUNDLED_CFLAGS}" \
+ICON_CFLAGS="${ICON_CFLAGS}" \
+ICON_ECRAD_FCFLAGS="${ICON_ECRAD_FCFLAGS}" \
+ICON_FCFLAGS="${ICON_FCFLAGS}" \
+ICON_OCEAN_FCFLAGS="${ICON_OCEAN_FCFLAGS}" \
+ICON_OCEAN_PATH="${ICON_OCEAN_PATH}" \
+LDFLAGS="${LDFLAGS}" \
+LIBS="${LIBS}" \
+MPI_LAUNCH="${MPI_LAUNCH}" \
+${EXTRA_CONFIG_ARGS} \
+"$@"
+
+# Support variants of --help even from this configure wrapper:
+for arg in "$@"; do
+  case $arg in
+    -help | --help | --hel | --he | -h | -help=r* | --help=r* | --hel=r* | --he=r* | -hr* | -help=s* | --help=s* | --hel=s* | --he=s* | -hs*)
+      test -n "${EXTRA_CONFIG_ARGS}" && echo '' && echo "This wrapper script ('$0') calls the configure script with the following extra arguments, which might override the default values listed above: ${EXTRA_CONFIG_ARGS}"
+      exit 0 ;;
+  esac
+done
+
+# Copy runscript-related files when building out-of-source:
+if test $(pwd) != $(cd "${icon_dir}"; pwd); then
+  echo "Copying runscript input files from the source directory..."
+  rsync -uavz ${icon_dir}/run . --exclude='*.in' --exclude='.*' --exclude='standard_*' --exclude=mkexp
+  ln -sf -t run/ ${icon_dir}/run/{standard_*,mkexp}
+  rsync -uavz ${icon_dir}/externals . --exclude='.git' --exclude='*.f90' --exclude='*.F90' --exclude='*.c' --exclude='*.h' --exclude='*.Po' --exclude='tests' --exclude='*.mod' --exclude='*.o'
+  rsync -uavz ${icon_dir}/make_runscripts .
+  rsync -uavz ${icon_dir}/scripts .
+  ln -sf ${icon_dir}/data
+  ln -sf ${icon_dir}/vertical_coord_tables
+fi

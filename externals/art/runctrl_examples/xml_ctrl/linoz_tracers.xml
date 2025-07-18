@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tracers SYSTEM "tracers.dtd">
+
+<tracers>
+ <chemtracer id="TR_cold">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">1.000E+0</mol_weight>
+    <transport type="char"> hadv52aero </transport>
+    <lifetime type="real"> 432000 </lifetime>
+    <init_mode type="int">0</init_mode>
+    <unit type="char">none</unit>
+    <c_solve type="char">cold</c_solve>
+ </chemtracer>
+ <chemtracer id="TRO3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">4.800E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">1555200</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 1 </init_mode>
+    <polarchem type="char"> coldtracer </polarchem>
+    <feedback type="int"> 1 </feedback>
+    <init_name type="char">O3</init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">linoz</c_solve>
+    <Thet type="real">195</Thet>
+    <lt_het type="real">864000</lt_het>
+    </chemtracer>
+ </tracers>

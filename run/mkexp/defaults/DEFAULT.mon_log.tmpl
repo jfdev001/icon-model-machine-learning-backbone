@@ -1,0 +1,104 @@
+#! %{JOB.python3} #%# -*- mode: python -*- vi: set ft=python :
+#%#- ICON
+#%#-
+#%#- ------------------------------------------
+#%#- Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+#%#- Contact information: icon-model.org
+#%#- See AUTHORS.TXT for a list of authors
+#%#- See LICENSES/ for license information
+#%#- SPDX-License-Identifier: BSD-3-Clause
+#%#- ------------------------------------------
+
+"""\
+Create reports from run logfiles
+"""
+import argparse
+import sys
+import logging
+
+
+#% include 'mkexp/defaults/logging.tmpl'
+
+
+def parse_args():
+    command_line = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    command_line.add_argument(
+        "start_date",
+        help="first date of period (YYYY-MM-DD... or YYYYMMDD...)",
+    )
+    command_line.add_argument("-j", "--job_id", help="Job ID")
+    command_line.add_argument("-V", "--version", action="version")
+    command_line.add_argument(
+        "--script_dir",
+    )
+    command_line.add_argument(
+        "--exp_id",
+    )
+    command_line.add_argument(
+        "--model_dir",
+    )
+    command_line.add_argument(
+        "--mon_dir",
+    )
+    command_line.add_argument(
+        "--log_dir",
+    )
+    command_line.add_argument("--prioritized_plots", nargs="*")
+    command_line.add_argument("--plot_format", default="png")
+    command_line.add_argument("--custom_analyzer", nargs="*")
+    command_line.add_argument("--custom_plotter", nargs="*")
+    command_line.add_argument("-c", "--config")
+
+    args = command_line.parse_args()
+    return args
+
+def merge_args_with_defaults(args):
+    if args.config is not None:
+        defaults = {}
+        argsdict = vars(args)
+        if args.config[-4:].lower() in ("yaml", ".yml"):
+            import yaml
+
+            try:
+                defaults = yaml.safe_load(open(args.config))
+                logging.debug(f"Read the config from {args.config}")
+            except FileNotFoundError as e:
+                logging.error(f"Could not open {args.config}")
+                exit(1)
+        elif args.config[-4:].lower() in ("dump",):
+            from configobj import ConfigObj
+
+            defaults = dict(ConfigObj(args.config))
+        for x in argsdict:
+            if argsdict[x] is None:
+                argsdict[x] = get_with_upper(x, defaults)
+        for arg_name in ["prioritized_plots", "custom_analyzer", "custom_plotter", "plot_format"]:
+            get_arg(arg_name, argsdict, defaults)
+    return args
+
+def get_arg(arg_name, argsdict, defaults):
+    if argsdict.get("arg_name", None) is None:
+        try:
+            dml = defaults["jobs"]["mon_log"]
+            argsdict[arg_name] = get_with_upper(arg_name, dml)
+        except KeyError as e:
+            logging.critical(f"Could not get config option for {arg_name}")
+            logging.critical(f"Arguments : {str (argsdict)}")
+            logging.critical(
+                f"Tried command line argument --{arg_name}, config entry and config['jobs']['mon_log']"
+            )
+            sys.exit(1)
+
+def get_with_upper(name, dictionary, default=None):
+    return dictionary.get(name, dictionary.get(name.upper(), default))
+
+if __name__ == "__main__":
+    args_line = " ".join(sys.argv)
+    args = parse_args()
+    args = merge_args_with_defaults(args)
+    analysis_script_dir = f"{args.model_dir}/utils/log-plotting/"
+    sys.path.insert(1, analysis_script_dir)
+    import process_mkexp_experiment
+    logging.info(f'log monitoring started ({args_line})')
+    process_mkexp_experiment.main(args)
+    logging.info(f'log monitoring finished ({args_line})')

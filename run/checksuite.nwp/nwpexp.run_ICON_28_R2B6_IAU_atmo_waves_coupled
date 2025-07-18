@@ -1,0 +1,964 @@
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#=======================================================================
+#
+# R2B6 NWP atmosphere coupled to R2B6 wave
+#
+# nwpexp.run_ICON_28_R2B6_IAU_atmo_waves_coupled
+#
+# Basic test case for ICON-NWP coupled to ICON-WAVE.
+# ICON-NWP starts from ununitialized analysis with IAU, while ICON-WAVE starts
+# from a restart file.
+#
+# The purpose is the technical testing of
+# - the coupling of components with distinct start times
+#     (due to IAU, the atm component starts prior to the wave component)
+# - the component-wise initialization from restart
+#     (only one component starts from restart file while the other used IAU)
+#
+author_list="Daniel Reinert and Mikhail Dobrynin"
+#
+# Some preset environment variables:
+# nproma = blocking length for array dimensioning and inner loop lengths
+# mpi_procs_pernode = Number of mpi processes per node
+# proc0_shift
+#=======================================================================
+
+# ----------------------------------------------------------------------
+# path definitions
+# ----------------------------------------------------------------------
+
+make_and_change_to_experiment_dir # function in ../add_run_routines
+
+# Combine START and MODEL if START_MODEL is not already set.
+# START_MODEL is used to ease the execution of a machine that uses a complex
+# mpirun command with multiple binaries
+START_MODEL="${START_MODEL:=$START $MODEL}"
+
+# set icon_data_poolFolder
+icon_data_poolFolder="${icon_data_rootFolder:-/pool/data/ICON}/buildbot_data/nwp"
+
+export PATH=${PATH}:~routfor/routfox/bin
+
+# base directory for ICON sources, binary and auxilary data:
+ICONDIR="${basedir}" # basedir can be set with create_target_header
+
+# experiment identifier for output files
+EXP="couple_atm_wave_R2B6_28"    # experiment identifier
+
+# root directory for input data
+DATAROOT="${icon_data_poolFolder}/Checksuite_data/"
+
+# atmo
+GRIDDIR="${icon_data_poolFolder}/grids/public/edzw"
+# GRIDDIR links to /hpc/rwork0/routfor/routfox/icon/grids/public/edzw on RCL
+EXTPDIR="$GRIDDIR" # external parameter directory
+
+# waves
+GRIDDIR_waves=${DATAROOT}/ICON-waves
+# directory with external parameter data:
+EXTPDIR_waves=${DATAROOT}/ICON-waves
+
+# absolute path to input directory
+INDIR=${DATAROOT}/InidataExp28/
+
+# ----------------------------------------------------------------------
+# Basic model configuration
+# ----------------------------------------------------------------------
+
+# nproma = blocking length for array dimensioning and inner loop lengths
+nproma_atm=$nproma
+nproma_wave=$nproma
+
+# number of io/restart/prefetch/radar procs
+#
+num_atm_io_procs=2
+num_atm_restart_procs=0
+num_atm_prefetch_proc=0
+num_atm_io_procs_radar=0
+
+num_wave_io_procs=1
+num_wave_restart_procs=0
+num_wave_prefetch_proc=0
+num_wave_io_procs_radar=0
+
+# ----------------------------------------------------------------------
+# MPI variables
+# ----------------------------------------------------------------------
+# NEC has PPN=NE*CPE mpi processes (OMP_NUM_THREADS=1)
+# they will be devided in wave and atmosphere
+#
+case $use_target in
+    rcl)
+        mpi_total_procs=${PPN}
+        ;;
+esac
+
+if [ $mpi_total_procs -lt 2 ] ; then
+  check_error 0 "This setup requires at least 2 mpi processes. Exit"
+fi
+
+# Number of mpi processes per node
+# Please note that we do not expect the processes to be distributed
+# over nodes in a particular manner. atm_per_node and wave_per_node
+# are used only the specify the relative amount of available processes
+# that are used by atm versus wave.
+#
+wave_per_node=$((mpi_procs_pernode/4))
+atm_per_node=$((mpi_procs_pernode - wave_per_node))
+num_atm_procs=$((no_of_nodes * atm_per_node))
+num_wave_procs=$((no_of_nodes * wave_per_node))
+
+#-----------------------------------------------------------------
+# Coupling section
+#-----------------------------------------------------------------
+
+ICON_COMPONENT1_proc0_shift=$proc0_shift  # proc0_shift set by create_target_header
+ICON_COMPONENT2_proc0_shift=$proc0_shift
+
+# Please note that io/restart/prefetch/radar procs are offloaded to VH procs for proc0_shift>0.
+# Otherwise, they are taken from the pool of VE processes. This must be taken into account,
+# when computing the total number of processes (VH + VE).
+#
+if (( ICON_COMPONENT1_proc0_shift > 0 )); then
+  tot_atm_procs=$((num_atm_procs + num_atm_io_procs + num_atm_restart_procs + num_atm_prefetch_proc + num_atm_io_procs_radar + ICON_COMPONENT1_proc0_shift))
+else
+  tot_atm_procs=$((num_atm_procs))
+fi
+
+if (( ICON_COMPONENT2_proc0_shift > 0 )); then
+  tot_wave_procs=$((num_wave_procs + num_wave_io_procs + num_wave_restart_procs + num_wave_prefetch_proc + num_wave_io_procs_radar + ICON_COMPONENT2_proc0_shift))
+else
+  tot_wave_procs=$((num_wave_procs))
+fi
+
+
+echo "============================================"
+echo " #configinfo#  number of nodes: $no_of_nodes"
+echo " #configinfo#  OMP_NUM_THREADS = $OMP_NUM_THREADS"
+echo " #configinfo#  mpi_procs_pernode = $mpi_procs_pernode"
+echo " #configinfo#  mpi_total_procs = $mpi_total_procs"
+echo " #configinfo#  atm_per_node = $atm_per_node"
+echo " #configinfo#  wave_per_node = $wave_per_node"
+echo " #configinfo#  num_atm_procs = $num_atm_procs (excl. io, restart, prefetch procs)"
+echo " #configinfo#  num_wave_procs = $num_wave_procs (excl. io, restart, prefetch procs)"
+echo " #configinfo#  tot_atm_procs = $tot_atm_procs (incl. io, restart, prefetch procs)"
+echo " #configinfo#  tot_wave_procs = $tot_wave_procs (incl. io, restart, prefetch procs)"
+echo " #configinfo#  num_atm_io_procs = $num_atm_io_procs"
+echo " #configinfo#  num_wave_io_procs = $num_wave_io_procs"
+echo " #configinfo#  num_atm_restart_procs=$num_atm_restart_procs"
+echo " #configinfo#  num_wave_restart_procs=$num_wave_restart_procs"
+echo " #configinfo#  nproma_atm = $nproma_atm"
+echo " #configinfo#  nproma_wave = $nproma_wave"
+echo "============================================"
+
+
+# ----------------------------------------------------------------------
+# Split the number of total procs and assign to each component
+# ----------------------------------------------------------------------
+atm_min_rank=0
+atm_max_rank=$(( tot_atm_procs - 1 ))
+atm_inc_rank=1
+wave_min_rank=$(( atm_max_rank + 1 ))
+wave_max_rank=$(( tot_atm_procs + tot_wave_procs - 1 ))
+wave_inc_rank=1
+#
+echo " atm_min_rank="$atm_min_rank "  atm_max_rank="$atm_max_rank
+echo "wave_min_rank="$wave_min_rank "wave_max_rank="$wave_max_rank
+
+
+# ----------------------------------------------------------------------
+# copy input data: grids, external parameters
+# ----------------------------------------------------------------------
+# atmo
+ln -sf $GRIDDIR/icon_grid_0023_R02B05_R.nc iconR2B05_DOM00.nc
+ln -sf $GRIDDIR/icon_grid_0023_R02B05_R-grfinfo.nc iconR2B05_DOM00-grfinfo.nc
+ln -sf $GRIDDIR/icon_grid_0024_R02B06_G.nc iconR2B06_DOM01.nc
+ln -sf $GRIDDIR/icon_grid_0024_R02B06_G-grfinfo.nc iconR2B06_DOM01-grfinfo.nc
+ln -sf $EXTPDIR/icon_extpar_0024_R02B06_G_20200917_tiles.nc extpar_iconR2B06_DOM01.nc
+
+# waves
+ln -sf $GRIDDIR_waves/ocean_icon_waves_grid_0024_R02B06_G_DOM01.nc icon_waves_grid_0024_R02B06_G_DOM01.nc
+ln -sf $EXTPDIR_waves/extpar_ocean_icon_waves_grid_0024_R02B06_G_DOM01.nc extpar_icon_waves_grid_0024_R02B06_G_DOM01.nc
+
+# files needed for radiation
+ln -sf ${ICONDIR}/externals/ecrad/data ecrad_data
+
+# atm analysis (IAU)
+ln -sf $INDIR/atm/2022110300/igfff00013000.m013.R2B06.grb .
+ln -sf $INDIR/atm/2022110300/igaf2022110300.m013.R2B06.grb .
+
+# wave restart file
+ln -sf $INDIR/wave/2022110300/icon_waves_grid_0024_R02B06_G_DOM01_restart_wave_20221102T223000Z.nc restart_wave_DOM01.nc
+
+# ----------------------------------------------------------------------
+# global namelist settings
+# ----------------------------------------------------------------------
+
+# the namelist filename
+atmo_namelist=NAMELIST_${EXP}_atm
+wave_namelist=NAMELIST_${EXP}_wave
+
+# global timing
+start_date="2022-11-03T00:00:00Z"
+stop_date="2022-11-03T10:00:00Z"
+
+dtime=360
+
+waveTimeStep="PT6M"              # wave time step
+couplingTimeStep="PT6M"         # coupling time step
+longcouplingTimeStep="P100Y"     # no coupling (long coupling period)
+
+# the grid parameters
+atmo_dyn_grids="iconR2B06_DOM01.nc"
+atmo_rad_grids="iconR2B05_DOM00.nc"
+
+wave_grid="icon_waves_grid_0024_R02B06_G_DOM01.nc"
+wave_extpar="extpar_icon_waves_grid_0024_R02B06_G_DOM01.nc"
+
+cp -p $MODEL icon
+
+
+#
+# Fill model list
+# -------------------
+#
+namelist_list[0]="$atmo_namelist"
+modelname_list[0]="atmo"
+modeltype_list[0]=1
+minrank_list[0]=$atm_min_rank
+maxrank_list[0]=$atm_max_rank
+incrank_list[0]=$atm_inc_rank
+#
+namelist_list[1]="$wave_namelist"
+modelname_list[1]="wave"
+modeltype_list[1]=98
+minrank_list[1]=$wave_min_rank
+maxrank_list[1]=$wave_max_rank
+incrank_list[1]=$wave_inc_rank
+model_do_restart_list[1]="for_init"   # initialize model from restart file
+
+# YAC coupling library configuration
+#-----------------------------------------------------------------------------
+atm_lag=-14   # time lags in unit of time steps
+wave_lag=-14  # in order to start coupling at the shifted start date
+
+cat > coupling_${EXP}.yaml << EOF
+definitions:
+  components:
+    atm: &atm
+      component: ${modelname_list[0]}
+      grid: icon_atmos_grid
+    wave: &wave
+      component: ${modelname_list[1]}
+      grid: icon_waves_grid
+  atm2wave: &atm2wave
+    source: *atm
+    target: *wave
+    time_reduction: none
+    src_lag: ${atm_lag}
+    tgt_lag: ${wave_lag}
+  wave2atm: &wave2atm
+    source: *wave
+    target: *atm
+    time_reduction: none
+    src_lag: ${wave_lag}
+    tgt_lag: ${atm_lag}
+  interp_stacks:
+    hcsbb_interp_stack: &hcsbb_interp_stack
+      interpolation:
+        - bernstein_bezier
+        - nnn:
+            n: 4
+            weighted: arithmetic_average
+        - fixed:
+            user_value: -999.9
+timestep_unit: ISO_format
+calendar: proleptic-gregorian
+coupling:
+  - <<: [ *atm2wave, *hcsbb_interp_stack ]
+    coupling_period: ${couplingTimeStep}
+    field: [zonal_wind_in_10m,
+            meridional_wind_in_10m,
+            fraction_of_ocean_covered_by_sea_ice]
+  - <<: [ *wave2atm, *hcsbb_interp_stack ]
+    coupling_period: ${couplingTimeStep}
+    field: [roughness_length]
+EOF
+
+# yaml files for yac
+# ------------------
+ln -sf coupling_${EXP}.yaml     coupling.yaml
+
+# ----------------------------------------------------------------------
+# model namelists
+# ----------------------------------------------------------------------
+
+# reconstrcuct the grid parameters in namelist form
+# atmo
+dynamics_grid_filename=""
+for gridfile in ${atmo_dyn_grids}; do
+  dynamics_grid_filename="${dynamics_grid_filename} '${gridfile}',"
+done
+radiation_grid_filename=""
+for gridfile in ${atmo_rad_grids}; do
+  radiation_grid_filename="${radiation_grid_filename} '${gridfile}',"
+done
+
+# waves
+wave_grid_filename=""
+for gridfile in ${wave_grid}; do
+  wave_grid_filename="${wave_grid_filename} '${gridfile}',"
+done
+
+
+cat > ${atmo_namelist} << EOF
+&coupling_mode_nml
+ coupled_to_waves        = .TRUE.
+/
+&parallel_nml
+ nproma                  = ${nproma_atm}
+ p_test_run              = .false.
+ l_test_openmp           = .true.
+ l_log_checks            = .true.
+ num_io_procs            = ${num_atm_io_procs}
+ num_restart_procs       = ${num_atm_restart_procs}
+ num_prefetch_proc       = ${num_atm_prefetch_proc}
+ num_io_procs_radar      = ${num_atm_io_procs_radar}
+ iorder_sendrecv         = 3
+ num_dist_array_replicas = 4
+ proc0_shift             = ${proc0_shift}
+ use_omp_input           = .true.
+/
+&grid_nml
+ dynamics_grid_filename  = ${dynamics_grid_filename}
+ radiation_grid_filename = ${radiation_grid_filename}
+ dynamics_parent_grid_id = 0,1
+ lredgrid_phys           = .true.,.true.
+ lfeedback               = .true.
+ ifeedback_type          = 2
+ start_time              = 0.,-5280
+ end_time                = 0.,432000.
+ nexlevs_rrg_vnest       = 14
+/
+&run_nml
+ num_lev        = 90
+ lvert_nest     = .true.
+ dtime          = ${dtime}     ! timestep in seconds
+ ldynamics      = .true.       ! dynamics
+ ltransport     = .true.
+ iforcing       = 3
+ lart           = .false.
+ ldass_lhn      = .false.
+ ltestcase      = .false.
+ msg_level      = 10
+ ltimer         = .true.
+ timers_level   = 5
+ output         = "nml"
+/
+&initicon_nml
+ init_mode             = 5
+ lread_ana             =.true.
+ dt_iau                = 10800
+ dt_shift              = -5400.
+ iterate_iau           = .false.
+ niter_diffu           = 5
+ niter_divdamp         = 10
+ zpbl1                 = 500.
+ zpbl2                 = 1000.
+ dwdfg_filename        = 'igfff00013000.m013.R2B06.grb'
+ dwdana_filename       = 'igaf2022110300.m013.R2B06.grb'
+ ana_varnames_map_file = 'map_file.ana'
+ !check_ana(1)%list     = 'T_SO','FR_ICE','T_2M','P','QV','T','U','V','FRESHSNW','H_SNOW'
+ !check_ana(2)%list     = ''
+ !check_fg(1)%list      = 'alb_seaice','evap_pl','hsnow_max','snoag','relhum_lml_filtinc','skt'
+ !check_fg(2)%list      = 'alb_seaice','evap_pl','hsnow_max','snoag','relhum_lml_filtinc','skt'
+ ltile_coldstart       = .false.
+ ltile_init            = .false.
+ lp2cintp_incr         = .true.
+ lp2cintp_sfcana       = .true.
+ use_lakeiceana        = .true.
+ adjust_tso_tsnow      = .true.
+ smi_relax_timescale   = 1.
+ !icpl_da_sfcevap       = 4
+ !icpl_da_sfcfric       = 2
+ !icpl_da_skinc         = 2
+ !icpl_da_snowalb       = 2
+ !icpl_da_tkhmin        = 1
+ !icpl_da_seaice        = 2
+ !scalfac_da_sfcfric    = 5
+/
+&io_nml
+ dt_checkpoint        = 0
+ checkpoint_on_demand = .false.
+ restart_write_mode   = ''
+ itype_pres_msl       = 5
+ itype_rh             = 1
+ output_nml_dict      = 'map_file.fc'
+ gust_interval        = 3600
+ linvert_dict         =.false.
+/
+&nwp_phy_nml
+ inwp_gscp          = 1
+ inwp_convection    = 1
+ inwp_radiation     = 4
+ inwp_cldcover      = 1
+ inwp_turb          = 1
+ inwp_satad         = 1
+ inwp_sso           = 1
+ inwp_gwd           = 1
+ inwp_surface       = 1
+ icapdcycl          = 3
+ latm_above_top     = .true.,.true.
+ efdt_min_raylfric  = 3600.
+ itype_z0           = 2
+ icpl_aero_conv     = 1
+ icpl_aero_gscp     = 1
+ dt_rad             = 2160
+ dt_conv            = 720,360
+ dt_sso             = 1440,720
+ dt_gwd             = 1440
+ ldetrain_conv_prec = .false.,.false.,.true.
+ mu_rain            = 0.5
+ rain_n0_factor     = 0.1
+/
+&nwp_tuning_nml
+ itune_albedo      = 0
+ tune_eiscrit      = 7.
+ tune_gkdrag       = 0.075, 0.08
+ tune_gkdrag_enh   = 0.12, 0.14
+ tune_gkwake       = 0.55, 0.65
+ tune_gfrcrit      = 0.36, 0.35
+ tune_grcrit       = 0.50, 0.50
+ tune_grcrit_enh   = 0.58, 0.6
+ tune_gustsso_lim  = 20.
+ tune_dust_abs     = 1.
+ tune_zvz0i        = 0.90
+ tune_box_liq_asy  = 3.25
+ tune_rhebc_land   = 0.825
+ tune_rcucov       = 0.075
+ tune_gfluxlaun    = 3.75e-3
+ icpl_turb_clc     = 2
+ max_calibfac_clcl = 1.5
+ itune_gust_diag   = 2
+ tune_blockred     = 1.5
+ tune_minsso       = 1.
+ tune_minsso_gwd   = 40.
+ tune_capethresh   = 2000.
+ tune_sc_eis       = 7.
+/
+&turbdiff_nml
+ a_hshr        = 1.25
+ alpha0        = 0.0123
+ alpha0_max    = 0.0335
+ alpha1        = 0.125
+ c_diff        = 0.2
+ frcsmot       = 0
+ icldm_turb    = 1
+ imode_charpar = 3
+ itype_sher    = 3
+ ltkesso       = .true.
+ ltkeshs       = .true.
+ pat_len       = 750.
+ rat_sea       = 0.875
+ rlam_heat     = 10.0
+ tkhmin        = 0.6
+ tkhmin_strat  = 1.0
+ tkmmin        = 0.75
+ tkmmin_strat  = 2.5
+/
+&lnd_nml
+ ntiles         = 3
+ nlev_snow      = 3
+ lmulti_snow    = .false.
+ itype_heatcond = 3
+ idiag_snowfrac = 20
+ lsnowtile      = .true.
+ lseaice        = .true.
+ llake          = .true.
+ lprog_albsi    = .true.
+ itype_canopy   = 2
+ itype_lndtbl   = 4
+ itype_root     = 2
+ itype_evsl     = 4
+ itype_trvg     = 3
+ cwimax_ml      = 5.e-4
+ c_soil         = 1.25
+ c_soil_urb     = 0.5
+ sstice_mode    = 2
+ lbottom_hflux  = .true.
+ itype_snowevap = 3
+/
+&radiation_nml
+ irad_o3     = 79
+ irad_aero   = 6
+ albedo_type = 2 ! Modis albedo
+ direct_albedo = 4
+ direct_albedo_water = 3
+ albedo_whitecap = 1
+ vmr_co2    = 390.e-06 ! values representative for 2012
+ vmr_ch4    = 1800.e-09
+ vmr_n2o    = 322.0e-09
+ vmr_o2     = 0.20946
+ vmr_cfc11  = 240.e-12
+ vmr_cfc12  = 532.e-12
+ ecrad_data_path = './ecrad_data'
+ isolrad    = 1
+ ecrad_isolver = ${radiation_ecrad_isolver}
+ ! Solver version. 2: McICA with OpenACC, 0: McICA
+/
+&nonhydrostatic_nml
+ iadv_rhotheta       = 2
+ ivctype             = 2
+ itime_scheme        = 4
+ exner_expol         = 0.6
+ vwind_offctr        = 0.2
+ damp_height         = 43500
+ rayleigh_coeff      = 1
+ divdamp_order       = 24
+ divdamp_type        = 32
+ divdamp_fac         = 0.004
+ divdamp_trans_start = 12500
+ divdamp_trans_end   = 17500
+ igradp_method       = 3
+ l_zdiffu_t          = .true.
+ thslp_zdiffu        = 0.02
+ thhgtd_zdiffu       = 125.
+ htop_moist_proc     = 22500.
+ hbot_qvsubstep      = 16000.
+ vcfl_threshold      = 1.00
+ nlev_hcfl           = 10
+/
+&sleve_nml
+ min_lay_thckn       = 20.,
+ max_lay_thckn       = 400,
+ htop_thcknlimit     = 14000.,
+ top_height          = 75000.,
+ stretch_fac         = 0.9,
+ decay_scale_1       = 4000.,
+ decay_scale_2       = 2500.,
+ decay_exp           = 1.2,
+ flat_height         = 16000.,
+/
+&dynamics_nml
+ iequations     = 3
+ divavg_cntrwgt = 0.50
+ lcoriolis      = .true.
+ lmoist_thdyn   = .true.
+/
+&transport_nml
+ ivadv_tracer   = 3,3,3,3,3
+ itype_hlimit   = 3,4,4,4,4,
+ ihadv_tracer   = 52,2,2,2,2,
+ llsq_svd       = .TRUE.
+/
+&diffusion_nml
+ hdiff_order      = 5
+ itype_vn_diffu   = 1
+ itype_t_diffu    = 2
+ hdiff_efdt_ratio = 24.
+ hdiff_smag_fac   = 0.025
+ lhdiff_vn        = .true.
+ lhdiff_temp      = .true.
+/
+&interpol_nml
+ nudge_zone_width  = 8
+ lsq_high_ord      = 3
+ l_intp_c2l        = .true.
+ l_mono_c2l        = .true.
+ support_baryctr_intp=.true.,
+/
+&gridref_nml
+ grf_intmethod_e  = 6
+ grf_intmethod_ct = 2
+ grf_tracfbk      = 2
+ denom_diffu_v    = 150.
+/
+&extpar_nml
+ itopo                   = 1
+ itype_lwemiss           = 2
+ itype_vegetation_cycle  = 3
+ n_iter_smooth_topo      = 1,1
+ heightdiff_threshold    = 3000.
+ hgtdiff_max_smooth_topo = 750.,750.
+ read_nc_via_cdi         = .true.
+ pp_sso                  = 2
+/
+&ensemble_pert_nml
+ use_ensemble_pert  = .false.
+ stdev_sst_pert     = 1.1
+ timedep_pert       = 2
+ range_entrorg      = 0.
+ range_entrorg_mult = 2.0
+ range_rmfdeps      = 1.5
+/
+&gribout_nml
+ preset                          = "ensemble"
+ ldate_grib_act                  = .true.
+ lgribout_24bit                  = .false.
+ lgribout_compress_ccsds         = .false.
+ backgroundProcess               = 0
+ localNumberOfExperiment         = 1
+ productionStatusOfProcessedData = 0
+ localTypeOfEnsembleForecast     = 101
+ numberOfForecastsInEnsemble     = 40
+ perturbationNumber              = 3
+ generatingProcessIdentifier     = 1,2
+ tablesVersion=19,
+/
+&synsat_nml
+ lsynsat= .false.,.false.
+/
+&output_nml
+ ! ----------------------------------------------------------- !
+ ! ---  IGLO: ensemble forecast - native grid (00+12 UTC)  --- !
+ ! ---        + feedback files                             --- !
+ ! ----------------------------------------------------------- !
+ filetype             = 4         ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                  = 1                         ! write global domains
+ remap                = 1                         ! icon grid
+ reg_lon_def          = 0.,0.5,359.501
+ reg_lat_def          = -90.,0.5,90.
+ output_time_unit     = 1                         ! 1: seconds
+ output_bounds        = 0.,10000000.,3600.,        ! 0h,180h,6h,
+ steps_per_file       = 10000
+ taxis_tunit          = 2
+ mode                 = 1  ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last         = .true.
+ output_filename      = 'igfff_ll_'                      ! file name base
+ filename_format      = '<output_filename><ddhhmmss>'
+ ml_varlist           = 'U_10M','V_10M','sp_10m','VMAX_10M','FR_ICE','gz0','z0_waves','pres_msl','shfl_s','lhfl_s'
+ output_grid          = .TRUE.
+/
+&output_nml
+ ! ----------------------------------------------------------- !
+ ! ---  IGLO: ensemble forecast - native grid (00+12 UTC)  --- !
+ ! ---        + feedback files                             --- !
+ ! ----------------------------------------------------------- !
+ filetype             = 4         ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                  = 1                         ! write global domains
+ remap                = 0                         ! icon grid
+ output_time_unit     = 1                         ! 1: seconds
+ output_bounds        = 0.,10000000.,3600.,        ! 0h,180h,6h,
+ steps_per_file       = 10000
+ taxis_tunit          = 2
+ mode                 = 1  ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last         = .true.
+ output_filename      = 'igfff_'                     ! file name base
+ filename_format      = '<output_filename><ddhhmmss>'
+ ml_varlist           = 'U_10M','V_10M','sp_10m','VMAX_10M','FR_ICE','gz0','z0_waves','pres_msl','shfl_s','lhfl_s'
+ output_grid          = .TRUE.
+/
+EOF
+
+cat > map_file.ana << EOF2
+# internal name     GRIB2 shortName
+theta_v             THETA_V
+rho                 DEN
+vn                  VN
+u                   U
+v                   V
+w                   W
+tke                 TKE
+temp                T
+pres                P
+qv                  QV
+qc                  QC
+qi                  QI
+qr                  QR
+qs                  QS
+t_g                 T_G
+qv_s                QV_S
+fr_seaice           FR_ICE
+alb_si              ALB_SEAICE
+t_ice               T_ICE
+h_ice               H_ICE
+t_snow              T_SNOW
+freshsnow           FRESHSNW
+snowfrac_lc         SNOWC
+w_snow              W_SNOW
+rho_snow            RHO_SNOW
+h_snow              H_SNOW
+w_i                 W_I
+w_so                W_SO
+w_so_ice            W_SO_ICE
+t_so                T_SO
+smi                 SMI
+gz0                 Z0
+pres_sfc            PS
+z_ifc               HHL
+
+t_mnw_lk            T_MNW_LK
+t_wml_lk            T_WML_LK
+h_ml_lk             H_ML_LK
+t_bot_lk            T_BOT_LK
+c_t_lk              C_T_LK
+t_b1_lk             T_B1_LK
+h_b1_lk             H_B1_LK
+EOF2
+
+
+cat > map_file.fc << EOF3
+# GRIB2 shortName   internal name
+  alb_rad           ALBDIF
+  alb_seaice        ALB_SI
+  apab_s            ASWFLX_PAR_SFC
+  aswdifd_s         ASODIFD_S
+  aswdifu_s         ASODIFU_S
+  aswdir_s          ASODIRD_S
+  cape_con          CAPE
+  den               RHO
+  dtke_con          DDT_TKE_PCONV
+  dtke_hsh          DDT_TKE_HSH
+  fi                GEOPOT
+  fr_ice            FR_SEAICE
+  freshsnw          FRESHSNOW
+  hhl               Z_IFC
+  hsurf             TOPOGRAPHY_C
+  p                 PRES
+  pmsl              PRES_MSL
+  ps                PRES_SFC
+  relhum            RH
+  relhum_2m         RH_2M
+  snowc             SNOWFRAC_LC
+  sobs_rad          SOB_S
+  t                 TEMP
+  t_sea             T_SEASFC
+  thbs_rad          THB_S
+  vmax_10m          GUST10
+  z0                GZ0
+EOF3
+
+# ----------------------------------------------------------------------------
+#
+# wave namelist
+# --------------
+#spectral resolution
+nd=36          # NUMBER OF DIRECTIONS
+nf=30          # NUMBER OF FREQUENCIES
+
+cat > ${wave_namelist} <<EOF
+&coupling_mode_nml
+ coupled_to_atmo      = .TRUE.
+/
+&run_nml
+ num_lev              = 1
+ dtime                = ${dtime}
+ ltimer               = .true.
+ timers_level         = 10
+ msg_level            = 14
+ ltestcase            = .FALSE.       ! run testcase
+ ldynamics            = .TRUE.
+ ltransport           = .TRUE.
+ ntracer              = $((${nd}*${nf}))
+ output               = "nml"
+/
+&parallel_nml
+ nproma               = ${nproma_wave}
+ p_test_run           = .false.
+ l_test_openmp        = .false.
+ l_log_checks         = .false.
+ num_io_procs         = ${num_wave_io_procs}
+ num_restart_procs    = ${num_wave_restart_procs}
+ num_prefetch_proc    = ${num_wave_prefetch_proc}
+ num_io_procs_radar   = ${num_wave_io_procs_radar}
+ proc0_shift          = ${ICON_COMPONENT2_proc0_shift}
+ num_dist_array_replicas = 4
+ iorder_sendrecv      = 1
+/
+&grid_nml
+ dynamics_grid_filename  = ${wave_grid_filename}
+/
+&io_nml
+ restart_write_mode   = "sync"
+ dt_checkpoint        = 86400.
+/
+&extpar_nml
+ itopo                = 0
+ extpar_filename      = '${wave_extpar}'
+/
+&wave_nml
+ ndirs                = ${nd}   ! number of directions
+ nfreqs               = ${nf}   ! number of frequencies
+ forc_file_prefix     = '' ! prefix of forcing file name
+ depth_min            = 0.2
+ depth_max            = 999.
+ niter_smooth         = 3
+ ALPHA_CH             = 0.00375 !0.0075
+/
+&initwave_nml
+ dt_shift             = -5400.      ! timedelta for backwards time shift of model start date
+/
+&output_nml
+ filetype             =                          4       ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                  =                         -1       ! write all domains
+ output_bounds        =         0., 10000000.,3600.      ! start, end, increment
+ steps_per_file       =                      10000
+ mode                 =                          1       ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last         =                      .TRUE.      ! flag whether to include the last time step
+ output_filename      =                      'WAVE'      ! file name base
+ output_grid          =                      .TRUE.      ! flag whether grid information is added to output.
+ ml_varlist           = 'z0','group:wave_forcing','group:wave_short','drag','beta','tauwn','ustar'
+/
+EOF
+
+
+#-----------------------------------------------------------------------------
+# set up the model lists if they do not exist
+# this works for single model runs
+# for coupled runs the lists should be declared explicilty
+if [ x$namelist_list = x ]; then
+#  minrank_list=(        0           )
+#  maxrank_list=(     65535          )
+#  incrank_list=(        1           )
+  minrank_list[0]=0
+  maxrank_list[0]=65535
+  incrank_list[0]=1
+  if [ x$atmo_namelist != x ]; then
+    # this is the atmo model
+    namelist_list[0]="$atmo_namelist"
+    modelname_list[0]="atmo"
+    modeltype_list[0]=1
+    run_atmo="true"
+  elif [ x$ocean_namelist != x ]; then
+    # this is the ocean model
+    namelist_list[0]="$ocean_namelist"
+    modelname_list[0]="oce"
+    modeltype_list[0]=2
+  elif [ x$psrad_namelist != x ]; then
+    # this is the psrad model
+    namelist_list[0]="$psrad_namelist"
+    modelname_list[0]="psrad"
+    modeltype_list[0]=3
+  elif [ x$hamocc_namelist != x ]; then
+    # this is the hamocc model
+    namelist_list[0]="$hamocc_namelist"
+    modelname_list[0]="hamocc"
+    modeltype_list[0]=4
+  elif [ x$wave_namelist != x ]; then
+    # this is the wave model
+    namelist_list[0]="$wave_namelist"
+    modelname_list[0]="wave"
+    modeltype_list[0]=98
+  elif [ x$testbed_namelist != x ]; then
+    # this is the testbed model
+    namelist_list[0]="$testbed_namelist"
+    modelname_list[0]="testbed"
+    modeltype_list[0]=99
+  else
+    check_error 1 "No namelist is defined"
+  fi
+fi
+
+#-----------------------------------------------------------------------------
+#
+# create ICON master namelist
+# ------------------------
+# For a complete list see Namelist_overview and Namelist_overview.pdf
+
+#-----------------------------------------------------------------------------
+# create master_namelist
+master_namelist=icon_master.namelist
+#if [ x$end_date = x ]; then
+cat > $master_namelist << EOF
+&master_nml
+ lrestart            = .FALSE.
+/
+&master_time_control_nml
+ experimentStartDate = "$start_date"
+ experimentStopDate  = "$stop_date"
+/
+EOF
+
+#-----------------------------------------------------------------------------
+# add model component to master_namelist
+add_component_to_master_namelist()
+{
+  model_namelist_filename="$1"
+  model_name=$2
+  model_type=$3
+  model_min_rank=$4
+  model_max_rank=$5
+  model_inc_rank=$6
+  model_rank_group_size=$7
+  model_do_restart=$8
+
+cat >> $master_namelist << EOF
+&master_model_nml
+  model_name="$model_name"
+  model_namelist_filename="$model_namelist_filename"
+  model_type=$model_type
+  model_min_rank=$model_min_rank
+  model_max_rank=$model_max_rank
+  model_inc_rank=$model_inc_rank
+  ${model_do_restart:+model_do_restart='$model_do_restart'}
+/
+EOF
+
+}
+#-----------------------------------------------------------------------------
+
+#
+# configure START_MODEL_function
+#
+if (( ICON_COMPONENT1_proc0_shift > 0 )); then
+  ICON_COMPONENT1_VH_procs=$((num_atm_restart_procs + num_atm_io_procs + num_atm_prefetch_proc + num_atm_io_procs_radar))
+  ICON_COMPONENT1_VE_procs=$((num_atm_procs))
+else
+  ICON_COMPONENT1_VH_procs=0
+  ICON_COMPONENT1_VE_procs=$((num_atm_procs))
+fi
+
+if (( ICON_COMPONENT2_proc0_shift > 0 )); then
+  ICON_COMPONENT2_VH_procs=$((num_wave_io_procs + num_wave_restart_procs + num_wave_prefetch_proc + num_wave_io_procs_radar))
+  ICON_COMPONENT2_VE_procs=$((num_wave_procs))
+else
+  ICON_COMPONENT2_VH_procs=0
+  ICON_COMPONENT2_VE_procs=$((num_wave_procs))
+fi
+
+echo "mpi procs: total=$mpi_total_procs atmo=${ICON_COMPONENT1_VE_procs} waves=${ICON_COMPONENT2_VE_procs}"
+
+no_of_models=${#namelist_list[*]}
+echo "no_of_models=$no_of_models"
+
+rank_group_size=1
+j=0
+while [ $j -lt ${no_of_models} ]
+do
+  add_component_to_master_namelist "${namelist_list[$j]}" "${modelname_list[$j]}" ${modeltype_list[$j]} ${minrank_list[$j]} ${maxrank_list[$j]} ${incrank_list[$j]} ${rank_group_size} "${model_do_restart_list[$j]}"
+  j=`expr ${j} + 1`
+done
+
+# ----------------------------------------------------------------------
+# run the model!
+# ----------------------------------------------------------------------
+
+rm -f finish.status
+date
+
+
+echo "START_MODEL: ${START_MODEL}"
+
+
+# ----------------------------------------------------------------------
+# run the model!
+# ----------------------------------------------------------------------
+
+
+
+$START_MODEL
+EXIT_STATUS=$?
+
+if [ "$EXIT_STATUS" -ne "0" ]; then
+  echo "ICON EXIT_STATUS: $EXIT_STATUS"
+  exit $EXIT_STATUS
+fi

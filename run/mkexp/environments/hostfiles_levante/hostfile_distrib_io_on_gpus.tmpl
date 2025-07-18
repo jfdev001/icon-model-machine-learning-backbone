@@ -1,0 +1,36 @@
+#%#- ICON
+#%#-
+#%#- ------------------------------------------
+#%#- Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+#%#- Contact information: icon-model.org
+#%#- See AUTHORS.TXT for a list of authors
+#%#- See LICENSES/ for license information
+#%#- SPDX-License-Identifier: BSD-3-Clause
+#%#- ------------------------------------------
+#%#-
+#-----------------------------------------------------------------------------
+# Hostfile generation to distributed processes on Levante gpu partition
+#
+# $Id: run/mkexp/environments/hostfiles_levante/hostfile_distrib_io_on_gpus.tmpl 1 2025-01-09 k202123 $
+#
+export SLURM_HOSTFILE=$EXPDIR/hst_file
+
+/usr/bin/python3 -c 'from ClusterShell.NodeSet import NodeSet
+import os
+
+SLURM_NODELIST     = os.environ["SLURM_NODELIST"]
+SLURM_GPUS_ON_NODE = int(os.environ["SLURM_GPUS_ON_NODE"])
+io_procs_pernode   = int(os.environ["io_procs_pernode"])
+
+ns = NodeSet(SLURM_NODELIST)
+
+# Distribute compute procs on GPUs
+for host in ns:
+    for i in range(SLURM_GPUS_ON_NODE):
+        print(host)
+
+# Distribute IO procs on CPU of the gpu nodes
+for host in ns:
+    for i in range(io_procs_pernode):
+        print(host)' > $SLURM_HOSTFILE
+#-----------------------------------------------------------------------------

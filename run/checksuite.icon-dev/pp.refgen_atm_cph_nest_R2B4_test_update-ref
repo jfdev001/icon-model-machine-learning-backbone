@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# set experiment specific variables
+update_file_ids="atm_2d_ml_DOM01 atm_2d_ml_DOM02 atm_2d_ml_DOM03 atm_2d_ml_DOM04"
+#
+base_exp=atm_cph_nest_R2B4_test_update_base
+
+. ./add_refgen_routines
+
+# move data for update test
+store_model_output
+
+status=$?
+echo $status > pp.${EXPNAME}.run.final_status
+exit $status

@@ -1,0 +1,192 @@
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# ----------------------------------------------------------------------------
+#
+# ICON-waves standalone test
+#
+author_list="Mikhail Dobrynin, Daniel Reinert (DWD)"
+#
+#-----------------------------------------------------------------------------
+#
+# The purpose is the technical testing of the ICON-waves.
+#
+# This global test-case experiment generates an artificial wind field,
+# and therefore no forcing files are needed. This experiment requires a grid file,
+# and an external parameter file with bathymetry.
+#
+#
+#=============================================================================
+
+# (1) Variables provided by the scripting mechanism
+
+# EXPNAME                       = name of exp. in 'exp.<name>'
+# basedir                       = base directory, where src/, run/ etc exist
+# icon_data_poolFolder          = base directory, where grids/, input/ and setup/ exist
+# nproma                        = blocking length for array dimensioning and inner loop lengths
+
+icon_data_poolFolder="${icon_data_rootFolder:-/pool/data/ICON}/buildbot_data/nwp"
+
+#--------------------------------------------------------------------------------------------------
+
+# (2) Set variables needed by the scripting mechanism
+
+#
+grids_folder=${icon_data_poolFolder}/Checksuite_data/ICON-waves
+#
+# global domain
+#
+dynamics_grid_filename=ocean_icon_waves_grid_0010_R02B04_G_DOM01.nc
+wave_grids="'${dynamics_grid_filename}',"
+
+# start and end date+time
+start_date=${start_date:="1979-01-01T00:00:00Z"}
+  end_date=${end_date:="1979-01-08T00:00:00Z"}
+
+# restart intervals
+checkpoint_interval=P3D
+   restart_interval=P20D
+
+num_io_procs=1
+num_restart_procs=0
+num_prefetch_proc=0
+num_io_procs_radar=0
+
+# namelist files
+wave_namelist=NAMELIST_${EXPNAME} # also used in exec.iconrun
+
+
+#--------------------------------------------------------------------------------------------------
+
+# (3) Define the model configuration
+
+echo "Define the model configuration"
+echo "${wave_namelist}"
+pwd
+
+#spectral resolution
+nd=12          # NUMBER OF DIRECTIONS
+nf=25          # NUMBER OF FREQUENCIES
+
+dtime=900
+
+wave_extpar=extpar_ocean_icon_waves_grid_0010_R02B04_G_DOM01.nc
+
+
+cat > ${basedir}/run/${wave_namelist} << EOF
+&coupling_mode_nml
+ coupled_to_atmo = .FALSE.
+/
+&run_nml
+ num_lev                = 1
+ dtime                  = ${dtime}              ! [s] timestep in seconds
+ ltimer                 = .true.
+ timers_level           = 10
+ msg_level              = 14
+ restart_filename       = '${EXPNAME}_restart_wave_<rsttime>.nc'
+ ltestcase              = .TRUE.                ! run testcase
+ ldynamics              = .TRUE.
+ ltransport             = .TRUE.                ! horizontal propagation of wave energy
+ ntracer                = $((${nd}*${nf}))
+ output                 = "nml"
+/
+&parallel_nml
+ nproma                 = ${nproma}             ! loop chunk length
+ nproma_sub             = ${nproma_sub}         ! loop chunk length for radiation
+ p_test_run             = .false.               ! .TRUE. means verification run for MPI parallelization
+ l_test_openmp          = .false.
+ l_log_checks           = .false.
+ num_io_procs           = ${num_io_procs}       ! number of I/O processors
+ num_restart_procs      = ${num_restart_procs}  ! number of restart processors
+ num_prefetch_proc      = ${num_prefetch_proc}  ! number of processors for LBC prefetching
+ num_io_procs_radar     = ${num_io_procs_radar} ! number of EMVORADO I/O processors
+ proc0_shift            = $proc0_shift
+ num_dist_array_replicas= 4
+ iorder_sendrecv        = 1
+/
+&io_nml
+ restart_write_mode     = "sync"                ! synchronous writing of checkpoint file
+/
+&grid_nml
+ dynamics_grid_filename = ${wave_grids}
+/
+&extpar_nml
+ itopo                  = 0                     ! do not read atmospheric exp file
+ extpar_filename        = '${icon_data_poolFolder}/Checksuite_data/ICON-waves/extpar_ocean_icon_waves_grid_0010_R02B04_G_DOM01.nc'
+/
+&wave_nml
+ ndirs                  = ${nd}                 ! number of directions
+ nfreqs                 = ${nf}                 ! number of frequencies
+ forc_file_prefix       = ''                    ! prefix of forcing file name
+ linput_sf1             = .TRUE.                ! if .TRUE., calculate wind input source function term, first call
+ linput_sf2             = .TRUE.                ! if .TRUE., calculate wind input source function term, second call
+ lwave_stress1          = .TRUE.                ! if .TRUE., calculate wave stress, first call
+ lwave_stress2          = .TRUE.                ! if .TRUE., calculate wave stress, second call
+ ldissip_sf             = .TRUE.                ! if .TRUE., calculate dissipation source function term
+ lwave_brk_sf           = .TRUE.                ! if .TRUE., calculate wave breaking dissipation source function term
+ lnon_linear_sf         = .TRUE.                ! if .TRUE., calculate non linear source function term
+ lbottom_fric_sf        = .TRUE.                ! if .TRUE., calculate bottom_friction source function term
+ depth                  = 0.                    ! ocean depth (m) if not 0, then constant depth
+ depth_min              = 0.2
+ depth_max              = 999.
+ fetch                  = 300000.               ! fetch in metres used for initialisation of spectrum
+ !fetch_min_energy       = 25000.                ! fetch in meters used for calculation of minimum allowed energy level
+ peak_u10               = 17.680452             ! peak value (m/s) of 10 m U wind component for test case
+ peak_v10               = 17.680452             ! peak value (m/s) of 10 m V wind component for test case
+ peak_lat               = -60.0                 ! latitude (deg) of wind peak value
+ peak_lon               = -140.0                ! longitude (deg) of wind peak value
+ ALPHA_CH               = 6.0000001E-03
+/
+&output_nml
+ output_filename        = "${EXPNAME}_wave_forcing"   ! file name base
+ filename_format        = "<output_filename>_<levtype_l>_<datetime2>"
+ filetype               =                   4         ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                    =                  -1         ! write all domains
+ output_bounds          = 0., 10000000., 43200.       ! output: start, end, increment
+ steps_per_file         =                   1         ! number of output steps in one output file
+ mode                   =                   1         ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last           =               .TRUE.        ! flag whether to include the last time step
+ output_grid            =               .TRUE.        ! flag whether grid information is added to output.
+ ml_varlist             = 'group:wave_forcing'
+/
+&output_nml
+ output_filename        = "${EXPNAME}_wave_phy"       ! file name base
+ filename_format        = "<output_filename>_<levtype_l>_<datetime2>"
+ filetype               =                   4         ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                    =                  -1         ! write all domains
+ output_bounds          = 0., 10000000., 43200.       ! output: start, end, increment
+ steps_per_file         =                   1         ! number of output steps in one output file
+ mode                   =                   1         ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last           =               .TRUE.        ! flag whether to include the last time step
+ output_grid            =               .TRUE.        ! flag whether grid information is added to output.
+ ml_varlist             = 'group:wave_phy','drag','tauwn','beta'
+/
+&output_nml
+ output_filename        = "${EXPNAME}_wave_short"     ! file name base
+ filename_format        = "<output_filename>_<levtype_l>_<datetime2>"
+ filetype               =                   4         ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                    =                  -1         ! write all domains
+ output_bounds          = 0., 10000000., 43200.       ! output: start, end, increment
+ steps_per_file         =                   1         ! number of output steps in one output file
+ mode                   =                   1         ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last           =               .TRUE.        ! flag whether to include the last time step
+ output_grid            =               .TRUE.        ! flag whether grid information is added to output.
+ ml_varlist             = 'group:wave_short'
+/
+EOF
+
+#--------------------------------------------------------------------------------------------------
+
+# (4) Define the input
+
+# external parameter (from ExtPar tool)
+#
+datadir=${icon_data_poolFolder}/Checksuite_data/ICON-waves
+add_link_file ${icon_data_poolFolder}/Checksuite_data/ICON-waves/extpar_ocean_icon_waves_grid_0010_R02B04_G_DOM01.nc extpar_ocean_icon_waves_grid_0010_R02B04_G_DOM01.nc

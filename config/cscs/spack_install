@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+set -eu
+set -o pipefail
+
+
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+ICON_DIR=$(cd "${SCRIPT_DIR}/../.."; pwd)
+SPACK_VERSION=$1
+VARIANT=$2
+BUILD_DIR=$3
+ENV_TAG=$4
+BUILD_TRHEADS=$5
+
+# Unset positional parameters
+# so they are not forwarded to spack-c2sm/setup-env.sh
+set --
+set +x
+set -e
+
+# we allow the script to fail here, as the spack-c2sm repository might already exist in ICON_DIR
+if [ -e "$ICON_DIR/spack-c2sm" ]; then
+    echo "Info: spack-c2sm directory already exists"
+    echo "Info: In case of spack build issue or if the version is not $SPACK_VERSION, please remove folder $ICON_DIR/spack-c2sm"
+else
+    $ICON_DIR/config/cscs/spack/clean-spack-env.sh # remove spack env if there was any
+    git clone --depth 1 --recurse-submodules --shallow-submodules -b $SPACK_VERSION https://github.com/C2SM/spack-c2sm.git $ICON_DIR/spack-c2sm
+fi
+
+source $ICON_DIR/spack-c2sm/setup-env.sh $ENV_TAG
+
+# The spack spec, i.e. the icon configuration is defined in the enviroment file in the path below
+# and is set by the spack activate command
+SPACK_ICON_ENV_DIR=$ICON_DIR/config/cscs/spack/$VARIANT
+spack env activate -d $SPACK_ICON_ENV_DIR
+
+if [ "$ICON_DIR" != "$BUILD_DIR" ]; then
+  # out-of-source
+  spack develop --build-directory $BUILD_DIR --path $ICON_DIR icon@develop
+  # Workaround for spach v0.22 need to concretize once to avoid error
+  # ==> Error: build_directory
+  if [ ! -d "$SPACK_ICON_ENV_DIR/.spack-env/repos" ]; then
+    set  +e
+    spack concretize > /dev/null 2>&1
+    set -e
+  fi
+else
+  # in-source
+  spack develop --path $ICON_DIR icon@develop
+fi
+
+spack install -v  -j $BUILD_TRHEADS
+
+$SCRIPT_DIR/create_sh_env $VARIANT $BUILD_DIR

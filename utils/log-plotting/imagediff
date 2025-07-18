@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+#
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+set +vx
+
+reference_dir=$1
+output_dir=$2
+
+processes="log_plotting log_plotting/individual"
+errors=0
+
+for case in ${processes} ; do
+    if [ ! -d "${output_dir}/${case}/" ]; then
+      ((errors++))
+      echo "${output_dir}/${case}/ does not exist."
+    else
+        for image in  ${reference_dir}/${case}/*.png ; do
+            plot=${image##*/}
+            if [ -f "${output_dir}/${case}/${plot}" ]; then
+              XX=0
+              test=`compare -metric ae -fuzz $XX% ${reference_dir}/${case}/${plot} ${output_dir}/${case}/${plot}  null: 2>&1`
+              if [ "$test" -ne "0" ]; then
+                  ((errors++))
+                  echo "no match for ${output_dir}/${case}/${plot}"
+                  fi
+            else
+              ((errors++))
+              echo "${output_dir}/${case}/${plot} does not exist."
+            fi
+        done
+    fi
+done
+
+if [ "$errors" = "0" ]; then
+    exit 0
+    else
+    echo "${errors} errors have been detected"
+    exit 1
+    fi

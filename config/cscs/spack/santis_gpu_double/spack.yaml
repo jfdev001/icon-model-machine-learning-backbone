@@ -1,0 +1,19 @@
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+spack:
+  specs:
+  - cosmo-eccodes-definitions@2.36.0.3
+  - icon @develop %nvhpc +grib2 +eccodes-definitions +ecrad +emvorado +art +dace gpu=nvidia-90
+    +mpi-gpu +realloc-buf ~aes ~jsbach ~ocean ~coupling ~rte-rrtmgp ~loop-exchange
+    ~async-io-rma ~cuda-graphs fflags="-traceback"
+  view: true
+  concretizer:
+    unify: true

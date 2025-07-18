@@ -1,0 +1,55 @@
+#%#- ICON
+#%#-
+#%#- ------------------------------------------
+#%#- Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+#%#- Contact information: icon-model.org
+#%#- See AUTHORS.TXT for a list of authors
+#%#- See LICENSES/ for license information
+#%#- SPDX-License-Identifier: BSD-3-Clause
+#%#- ------------------------------------------
+#%#-
+#-----------------------------------------------------------------------------
+# Replace run_wrapper_levante.sh for running on Levante gpu partition
+#  with IO on the CPUs of the nodes
+#
+# $Id: run/mkexp/environments/run_wrapper_levante_gpu.tmpl 1 2025-01-09 k202123 $
+#
+rm -f run_model.sh
+
+cat > run_model.sh << EOF
+#! /usr/bin/bash
+
+lrank=\$SLURM_LOCALID%4
+
+numanode=(2-3 0-1 6-7 4-5)
+gpus=(0 1 2 3)
+nics=(mlx5_0:1 mlx5_0:1 mlx5_1:1 mlx5_1:1)
+reorder=(0 1 2 3)
+
+nic_reorder=(\${nics[\${reorder[0]}]}
+             \${nics[\${reorder[1]}]}
+             \${nics[\${reorder[2]}]}
+             \${nics[\${reorder[3]}]})
+numanode_reorder=(\${numanode[\${reorder[0]}]}
+                  \${numanode[\${reorder[1]}]}
+                  \${numanode[\${reorder[2]}]}
+                  \${numanode[\${reorder[3]}]})
+
+export UCX_NET_DEVICES=\${nic_reorder[lrank]}
+
+if (( \$SLURM_PROCID < $compute_tasks ))
+then
+    echo Compute process \$SLURM_LOCALID on \$(hostname)
+    export CUDA_VISIBLE_DEVICES=\${gpus[\${reorder[lrank]}]}
+    export UCX_TLS=self,cma,rc_x,ud_x,cuda_ipc,cuda_copy
+else
+    echo IO process \$SLURM_LOCALID on \$(hostname)
+    export CUDA_VISIBLE_DEVICES=
+fi
+
+numactl --cpunodebind=\${numanode_reorder[\$lrank]} --membind=\${numanode_reorder[\$lrank]} ${MODEL}
+
+EOF
+
+chmod 755 ./run_model.sh
+#-----------------------------------------------------------------------------

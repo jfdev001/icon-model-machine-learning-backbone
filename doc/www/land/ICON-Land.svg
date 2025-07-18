@@ -1,0 +1,2350 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100%"
+   height="100%"
+   viewBox="0 0 2263 2263"
+   version="1.1"
+   xml:space="preserve"
+   style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"
+   id="svg241"
+   sodipodi:docname="ICON-Land.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:serif="http://www.serif.com/"><sodipodi:namedview
+   id="namedview241"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="true"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="0.80910296"
+   inkscape:cx="1131.5"
+   inkscape:cy="1131.5"
+   inkscape:window-width="3840"
+   inkscape:window-height="2066"
+   inkscape:window-x="1909"
+   inkscape:window-y="-11"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Infrastructure-Circle" />
+    <g
+   transform="matrix(1,0,0,1,-640,-640)"
+   id="g238">
+        <g
+   id="Atmosphere"
+   transform="matrix(0.75546,0,0,1.05158,561.597,-50.1712)"
+   inkscape:label="Atmosphere">
+
+            <g
+   id="Atmosphere-Pie"
+   serif:id="Atmosphere Pie"
+   transform="matrix(1.3237,0,0,0.950946,-44.147,539.224)">
+                <path
+   id="ParFlow-Pie"
+   serif:id="ParFlow Pie"
+   d="M2160.72,1916.81C2231.44,1818.83 2285.99,1710.15 2322.32,1594.92L2197.14,1555.45C2165.03,1657.32 2116.8,1753.39 2054.3,1840L2160.72,1916.81Z"
+   style="fill:rgb(21,150,139);" />
+                <path
+   id="Ocean-Pie"
+   serif:id="Ocean Pie"
+   d="M1833.11,2220.18C1963.42,2140.59 2076.27,2035.43 2164.86,1911.05L2057.1,1834.3C1978.88,1944.14 1879.23,2037 1764.15,2107.29L1833.11,2220.18Z"
+   style="fill:rgb(26,106,230);" />
+                <path
+   id="Atmosphere-Pie1"
+   serif:id="Atmosphere Pie"
+   d="M2321.53,1597.42C2356.74,1486.62 2374.67,1371.05 2374.67,1254.79C2374.67,630.428 1867.77,123.528 1243.41,123.528C619.05,123.528 112.151,630.428 112.151,1254.79C112.151,1879.14 619.05,2386.04 1243.41,2386.04C1451.55,2386.04 1655.66,2328.62 1833.27,2220.09L1764.29,2107.21C1607.45,2203.05 1427.21,2253.76 1243.41,2253.76C692.062,2253.76 244.44,1806.13 244.44,1254.79C244.44,703.44 692.062,255.817 1243.41,255.817C1794.75,255.817 2242.38,703.44 2242.38,1254.79C2242.38,1357.45 2226.55,1459.51 2195.46,1557.35L2321.53,1597.42Z"
+   style="fill:rgb(21,150,212);" />
+                <g
+   transform="matrix(1,0,0,1,-123.995,-112.618)"
+   id="g11">
+                    <g
+   transform="matrix(0.978541,-0.206054,0.206054,0.978541,-51.2617,238.959)"
+   id="g1">
+                        <text
+   x="1121.62px"
+   y="365.589px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text1">A</text>
+                    </g>
+                    <g
+   transform="matrix(0.98687,-0.161514,0.161514,0.98687,-41.367,196.135)"
+   id="g2">
+                        <text
+   x="1185.69px"
+   y="352.506px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text2">t</text>
+                    </g>
+                    <g
+   transform="matrix(0.993932,-0.109999,0.109999,0.993932,-30.8735,135.367)"
+   id="g3">
+                        <text
+   x="1211.45px"
+   y="347.503px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text3">m</text>
+                    </g>
+                    <g
+   transform="matrix(0.998971,-0.0453559,0.0453559,0.998971,-14.0432,58.9644)"
+   id="g4">
+                        <text
+   x="1292.35px"
+   y="338.946px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text4">o</text>
+                    </g>
+                    <g
+   transform="matrix(0.999994,0.00336953,-0.00336953,0.999994,1.14163,-4.5346)"
+   id="g5">
+                        <text
+   x="1346.34px"
+   y="336.541px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text5">s</text>
+                    </g>
+                    <g
+   transform="matrix(0.998543,0.0539573,-0.0539573,0.998543,20.1922,-74.7678)"
+   id="g6">
+                        <text
+   x="1394.77px"
+   y="336.569px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text6">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.994514,0.104602,-0.104602,0.994514,43.451,-149.681)"
+   id="g7">
+                        <text
+   x="1448.76px"
+   y="339.414px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text7">h</text>
+                    </g>
+                    <g
+   transform="matrix(0.987683,0.156467,-0.156467,0.987683,72.4922,-230.841)"
+   id="g8">
+                        <text
+   x="1502.49px"
+   y="345.032px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text8">e</text>
+                    </g>
+                    <g
+   transform="matrix(0.979459,0.201645,-0.201645,0.979459,103.267,-306.471)"
+   id="g9">
+                        <text
+   x="1555.88px"
+   y="353.627px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text9">r</text>
+                    </g>
+                    <g
+   transform="matrix(0.971017,0.239009,-0.239009,0.971017,132.012,-368.999)"
+   id="g10">
+                        <text
+   x="1587.5px"
+   y="359.826px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text10">e</text>
+                    </g>
+                </g>
+                <g
+   id="ICON-Sapphire"
+   transform="matrix(1,0,0,1,-123.995,-112.618)">
+                    <g
+   transform="matrix(-0.210647,-0.977562,0.977562,-0.210647,-1135.12,2276.62)"
+   id="g12">
+                        <text
+   x="351.592px"
+   y="1596.6px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text11">I</text>
+                    </g>
+                    <g
+   transform="matrix(-0.179417,-0.983773,0.983773,-0.179417,-1143.58,2204.39)"
+   id="g13">
+                        <text
+   x="347.571px"
+   y="1579.14px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text12">C</text>
+                    </g>
+                    <g
+   transform="matrix(-0.1329,-0.991129,0.991129,-0.1329,-1135,2072.37)"
+   id="g14">
+                        <text
+   x="339.021px"
+   y="1532.67px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text13">O</text>
+                    </g>
+                    <g
+   transform="matrix(-0.0865122,-0.996251,0.996251,-0.0865122,-1115.7,1941.57)"
+   id="g15">
+                        <text
+   x="332.288px"
+   y="1482.29px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text14">N</text>
+                    </g>
+                    <g
+   transform="matrix(-0.0534631,-0.99857,0.99857,-0.0534631,-1086.97,1839.61)"
+   id="g16">
+                        <text
+   x="328.387px"
+   y="1434.97px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text15">-</text>
+                    </g>
+                    <g
+   transform="matrix(-0.0226896,-0.999743,0.999743,-0.0226896,-1078.58,1772.47)"
+   id="g17">
+                        <text
+   x="327.056px"
+   y="1413.42px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text16">S</text>
+                    </g>
+                    <g
+   transform="matrix(0.015062,-0.999887,0.999887,0.015062,-1048.39,1675.22)"
+   id="g18">
+                        <text
+   x="326.129px"
+   y="1369.76px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text17">a</text>
+                    </g>
+                    <g
+   transform="matrix(0.0504977,-0.998724,0.998724,0.0504977,-1021.57,1592.33)"
+   id="g19">
+                        <text
+   x="326.651px"
+   y="1333.43px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text18">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.0851338,-0.99637,0.99637,0.0851338,-991.878,1513.9)"
+   id="g20">
+                        <text
+   x="328.447px"
+   y="1297.07px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text19">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.118917,-0.992904,0.992904,0.118917,-959.798,1440.07)"
+   id="g21">
+                        <text
+   x="331.517px"
+   y="1260.84px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text20">h</text>
+                    </g>
+                    <g
+   transform="matrix(0.143141,-0.989702,0.989702,0.143141,-924.082,1381.83)"
+   id="g22">
+                        <text
+   x="335.99px"
+   y="1224.59px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text21">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.162969,-0.986631,0.986631,0.162969,-911.178,1346.51)"
+   id="g23">
+                        <text
+   x="337.993px"
+   y="1210.27px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text22">r</text>
+                    </g>
+                    <g
+   transform="matrix(0.187998,-0.982169,0.982169,0.187998,-890.44,1300.66)"
+   id="g24">
+                        <text
+   x="341.397px"
+   y="1188.85px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text23">e</text>
+                    </g>
+                </g>
+                <g
+   id="Forcing"
+   transform="matrix(-0.000161849,1,-1,-0.000161849,2611.03,-112.396)">
+                    <g
+   transform="matrix(0.579427,-0.815024,0.815024,0.579427,-698.437,2669.59)"
+   id="g25">
+                        <text
+   x="2237.46px"
+   y="2011.54px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text24">S</text>
+                    </g>
+                    <g
+   transform="matrix(0.554646,-0.832087,0.832087,0.554646,-635.103,2762.79)"
+   id="g26">
+                        <text
+   x="2263.4px"
+   y="1974.7px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text25">t</text>
+                    </g>
+                    <g
+   transform="matrix(0.533205,-0.845986,0.845986,0.533205,-595.743,2838.23)"
+   id="g27">
+                        <text
+   x="2274.03px"
+   y="1958.96px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text26">a</text>
+                    </g>
+                    <g
+   transform="matrix(0.503238,-0.864148,0.864148,0.503238,-525.483,2939.75)"
+   id="g28">
+                        <text
+   x="2294.2px"
+   y="1926.93px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text27">n</text>
+                    </g>
+                    <g
+   transform="matrix(0.473712,-0.88068,0.88068,0.473712,-450.857,3034.1)"
+   id="g29">
+                        <text
+   x="2313.17px"
+   y="1894.28px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text28">d</text>
+                    </g>
+                    <g
+   transform="matrix(0.441658,-0.897183,0.897183,0.441658,-368.039,3130.43)"
+   id="g30">
+                        <text
+   x="2331.08px"
+   y="1860.91px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text29">a</text>
+                    </g>
+                    <g
+   transform="matrix(0.419489,-0.90776,0.90776,0.419489,-295.785,3191.67)"
+   id="g31">
+                        <text
+   x="2347.55px"
+   y="1827.1px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text30">l</text>
+                    </g>
+                    <g
+   transform="matrix(0.397001,-0.917818,0.917818,0.397001,-244.712,3254.02)"
+   id="g32">
+                        <text
+   x="2354.1px"
+   y="1813.25px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text31">o</text>
+                    </g>
+                    <g
+   transform="matrix(0.364483,-0.93121,0.93121,0.364483,-150.603,3336.41)"
+   id="g33">
+                        <text
+   x="2369.09px"
+   y="1778.54px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text32">n</text>
+                    </g>
+                    <g
+   transform="matrix(0.331555,-0.943436,0.943436,0.331555,-51.9076,3413.39)"
+   id="g34">
+                        <text
+   x="2382.85px"
+   y="1743.32px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text33">e</text>
+                    </g>
+                    <g
+   transform="matrix(0.287232,-0.957861,0.957861,0.287232,92.7649,3504.28)"
+   id="g35">
+                        <text
+   x="2401.01px"
+   y="1689.81px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text34">(</text>
+                    </g>
+                    <g
+   transform="matrix(0.258071,-0.966126,0.966126,0.258071,174.951,3563.66)"
+   id="g36">
+                        <text
+   x="2407.74px"
+   y="1667.92px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text35">F</text>
+                    </g>
+                    <g
+   transform="matrix(0.22353,-0.974697,0.974697,0.22353,291.079,3621.25)"
+   id="g37">
+                        <text
+   x="2418.4px"
+   y="1627.93px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text36">o</text>
+                    </g>
+                    <g
+   transform="matrix(0.193483,-0.981104,0.981104,0.193483,396.145,3664.17)"
+   id="g38">
+                        <text
+   x="2426.75px"
+   y="1591.14px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text37">r</text>
+                    </g>
+                    <g
+   transform="matrix(0.16917,-0.985587,0.985587,0.16917,473.665,3699.69)"
+   id="g39">
+                        <text
+   x="2431.24px"
+   y="1568.9px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text38">c</text>
+                    </g>
+                    <g
+   transform="matrix(0.14762,-0.989044,0.989044,0.14762,558.438,3719.03)"
+   id="g40">
+                        <text
+   x="2436.88px"
+   y="1535.53px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text39">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.123419,-0.992355,0.992355,0.123419,629.437,3753.37)"
+   id="g41">
+                        <text
+   x="2439.26px"
+   y="1520.4px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text40">n</text>
+                    </g>
+                    <g
+   transform="matrix(0.0897603,-0.995963,0.995963,0.0897603,747.588,3783.84)"
+   id="g42">
+                        <text
+   x="2443.89px"
+   y="1482.92px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text41">g</text>
+                    </g>
+                    <g
+   transform="matrix(0.0602803,-0.998181,0.998181,0.0602803,856.847,3800.98)"
+   id="g43">
+                        <text
+   x="2447.15px"
+   y="1445.41px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text42">)</text>
+                    </g>
+                </g>
+                <g
+   id="ICON-NWP"
+   transform="matrix(1,0,0,1,-123.995,-112.618)">
+                    <g
+   transform="matrix(0.231992,0.972718,-0.972718,0.231992,2913.46,-1458.88)"
+   id="g44">
+                        <text
+   x="2380.6px"
+   y="1115.58px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text43">I</text>
+                    </g>
+                    <g
+   transform="matrix(0.200878,0.979616,-0.979616,0.200878,3015.86,-1430.98)"
+   id="g45">
+                        <text
+   x="2385.02px"
+   y="1133.03px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text44">C</text>
+                    </g>
+                    <g
+   transform="matrix(0.154525,0.987989,-0.987989,0.154525,3189.76,-1368.72)"
+   id="g46">
+                        <text
+   x="2394.6px"
+   y="1179.35px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text45">O</text>
+                    </g>
+                    <g
+   transform="matrix(0.108037,0.994147,-0.994147,0.108037,3365.51,-1291.46)"
+   id="g47">
+                        <text
+   x="2402.46px"
+   y="1229.81px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text46">N</text>
+                    </g>
+                    <g
+   transform="matrix(0.0749846,0.997185,-0.997185,0.0749846,3500.35,-1219.29)"
+   id="g48">
+                        <text
+   x="2407.39px"
+   y="1277.08px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text47">-</text>
+                    </g>
+                    <g
+   transform="matrix(0.0423885,0.999101,-0.999101,0.0423885,3604.55,-1163.49)"
+   id="g49">
+                        <text
+   x="2409.22px"
+   y="1298.62px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text48">N</text>
+                    </g>
+                    <g
+   transform="matrix(-0.00931529,0.999957,-0.999957,-0.00931529,3779.66,-1052.98)"
+   id="g50">
+                        <text
+   x="2411.44px"
+   y="1345.82px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text49">W</text>
+                    </g>
+                    <g
+   transform="matrix(-0.0601816,0.998187,-0.998187,-0.0601816,3960.98,-913.816)"
+   id="g51">
+                        <text
+   x="2410.68px"
+   y="1407.77px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text50">P</text>
+                    </g>
+                </g>
+                <g
+   id="Ocean"
+   transform="matrix(-0.000161849,1,-1,-0.000161849,2611.03,-112.396)">
+                    <g
+   transform="matrix(-0.63355,-0.773702,0.773702,-0.63355,3085.84,2866.47)"
+   id="g52">
+                        <text
+   x="2221.75px"
+   y="702.46px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text51">O</text>
+                    </g>
+                    <g
+   transform="matrix(-0.664522,-0.747268,0.747268,-0.664522,3147.77,2736.68)"
+   id="g53">
+                        <text
+   x="2188.18px"
+   y="661.764px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text52">c</text>
+                    </g>
+                    <g
+   transform="matrix(-0.687972,-0.725737,0.725737,-0.687972,3193.69,2645.8)"
+   id="g54">
+                        <text
+   x="2165.62px"
+   y="636.341px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text53">e</text>
+                    </g>
+                    <g
+   transform="matrix(-0.712677,-0.701492,0.701492,-0.712677,3237.3,2543.8)"
+   id="g55">
+                        <text
+   x="2139.6px"
+   y="608.924px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text54">a</text>
+                    </g>
+                    <g
+   transform="matrix(-0.736657,-0.676266,0.676266,-0.736657,3275.05,2440.11)"
+   id="g56">
+                        <text
+   x="2112.62px"
+   y="582.394px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text55">n</text>
+                    </g>
+                </g>
+                <g
+   id="Parflow"
+   transform="matrix(-0.000161849,1,-1,-0.000161849,2611.03,-112.396)">
+                    <g
+   transform="matrix(-0.848036,-0.529939,0.529939,-0.848036,3377.25,1890.76)"
+   id="g57">
+                        <text
+   x="1959.72px"
+   y="461.156px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text56">P</text>
+                    </g>
+                    <g
+   transform="matrix(-0.867125,-0.49809,0.49809,-0.867125,3369.56,1773.36)"
+   id="g58">
+                        <text
+   x="1921.32px"
+   y="437.236px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text57">a</text>
+                    </g>
+                    <g
+   transform="matrix(-0.881977,-0.471292,0.471292,-0.881977,3356.97,1677.7)"
+   id="g59">
+                        <text
+   x="1888.56px"
+   y="418.517px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text58">r</text>
+                    </g>
+                    <g
+   transform="matrix(-0.894989,-0.446087,0.446087,-0.894989,3359.04,1605.98)"
+   id="g60">
+                        <text
+   x="1868.55px"
+   y="407.623px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text59">F</text>
+                    </g>
+                    <g
+   transform="matrix(-0.905832,-0.423638,0.423638,-0.905832,3325.69,1517.97)"
+   id="g61">
+                        <text
+   x="1831.55px"
+   y="389.36px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text60">l</text>
+                    </g>
+                    <g
+   transform="matrix(-0.915987,-0.401208,0.401208,-0.915987,3329.2,1462.66)"
+   id="g62">
+                        <text
+   x="1817.74px"
+   y="382.76px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text61">o</text>
+                    </g>
+                    <g
+   transform="matrix(-0.93142,-0.363947,0.363947,-0.93142,3310.1,1358.69)"
+   id="g63">
+                        <text
+   x="1783.06px"
+   y="367.474px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text62">w</text>
+                    </g>
+                </g>
+            </g>
+            <rect
+   id="Processes-10"
+   serif:id="Processes 10"
+   x="104.306"
+   y="656.692"
+   width="2994.88"
+   height="2151.53"
+   style="fill:none;" />
+            <g
+   id="Processes-101"
+   serif:id="Processes 10">
+                <g
+   id="Processes-Pie"
+   serif:id="Processes Pie"
+   transform="matrix(1.03238,0,3.674e-16,0.741667,318.073,801.824)">
+                    <path
+   d="M1243.41,123.528C1867.77,123.528 2374.67,630.428 2374.67,1254.79C2374.67,1879.14 1867.77,2386.04 1243.41,2386.04C619.05,2386.04 112.151,1879.14 112.151,1254.79C112.151,630.428 619.05,123.528 1243.41,123.528ZM1243.41,617.285C1595.25,617.285 1880.91,902.94 1880.91,1254.79C1880.91,1606.63 1595.25,1892.29 1243.41,1892.29C891.562,1892.29 605.908,1606.63 605.908,1254.79C605.908,902.94 891.562,617.285 1243.41,617.285Z"
+   style="fill:url(#_Linear1);"
+   id="path63" />
+                </g>
+                <rect
+   id="External-Parameters"
+   serif:id="External Parameters"
+   x="104.306"
+   y="656.692"
+   width="2994.88"
+   height="2151.53"
+   style="fill:none;" />
+                <g
+   id="External-Parameters1"
+   serif:id="External Parameters">
+                    <g
+   transform="matrix(0.575097,0,0,0.413151,886.668,1214.04)"
+   id="g64">
+                        <path
+   d="M1243.41,123.528C1867.77,123.528 2374.67,630.428 2374.67,1254.79C2374.67,1879.14 1867.77,2386.04 1243.41,2386.04C619.05,2386.04 112.151,1879.14 112.151,1254.79C112.151,630.428 619.05,123.528 1243.41,123.528ZM1243.41,689.157C1555.59,689.157 1809.04,942.607 1809.04,1254.79C1809.04,1566.97 1555.59,1820.41 1243.41,1820.41C931.229,1820.41 677.779,1566.97 677.779,1254.79C677.779,942.607 931.229,689.157 1243.41,689.157Z"
+   style="fill:rgb(164,219,211);"
+   id="path64" />
+                    </g>
+                    <g
+   transform="matrix(1.3237,0,0,0.950946,606.917,1017.77)"
+   id="g83">
+                        <g
+   transform="matrix(0.878427,-0.477876,0.477876,0.878427,-113.961,295.737)"
+   id="g65">
+                            <text
+   x="524.26px"
+   y="371.846px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text64">E</text>
+                        </g>
+                        <g
+   transform="matrix(0.909513,-0.415676,0.415676,0.909513,-97.193,263.149)"
+   id="g66">
+                            <text
+   x="555.825px"
+   y="354.815px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text65">x</text>
+                        </g>
+                        <g
+   transform="matrix(0.928419,-0.371534,0.371534,0.928419,-86.1858,240.209)"
+   id="g67">
+                            <text
+   x="580.299px"
+   y="343.775px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text66">t</text>
+                        </g>
+                        <g
+   transform="matrix(0.945905,-0.324445,0.324445,0.945905,-77.5403,211.035)"
+   id="g68">
+                            <text
+   x="594.085px"
+   y="338.047px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text67">e</text>
+                        </g>
+                        <g
+   transform="matrix(0.963518,-0.267643,0.267643,0.963518,-65.2057,178.556)"
+   id="g69">
+                            <text
+   x="622.371px"
+   y="328.463px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text68">r</text>
+                        </g>
+                        <g
+   transform="matrix(0.975542,-0.219814,0.219814,0.975542,-55.4693,148.478)"
+   id="g70">
+                            <text
+   x="639.476px"
+   y="323.499px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text69">n</text>
+                        </g>
+                        <g
+   transform="matrix(0.988201,-0.153164,0.153164,0.988201,-40.651,106.158)"
+   id="g71">
+                            <text
+   x="668.683px"
+   y="316.921px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text70">a</text>
+                        </g>
+                        <g
+   transform="matrix(0.994337,-0.106271,0.106271,0.994337,-29.2608,75.9785)"
+   id="g72">
+                            <text
+   x="698.298px"
+   y="312.552px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text71">l</text>
+                        </g>
+                        <g
+   transform="matrix(0.999855,-0.0170434,0.0170434,0.999855,-5.17474,12.4)"
+   id="g73">
+                            <text
+   x="724.91px"
+   y="309.799px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text72">P</text>
+                        </g>
+                        <g
+   transform="matrix(0.998559,0.0536608,-0.0536608,0.998559,17.691,-40.3769)"
+   id="g74">
+                            <text
+   x="760.751px"
+   y="309.256px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text73">a</text>
+                        </g>
+                        <g
+   transform="matrix(0.993668,0.112352,-0.112352,0.993668,39.9444,-86.8584)"
+   id="g75">
+                            <text
+   x="790.615px"
+   y="310.974px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text74">r</text>
+                        </g>
+                        <g
+   transform="matrix(0.986965,0.160932,-0.160932,0.986965,60.8754,-126.027)"
+   id="g76">
+                            <text
+   x="808.439px"
+   y="312.788px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text75">a</text>
+                        </g>
+                        <g
+   transform="matrix(0.96965,0.244496,-0.244496,0.96965,103.001,-195.243)"
+   id="g77">
+                            <text
+   x="837.934px"
+   y="317.265px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text76">m</text>
+                        </g>
+                        <g
+   transform="matrix(0.945528,0.325541,-0.325541,0.945528,154.947,-268.994)"
+   id="g78">
+                            <text
+   x="881.267px"
+   y="328.507px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text77">e</text>
+                        </g>
+                        <g
+   transform="matrix(0.927346,0.374204,-0.374204,0.927346,192.72,-315.753)"
+   id="g79">
+                            <text
+   x="909.505px"
+   y="338.428px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text78">t</text>
+                        </g>
+                        <g
+   transform="matrix(0.90744,0.420181,-0.420181,0.90744,229.939,-356.172)"
+   id="g80">
+                            <text
+   x="923.404px"
+   y="343.825px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text79">e</text>
+                        </g>
+                        <g
+   transform="matrix(0.880949,0.473212,-0.473212,0.880949,281.857,-407.346)"
+   id="g81">
+                            <text
+   x="950.5px"
+   y="356.497px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text80">r</text>
+                        </g>
+                        <g
+   transform="matrix(0.858591,0.512661,-0.512661,0.858591,323.671,-443.798)"
+   id="g82">
+                            <text
+   x="966.303px"
+   y="364.816px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:54.167px;"
+   id="text81">s</text>
+                        </g>
+                    </g>
+                    <g
+   transform="matrix(1.50366,0,0,1.08023,-1062.21,-181.337)"
+   id="g84">
+                        <circle
+   cx="1771.65"
+   cy="1771.65"
+   r="432.667"
+   style="fill:none;stroke:black;stroke-width:7.34px;"
+   id="circle83" />
+                    </g>
+                </g>
+                <g
+   id="Tiles-Pie"
+   serif:id="Tiles Pie"
+   transform="matrix(0.506268,0,0,0.363704,972.25,1276.09)">
+                    <path
+   id="Lake"
+   d="M112.151,1254.79C112.15,1879.56 618.632,2386.04 1243.41,2386.04L1243.41,1820.41C931.02,1820.41 677.779,1567.17 677.779,1254.79L112.151,1254.79Z"
+   style="fill:rgb(51,177,204);" />
+                    <clipPath
+   id="_clip2">
+                        <path
+   id="Lake1"
+   serif:id="Lake"
+   d="M112.151,1254.79C112.15,1879.56 618.632,2386.04 1243.41,2386.04L1243.41,1820.41C931.02,1820.41 677.779,1567.17 677.779,1254.79L112.151,1254.79Z" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip2)"
+   id="g90">
+                        <g
+   transform="matrix(2.61462,0,0,2.61462,-490.206,-478.828)"
+   id="g89">
+                            <g
+   transform="matrix(0.593297,0.804984,-0.804984,0.593297,841.982,60.03)"
+   id="g85">
+                                <text
+   x="361.583px"
+   y="863.279px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text84">L</text>
+                            </g>
+                            <g
+   transform="matrix(0.660686,0.750662,-0.750662,0.660686,797.137,15.8691)"
+   id="g86">
+                                <text
+   x="381.015px"
+   y="889.685px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text85">a</text>
+                            </g>
+                            <g
+   transform="matrix(0.726313,0.687364,-0.687364,0.726313,738.712,-26.5872)"
+   id="g87">
+                                <text
+   x="402.743px"
+   y="914.342px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text86">k</text>
+                            </g>
+                            <g
+   transform="matrix(0.778993,0.627033,-0.627033,0.778993,679.82,-59.3408)"
+   id="g88">
+                                <text
+   x="424.09px"
+   y="934.71px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text87">e</text>
+                            </g>
+                        </g>
+                    </g>
+                    <path
+   id="Land"
+   d="M1243.41,2386.04C1868.18,2386.04 2374.67,1879.56 2374.67,1254.79C2374.67,630.428 1867.77,123.528 1243.41,123.528C618.632,123.528 112.151,630.009 112.151,1254.79L394.965,1254.79C394.965,786.203 774.826,406.343 1243.41,406.343C1711.68,406.343 2091.85,786.517 2091.85,1254.79C2091.85,1723.37 1711.99,2103.23 1243.41,2103.23L1243.41,2386.04Z"
+   style="fill:rgb(139,140,115);" />
+                    <clipPath
+   id="_clip3">
+                        <path
+   id="Land1"
+   serif:id="Land"
+   d="M1243.41,2386.04C1868.18,2386.04 2374.67,1879.56 2374.67,1254.79C2374.67,630.428 1867.77,123.528 1243.41,123.528C618.632,123.528 112.151,630.009 112.151,1254.79L394.965,1254.79C394.965,786.203 774.826,406.343 1243.41,406.343C1711.68,406.343 2091.85,786.517 2091.85,1254.79C2091.85,1723.37 1711.99,2103.23 1243.41,2103.23L1243.41,2386.04Z" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip3)"
+   id="g96">
+                        <g
+   transform="matrix(2.61462,0,0,2.61462,-490.206,-478.828)"
+   id="g95">
+                            <g
+   transform="matrix(0.993557,-0.113333,0.113333,0.993557,-31.6806,70.6372)"
+   id="g91">
+                                <text
+   x="605.425px"
+   y="313.955px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text90">L</text>
+                            </g>
+                            <g
+   transform="matrix(0.999637,-0.026948,0.026948,0.999637,-8.12956,17.2876)"
+   id="g92">
+                                <text
+   x="637.333px"
+   y="310.264px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text91">a</text>
+                            </g>
+                            <g
+   transform="matrix(0.998017,0.0629467,-0.0629467,0.998017,20.803,-41.5283)"
+   id="g93">
+                                <text
+   x="669.484px"
+   y="309.395px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text92">n</text>
+                            </g>
+                            <g
+   transform="matrix(0.988678,0.150053,-0.150053,0.988678,54.6755,-101.733)"
+   id="g94">
+                                <text
+   x="701.482px"
+   y="311.446px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text93">d</text>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="Glacier"
+   transform="matrix(0.748418,0,0,0.748418,312.82,315.682)">
+                        <path
+   d="M1243.41,2386.04C1868.18,2386.04 2374.67,1879.56 2374.67,1254.79C2374.67,1141.32 2357.6,1028.5 2324.03,920.119L1967.13,1030.65C1989.61,1103.24 2001.05,1178.8 2001.05,1254.79C2001.05,1673.22 1661.84,2012.42 1243.41,2012.42L1243.41,2386.04Z"
+   style="fill:rgb(252,255,193);"
+   id="path96" />
+                        <clipPath
+   id="_clip4">
+                            <path
+   d="M1243.41,2386.04C1868.18,2386.04 2374.67,1879.56 2374.67,1254.79C2374.67,1141.32 2357.6,1028.5 2324.03,920.119L1967.13,1030.65C1989.61,1103.24 2001.05,1178.8 2001.05,1254.79C2001.05,1673.22 1661.84,2012.42 1243.41,2012.42L1243.41,2386.04Z"
+   id="path97" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip4)"
+   id="g105">
+                            <g
+   transform="matrix(3.49353,0,0,3.49353,-758.817,-747.439)"
+   id="g104">
+                                <g
+   transform="matrix(-0.348406,0.937344,-0.937344,-0.348406,1719.85,92.0063)"
+   id="g97">
+                                    <text
+   x="827.945px"
+   y="643.779px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text97">G</text>
+                                </g>
+                                <g
+   transform="matrix(-0.448976,0.893544,-0.893544,-0.448976,1788.36,268.186)"
+   id="g98">
+                                    <text
+   x="811.487px"
+   y="685.509px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text98">l</text>
+                                </g>
+                                <g
+   transform="matrix(-0.523298,0.85215,-0.85215,-0.523298,1821.99,374.804)"
+   id="g99">
+                                    <text
+   x="806.16px"
+   y="697.023px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text99">a</text>
+                                </g>
+                                <g
+   transform="matrix(-0.620322,0.784347,-0.784347,-0.620322,1847.17,554.275)"
+   id="g100">
+                                    <text
+   x="789.429px"
+   y="724.215px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text100">c</text>
+                                </g>
+                                <g
+   transform="matrix(-0.677294,0.735712,-0.735712,-0.677294,1843.07,684.987)"
+   id="g101">
+                                    <text
+   x="771.307px"
+   y="746.707px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text101">i</text>
+                                </g>
+                                <g
+   transform="matrix(-0.736468,0.676472,-0.676472,-0.736468,1836.64,797.048)"
+   id="g102">
+                                    <text
+   x="763.066px"
+   y="756.271px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text102">e</text>
+                                </g>
+                                <g
+   transform="matrix(-0.80365,0.595102,-0.595102,-0.80365,1796.32,962.937)"
+   id="g103">
+                                    <text
+   x="739.305px"
+   y="777.811px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text103">r</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="Vegetated"
+   transform="matrix(0.748418,0,0,0.748418,312.82,315.682)">
+                        <path
+   d="M2328.04,933.343C2185.69,453.021 1744.38,123.528 1243.41,123.528C618.632,123.528 112.15,630.01 112.151,1254.79L485.772,1254.79C485.772,836.355 824.977,497.149 1243.41,497.149C1578.92,497.149 1874.48,717.821 1969.82,1039.51L2328.04,933.343Z"
+   style="fill:rgb(38,217,185);"
+   id="path105" />
+                        <clipPath
+   id="_clip5">
+                            <path
+   d="M2328.04,933.343C2185.69,453.021 1744.38,123.528 1243.41,123.528C618.632,123.528 112.15,630.01 112.151,1254.79L485.772,1254.79C485.772,836.355 824.977,497.149 1243.41,497.149C1578.92,497.149 1874.48,717.821 1969.82,1039.51L2328.04,933.343Z"
+   id="path106" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip5)"
+   id="g116">
+                            <g
+   transform="matrix(3.49353,0,0,3.49353,-758.817,-747.439)"
+   id="g115">
+                                <g
+   transform="matrix(0.671796,-0.740736,0.740736,0.671796,-184.364,405.105)"
+   id="g106">
+                                    <text
+   x="364.966px"
+   y="410.601px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text106">V</text>
+                                </g>
+                                <g
+   transform="matrix(0.755809,-0.654792,0.654792,0.755809,-156.868,348.358)"
+   id="g107">
+                                    <text
+   x="388.623px"
+   y="384.498px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text107">e</text>
+                                </g>
+                                <g
+   transform="matrix(0.827479,-0.561496,0.561496,0.827479,-132.889,294.554)"
+   id="g108">
+                                    <text
+   x="412.893px"
+   y="363.532px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text108">g</text>
+                                </g>
+                                <g
+   transform="matrix(0.890799,-0.454398,0.454398,0.890799,-109.067,237.39)"
+   id="g109">
+                                    <text
+   x="439.369px"
+   y="345.615px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text109">e</text>
+                                </g>
+                                <g
+   transform="matrix(0.92906,-0.36993,0.36993,0.92906,-89.3889,196.645)"
+   id="g110">
+                                    <text
+   x="468.023px"
+   y="331.389px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text110">t</text>
+                                </g>
+                                <g
+   transform="matrix(0.958527,-0.285001,0.285001,0.958527,-72.651,151.042)"
+   id="g111">
+                                    <text
+   x="482.653px"
+   y="325.149px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text111">a</text>
+                                </g>
+                                <g
+   transform="matrix(0.980971,-0.194156,0.194156,0.980971,-51.6481,105.724)"
+   id="g112">
+                                    <text
+   x="513.527px"
+   y="316.345px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text112">t</text>
+                                </g>
+                                <g
+   transform="matrix(0.994379,-0.105878,0.105878,0.994379,-30.1554,57.7651)"
+   id="g113">
+                                    <text
+   x="528.971px"
+   y="312.895px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text113">e</text>
+                                </g>
+                                <g
+   transform="matrix(0.999947,0.0103062,-0.0103062,0.999947,3.22016,-5.76307)"
+   id="g114">
+                                    <text
+   x="560.781px"
+   y="309.56px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:58.333px;"
+   id="text114">d</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="PFT1"
+   transform="matrix(0.576163,0,0,0.576163,527.003,531.825)">
+                        <path
+   d="M391.96,509.95C211.575,716.155 112.151,980.816 112.151,1254.79L254.02,1254.79C254.019,1015.17 340.975,783.704 498.739,603.359L391.96,509.95Z"
+   style="fill:rgb(21,159,0);"
+   id="path116" />
+                        <clipPath
+   id="_clip6">
+                            <path
+   d="M391.96,509.95C211.575,716.155 112.151,980.816 112.151,1254.79L254.02,1254.79C254.019,1015.17 340.975,783.704 498.739,603.359L391.96,509.95Z"
+   id="path117" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip6)"
+   id="g122">
+                            <g
+   transform="matrix(4.53798,0,0,4.53798,-1153.67,-1142.3)"
+   id="g121">
+                                <g
+   transform="matrix(0.18665,-0.982427,0.982427,0.18665,-239.244,710.801)"
+   id="g117">
+                                    <text
+   x="309.658px"
+   y="499.889px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text117">P</text>
+                                </g>
+                                <g
+   transform="matrix(0.292057,-0.956401,0.956401,0.292057,-232.369,637.226)"
+   id="g118">
+                                    <text
+   x="314.248px"
+   y="475.573px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text118">F</text>
+                                </g>
+                                <g
+   transform="matrix(0.386966,-0.922094,0.922094,0.386966,-221.837,574.069)"
+   id="g119">
+                                    <text
+   x="320.824px"
+   y="453.872px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text119">T</text>
+                                </g>
+                                <g
+   transform="matrix(0.470205,-0.882557,0.882557,0.470205,-207.463,520.37)"
+   id="g120">
+                                    <text
+   x="329.697px"
+   y="432.986px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text120">1</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="PFT2"
+   transform="matrix(0.576163,0,0,0.576163,527.003,531.825)">
+                        <path
+   d="M874.492,185.373C686.869,250.097 519.577,363.044 389.412,512.873L496.511,605.915C610.351,474.876 756.664,376.093 920.757,319.486L874.492,185.373Z"
+   style="fill:rgb(0,227,89);"
+   id="path122" />
+                        <clipPath
+   id="_clip7">
+                            <path
+   d="M874.492,185.373C686.869,250.097 519.577,363.044 389.412,512.873L496.511,605.915C610.351,474.876 756.664,376.093 920.757,319.486L874.492,185.373Z"
+   id="path123" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip7)"
+   id="g128">
+                            <g
+   transform="matrix(4.53798,0,0,4.53798,-1153.67,-1142.3)"
+   id="g127">
+                                <g
+   transform="matrix(0.724776,-0.688985,0.688985,0.724776,-159.264,356.986)"
+   id="g123">
+                                    <text
+   x="367.2px"
+   y="377.841px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text123">P</text>
+                                </g>
+                                <g
+   transform="matrix(0.794208,-0.607646,0.607646,0.794208,-139.98,308.251)"
+   id="g124">
+                                    <text
+   x="385.099px"
+   y="360.786px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text124">F</text>
+                                </g>
+                                <g
+   transform="matrix(0.850965,-0.525222,0.525222,0.850965,-122.14,263.434)"
+   id="g125">
+                                    <text
+   x="403.122px"
+   y="346.937px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text125">T</text>
+                                </g>
+                                <g
+   transform="matrix(0.897435,-0.441146,0.441146,0.897435,-104.5,220.715)"
+   id="g126">
+                                    <text
+   x="422.414px"
+   y="335.092px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text126">2</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="PFT3"
+   transform="matrix(0.576163,0,0,0.576163,527.003,531.825)">
+                        <path
+   d="M1826.01,285.084C1650.06,179.375 1448.67,123.528 1243.41,123.528C1119.76,123.528 996.948,143.8 879.858,183.536L925.45,317.88C1027.86,283.126 1135.27,265.397 1243.41,265.397C1422.93,265.397 1599.06,314.24 1752.94,406.693L1826.01,285.084Z"
+   style="fill:rgb(160,208,40);"
+   id="path128" />
+                        <clipPath
+   id="_clip8">
+                            <path
+   d="M1826.01,285.084C1650.06,179.375 1448.67,123.528 1243.41,123.528C1119.76,123.528 996.948,143.8 879.858,183.536L925.45,317.88C1027.86,283.126 1135.27,265.397 1243.41,265.397C1422.93,265.397 1599.06,314.24 1752.94,406.693L1826.01,285.084Z"
+   id="path129" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip8)"
+   id="g134">
+                            <g
+   transform="matrix(4.53798,0,0,4.53798,-1153.67,-1142.3)"
+   id="g133">
+                                <g
+   transform="matrix(0.994627,-0.103522,0.103522,0.994627,-29.5297,52.619)"
+   id="g129">
+                                    <text
+   x="492.158px"
+   y="310.794px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text129">P</text>
+                                </g>
+                                <g
+   transform="matrix(0.999996,0.00277491,-0.00277491,0.999996,0.857247,-1.43266)"
+   id="g130">
+                                    <text
+   x="516.718px"
+   y="308.21px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text130">F</text>
+                                </g>
+                                <g
+   transform="matrix(0.994789,0.101951,-0.101951,0.994789,34.2343,-53.3886)"
+   id="g131">
+                                    <text
+   x="539.424px"
+   y="308.223px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text131">T</text>
+                                </g>
+                                <g
+   transform="matrix(0.980047,0.198767,-0.198767,0.980047,72.9439,-105.503)"
+   id="g132">
+                                    <text
+   x="561.963px"
+   y="310.57px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text132">3</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   id="PFT4"
+   transform="matrix(0.576163,0,0,0.576163,527.003,531.825)">
+                        <path
+   d="M2326.66,928.722C2244.8,656.767 2063.64,425.553 1819.17,281.006L1746.96,403.126C1960.77,529.545 2119.21,731.764 2190.81,969.613L2326.66,928.722Z"
+   style="fill:rgb(204,188,111);"
+   id="path134" />
+                        <clipPath
+   id="_clip9">
+                            <path
+   d="M2326.66,928.722C2244.8,656.767 2063.64,425.553 1819.17,281.006L1746.96,403.126C1960.77,529.545 2119.21,731.764 2190.81,969.613L2326.66,928.722Z"
+   id="path135" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip9)"
+   id="g140">
+                            <g
+   transform="matrix(4.53798,0,0,4.53798,-1153.67,-1142.3)"
+   id="g139">
+                                <g
+   transform="matrix(0.841546,0.540186,-0.540186,0.841546,282.171,-290.215)"
+   id="g135">
+                                    <text
+   x="635.77px"
+   y="335.866px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text135">P</text>
+                                </g>
+                                <g
+   transform="matrix(0.778759,0.627323,-0.627323,0.778759,364.348,-334.654)"
+   id="g136">
+                                    <text
+   x="656.626px"
+   y="349.222px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text136">F</text>
+                                </g>
+                                <g
+   transform="matrix(0.712612,0.701558,-0.701558,0.712612,448.739,-368.629)"
+   id="g137">
+                                    <text
+   x="674.31px"
+   y="363.405px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text137">T</text>
+                                </g>
+                                <g
+   transform="matrix(0.643452,0.765487,-0.765487,0.643452,536.541,-393.241)"
+   id="g138">
+                                    <text
+   x="690.403px"
+   y="379.339px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:37.5px;"
+   id="text138">4</text>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g
+   transform="matrix(2.61462,0,0,2.61462,-3388.79,-3377.41)"
+   id="g141">
+                        <circle
+   cx="1771.65"
+   cy="1771.65"
+   r="432.667"
+   style="fill:none;stroke:black;stroke-width:8.33px;"
+   id="circle140" />
+                    </g>
+                </g>
+                <rect
+   id="Infrastructure"
+   x="104.306"
+   y="656.692"
+   width="2994.88"
+   height="2151.53"
+   style="fill:none;" />
+                <g
+   id="Infrastructure1"
+   serif:id="Infrastructure">
+                    <g
+   id="Infrastructure-Circle"
+   serif:id="Infrastructure Circle"
+   transform="matrix(1.22213,0,0,0.877977,82.1474,630.784)"
+   inkscape:label="Infrastructure-Circle">
+                        <circle
+   cx="1243.41"
+   cy="1254.79"
+   r="230.039"
+   style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;fill:#ffffff;stroke:black;stroke-width:9.03px;fill-opacity:1"
+   id="circle144"
+   inkscape:label="circle144" /><circle
+   cx="1243.41"
+   cy="1254.79"
+   r="230.039"
+   style="fill:#ffffff;fill-opacity:1"
+   id="circle141"
+   inkscape:label="circle141" />
+                        <clipPath
+   id="_clip10">
+                            <circle
+   cx="1243.41"
+   cy="1254.79"
+   r="230.039"
+   id="circle142" />
+                        </clipPath>
+                        <g
+   clip-path="url(#_clip10)"
+   id="g144">
+                            <g
+   transform="matrix(1.08311,0,0,1.08311,-99.8036,-88.426)"
+   id="g143">
+                                <text
+   x="1109.6px"
+   y="1207.22px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text142">ICON-Land</text>
+                                <g
+   transform="matrix(50,0,0,50,1402.68,1308.86)"
+   id="g142">
+                                </g>
+                                <text
+   x="1077.61px"
+   y="1308.86px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text143">Infrastructure</text>
+                            </g>
+                        </g>
+
+                    </g>
+                </g>
+                <g
+   id="Hydrology"
+   transform="matrix(1.03238,0,0,0.741667,318.073,801.824)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path144" />
+                    <clipPath
+   id="_clip11">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path145" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip11)"
+   id="g149">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g146">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path146" />
+                        </g>
+                        <g
+   transform="matrix(0.405903,-1.21623,1.21623,0.405903,-1693.96,2826.06)"
+   id="g148">
+                            <text
+   x="1749.78px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text146">Surface and</text>
+                            <g
+   transform="matrix(50,0,0,50,2069.28,2509.26)"
+   id="g147">
+                            </g>
+                            <text
+   x="1716.48px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text147">Soil Hydrology</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="HD"
+   transform="matrix(0.83531,0.435848,-0.606691,0.600089,1324.38,437.538)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path149" />
+                    <clipPath
+   id="_clip12">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path150" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip12)"
+   id="g154">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g151">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path151" />
+                        </g>
+                        <g
+   transform="matrix(0.405903,-1.21623,1.21623,0.405903,-1693.96,2826.06)"
+   id="g153">
+                            <g
+   transform="matrix(50,0,0,50,2083.25,2483.45)"
+   id="g152">
+                            </g>
+                            <text
+   x="1702.51px"
+   y="2483.45px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text152">River Discharge</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Energy"
+   transform="matrix(0.835227,-0.435931,0.606806,0.600029,-198.191,1521.59)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path154" />
+                    <clipPath
+   id="_clip13">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path155" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip13)"
+   id="g159">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g156">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path156" />
+                        </g>
+                        <g
+   transform="matrix(-0.396097,1.21946,-1.21946,-0.396097,5829.44,192.969)"
+   id="g158">
+                            <text
+   x="1722.04px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text156">Soil and Snow</text>
+                            <g
+   transform="matrix(50,0,0,50,1977.63,2509.26)"
+   id="g157">
+                            </g>
+                            <text
+   x="1808.13px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text157">Energy</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Radiation"
+   transform="matrix(0.319183,-0.70533,0.981804,0.229301,-27.0803,2321.75)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path159" />
+                    <clipPath
+   id="_clip14">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path160" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip14)"
+   id="g164">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g161">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path161" />
+                        </g>
+                        <g
+   transform="matrix(-0.396097,1.21946,-1.21946,-0.396097,5829.44,192.969)"
+   id="g163">
+                            <text
+   x="1680.33px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text161">Surface Radiation</text>
+                            <g
+   transform="matrix(50,0,0,50,2028.06,2509.26)"
+   id="g162">
+                            </g>
+                            <text
+   x="1757.7px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text162">and <tspan
+   x="1858.63px 1894.74px "
+   y="2509.26px 2509.26px "
+   id="tspan162">Al</tspan>bedo</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Surface-energy"
+   serif:id="Surface energy"
+   transform="matrix(-0.319183,-0.70533,0.981804,-0.229302,766.669,2897.2)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path164" />
+                    <clipPath
+   id="_clip15">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path165" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip15)"
+   id="g169">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g166">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path166" />
+                        </g>
+                        <g
+   transform="matrix(-0.396097,1.21946,-1.21946,-0.396097,5829.44,192.969)"
+   id="g168">
+                            <text
+   x="1709.47px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text166">Surface Energy</text>
+                            <g
+   transform="matrix(50,0,0,50,1988.77,2509.26)"
+   id="g167">
+                            </g>
+                            <text
+   x="1796.99px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text167">Balance</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Turbulence"
+   transform="matrix(-0.835005,-0.436149,0.607111,-0.59987,1878.21,3027.48)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path169" />
+                    <clipPath
+   id="_clip16">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path170" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip16)"
+   id="g175">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g171">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path171" />
+                        </g>
+                        <g
+   transform="matrix(-0.396097,1.21946,-1.21946,-0.396097,5829.44,192.969)"
+   id="g174">
+                            <text
+   x="1779.48px"
+   y="2405.99px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text171">T<tspan
+   x="1806.31px 1836.85px "
+   y="2405.99px 2405.99px "
+   id="tspan171">ur</tspan>bulent</text>
+                            <text
+   x="1723.38px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text172">Exchange and</text>
+                            <text
+   x="1801.17px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text173">Surface</text>
+                            <g
+   transform="matrix(50,0,0,50,2029,2560.9)"
+   id="g173">
+                            </g>
+                            <text
+   x="1756.76px"
+   y="2560.9px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text174">Roughness</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Phenology"
+   transform="matrix(-1.03238,-0.000528573,0.000735761,-0.741667,2884.5,2663.75)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path175" />
+                    <clipPath
+   id="_clip17">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path176" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip17)"
+   id="g180">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g177">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path177" />
+                        </g>
+                        <g
+   transform="matrix(-0.396097,1.21946,-1.21946,-0.396097,5829.44,192.969)"
+   id="g179">
+                            <g
+   transform="matrix(50,0,0,50,2020.66,2483.45)"
+   id="g178">
+                            </g>
+                            <text
+   x="1765.1px"
+   y="2483.45px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text178">Phenology</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Photosynthesis"
+   transform="matrix(-0.835068,0.436087,-0.607024,-0.599915,3401.76,1942.99)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path180" />
+                    <clipPath
+   id="_clip18">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path181" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip18)"
+   id="g185">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g182">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path182" />
+                        </g>
+                        <g
+   transform="matrix(0.38808,-1.22203,1.22203,0.38808,-1674.53,2880.99)"
+   id="g184">
+                            <text
+   x="1706.73px"
+   y="2431.81px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text182">Photosynthesis</text>
+                            <text
+   x="1735.91px"
+   y="2483.45px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text183">and Stomatal</text>
+                            <g
+   transform="matrix(50,0,0,50,2051.23,2535.08)"
+   id="g183">
+                            </g>
+                            <text
+   x="1734.53px"
+   y="2535.08px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text184">Conductance</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Land-Cover"
+   serif:id="Land Cover"
+   transform="matrix(-0.319304,0.705302,-0.981765,-0.229389,3230.68,1143.31)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path185" />
+                    <clipPath
+   id="_clip19">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path186" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip19)"
+   id="g191">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g187">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path187" />
+                        </g>
+                        <g
+   transform="matrix(0.38808,-1.22203,1.22203,0.38808,-1674.53,2880.99)"
+   id="g190">
+                            <text
+   x="1755.36px"
+   y="2405.99px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text187">Natural and</text>
+                            <text
+   x="1697.07px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text188">Anthropogentric</text>
+                            <text
+   x="1755.36px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text189">Land Cover</text>
+                            <g
+   transform="matrix(50,0,0,50,1984.55,2560.9)"
+   id="g189">
+                            </g>
+                            <text
+   x="1801.2px"
+   y="2560.9px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text190">Change</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   id="Carbon"
+   transform="matrix(0.318889,0.705399,-0.9819,0.22909,2437.31,567.899)">
+                    <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   style="fill:none;"
+   id="path191" />
+                    <clipPath
+   id="_clip20">
+                        <path
+   d="M2158.62,1919.72C2299.04,1726.45 2374.67,1493.68 2374.67,1254.79L1880.91,1254.79C1880.91,1389.41 1838.29,1520.58 1759.16,1629.5L2158.62,1919.72Z"
+   id="path192" />
+                    </clipPath>
+                    <g
+   clip-path="url(#_clip20)"
+   id="g196">
+                        <g
+   transform="matrix(0.692462,1.13283,-1.12124,0.639742,1775.17,-943.487)"
+   id="g193">
+                            <path
+   d="M1240.16,1240.16L2018.28,901.662"
+   style="fill:none;stroke:black;stroke-width:12.43px;"
+   id="path193" />
+                        </g>
+                        <g
+   transform="matrix(0.38808,-1.22203,1.22203,0.38808,-1674.53,2880.99)"
+   id="g195">
+                            <text
+   x="1701.16px"
+   y="2457.63px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text193">Biogeochemical</text>
+                            <g
+   transform="matrix(50,0,0,50,2055.45,2509.26)"
+   id="g194">
+                            </g>
+                            <text
+   x="1730.31px"
+   y="2509.26px"
+   style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:50px;"
+   id="text194">Matter Cycles</text>
+                        </g>
+                    </g>
+                </g>
+                <g
+   transform="matrix(2.69929,0,0,1.93917,-3180.46,-1703.09)"
+   id="g197">
+                    <circle
+   cx="1771.65"
+   cy="1771.65"
+   r="432.667"
+   style="fill:none;stroke:black;stroke-width:4.09px;"
+   id="circle196" />
+                </g>
+            </g>
+            <g
+   id="Coupling-Pie"
+   serif:id="Coupling Pie"
+   transform="matrix(1.1729,0,0,0.842611,143.36,675.161)">
+                <path
+   id="YAC-Pie"
+   serif:id="YAC Pie"
+   d="M1832.54,2220.53C2065.96,2078.14 2239.91,1856.02 2322.21,1595.27L2197.39,1555.88C2124.62,1786.46 1970.79,1982.87 1764.38,2108.79L1832.54,2220.53Z"
+   style="fill:rgb(204,194,116);" />
+                <path
+   id="Coupling-Pie1"
+   serif:id="Coupling Pie"
+   d="M2321.57,1597.29C2356.76,1486.53 2374.67,1371 2374.67,1254.79C2374.67,630.428 1867.77,123.528 1243.41,123.528C619.05,123.528 112.151,630.428 112.151,1254.79C112.151,1879.14 619.05,2386.04 1243.41,2386.04C1452.26,2386.04 1657.04,2328.22 1835.06,2218.99L1765.87,2106.24C1608.67,2202.7 1427.84,2253.76 1243.41,2253.76C692.062,2253.76 244.44,1806.13 244.44,1254.79C244.44,703.44 692.062,255.817 1243.41,255.817C1794.75,255.817 2242.38,703.44 2242.38,1254.79C2242.38,1357.41 2226.56,1459.43 2195.49,1557.24L2321.57,1597.29Z"
+   style="fill:rgb(153,148,102);" />
+                <g
+   transform="matrix(1.12857,0,0,1.12857,-163.289,-151.911)"
+   id="g206">
+                    <g
+   transform="matrix(0.987928,-0.154913,0.154913,0.987928,-41.8335,169.775)"
+   id="g198">
+                        <text
+   x="1068.4px"
+   y="353.302px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text197">C</text>
+                    </g>
+                    <g
+   transform="matrix(0.996104,-0.0881856,0.0881856,0.996104,-25.7822,101.671)"
+   id="g199">
+                        <text
+   x="1137.78px"
+   y="342.629px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text198">o</text>
+                    </g>
+                    <g
+   transform="matrix(0.999552,-0.0299185,0.0299185,0.999552,-9.57472,35.7947)"
+   id="g200">
+                        <text
+   x="1191.35px"
+   y="337.852px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text199">u</text>
+                    </g>
+                    <g
+   transform="matrix(0.999552,0.0299185,-0.0299185,0.999552,10.6148,-37.0991)"
+   id="g201">
+                        <text
+   x="1245.04px"
+   y="336.161px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text200">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.997598,0.0692638,-0.0692638,0.997598,26.5376,-89.1979)"
+   id="g202">
+                        <text
+   x="1299.52px"
+   y="338.08px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text201">l</text>
+                    </g>
+                    <g
+   transform="matrix(0.995675,0.0929084,-0.0929084,0.995675,37.2615,-121.256)"
+   id="g203">
+                        <text
+   x="1320.92px"
+   y="339.561px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text202">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.990998,0.133876,-0.133876,0.990998,57.7492,-176.564)"
+   id="g204">
+                        <text
+   x="1341.8px"
+   y="341.14px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text203">n</text>
+                    </g>
+                    <g
+   transform="matrix(0.98165,0.190693,-0.190693,0.98165,92.027,-259.644)"
+   id="g205">
+                        <text
+   x="1395.1px"
+   y="348.341px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:100px;"
+   id="text204">g</text>
+                    </g>
+                </g>
+                <g
+   id="Coupling-tmx"
+   serif:id="Coupling tmx"
+   transform="matrix(1.12857,0,0,1.12857,-163.289,-151.911)">
+                    <g
+   transform="matrix(0.419835,-0.9076,0.9076,0.419835,-564.904,875.315)"
+   id="g207">
+                        <text
+   x="402.212px"
+   y="879.521px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text206">T</text>
+                    </g>
+                    <g
+   transform="matrix(0.465767,-0.884907,0.884907,0.465767,-522.605,821.062)"
+   id="g208">
+                        <text
+   x="418.704px"
+   y="843.354px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text207">M</text>
+                    </g>
+                    <g
+   transform="matrix(0.512176,-0.858881,0.858881,0.512176,-466.305,769.423)"
+   id="g209">
+                        <text
+   x="444.184px"
+   y="795.208px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text208">X</text>
+                    </g>
+                    <g
+   transform="matrix(0.559321,-0.828951,0.828951,0.559321,-405.608,722.207)"
+   id="g210">
+                        <text
+   x="476.459px"
+   y="742.593px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text209">(</text>
+                    </g>
+                    <g
+   transform="matrix(0.584223,-0.811593,0.811593,0.584223,-385.036,697.682)"
+   id="g211">
+                        <text
+   x="488.417px"
+   y="724.635px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text210">e</text>
+                    </g>
+                    <g
+   transform="matrix(0.614226,-0.78913,0.78913,0.614226,-351.924,670.372)"
+   id="g212">
+                        <text
+   x="509.687px"
+   y="695.13px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text211">x</text>
+                    </g>
+                    <g
+   transform="matrix(0.64388,-0.765127,0.765127,0.64388,-323.533,643.628)"
+   id="g213">
+                        <text
+   x="529.653px"
+   y="669.37px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text212">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.663756,-0.747949,0.747949,0.663756,-293.763,629.527)"
+   id="g214">
+                        <text
+   x="553.286px"
+   y="641.491px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text213">l</text>
+                    </g>
+                    <g
+   transform="matrix(0.675443,-0.737412,0.737412,0.675443,-282.409,619.757)"
+   id="g215">
+                        <text
+   x="562.857px"
+   y="630.703px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text214">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.694763,-0.719239,0.719239,0.694763,-271.258,600.964)"
+   id="g216">
+                        <text
+   x="572.405px"
+   y="620.069px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text215">c</text>
+                    </g>
+                    <g
+   transform="matrix(0.712024,-0.702155,0.702155,0.712024,-247.431,589.762)"
+   id="g217">
+                        <text
+   x="595.276px"
+   y="596.529px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text216">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.724519,-0.689254,0.689254,0.724519,-237.369,578.897)"
+   id="g218">
+                        <text
+   x="605.517px"
+   y="586.397px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text217">t</text>
+                    </g>
+                    <g
+   transform="matrix(0.739484,-0.673174,0.673174,0.739484,-225.205,565.923)"
+   id="g219">
+                        <text
+   x="618.571px"
+   y="573.926px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text218">)</text>
+                    </g>
+                </g>
+                <g
+   id="Coupling-vdiff"
+   serif:id="Coupling vdiff"
+   transform="matrix(1.12857,0,0,1.12857,-163.289,-151.911)">
+                    <g
+   transform="matrix(0.73546,0.677568,-0.677568,0.73546,866.085,-1109.01)"
+   id="g220">
+                        <text
+   x="1853.31px"
+   y="554.649px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text219">V</text>
+                    </g>
+                    <g
+   transform="matrix(0.700829,0.71333,-0.71333,0.700829,980.615,-1170.12)"
+   id="g221">
+                        <text
+   x="1885.3px"
+   y="584.003px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text220">D</text>
+                    </g>
+                    <g
+   transform="matrix(0.675855,0.737035,-0.737035,0.675855,1077.31,-1213.59)"
+   id="g222">
+                        <text
+   x="1918.37px"
+   y="617.987px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text221">I</text>
+                    </g>
+                    <g
+   transform="matrix(0.651547,0.758608,-0.758608,0.651547,1151.47,-1244.71)"
+   id="g223">
+                        <text
+   x="1930.65px"
+   y="631.063px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text222">F</text>
+                    </g>
+                    <g
+   transform="matrix(0.618417,0.78585,-0.78585,0.618417,1266.17,-1285.3)"
+   id="g224">
+                        <text
+   x="1956.59px"
+   y="661.153px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text223">F</text>
+                    </g>
+                    <g
+   transform="matrix(0.576293,0.817243,-0.817243,0.576293,1422.1,-1328.32)"
+   id="g225">
+                        <text
+   x="1992.08px"
+   y="707.31px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text224">(</text>
+                    </g>
+                    <g
+   transform="matrix(0.560953,0.827848,-0.827848,0.560953,1480.41,-1341.15)"
+   id="g226">
+                        <text
+   x="2004.61px"
+   y="725.121px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text225">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.52954,0.848285,-0.848285,0.52954,1571.8,-1360.94)"
+   id="g227">
+                        <text
+   x="2012.86px"
+   y="736.582px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text226">m</text>
+                    </g>
+                    <g
+   transform="matrix(0.486495,0.873684,-0.873684,0.486495,1732.28,-1381.65)"
+   id="g228">
+                        <text
+   x="2041.52px"
+   y="782.837px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text227">p</text>
+                    </g>
+                    <g
+   transform="matrix(0.463164,0.886272,-0.886272,0.463164,1827.62,-1387.57)"
+   id="g229">
+                        <text
+   x="2059.19px"
+   y="814.839px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text228">l</text>
+                    </g>
+                    <g
+   transform="matrix(0.448976,0.893544,-0.893544,0.448976,1877.9,-1389.9)"
+   id="g230">
+                        <text
+   x="2065.89px"
+   y="827.659px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text229">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.424846,0.905266,-0.905266,0.424846,1952.72,-1392.76)"
+   id="g231">
+                        <text
+   x="2072.43px"
+   y="840.362px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text230">c</text>
+                    </g>
+                    <g
+   transform="matrix(0.402434,0.915449,-0.915449,0.402434,2043.26,-1389.94)"
+   id="g232">
+                        <text
+   x="2086.3px"
+   y="870.131px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text231">i</text>
+                    </g>
+                    <g
+   transform="matrix(0.385729,0.922612,-0.922612,0.385729,2100.05,-1387.63)"
+   id="g233">
+                        <text
+   x="2092.11px"
+   y="883.285px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text232">t</text>
+                    </g>
+                    <g
+   transform="matrix(0.36502,0.931,-0.931,0.36502,2170.78,-1382.82)"
+   id="g234">
+                        <text
+   x="2099.13px"
+   y="899.98px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text233">)</text>
+                    </g>
+                </g>
+                <g
+   id="Coupling-YAC"
+   serif:id="Coupling YAC"
+   transform="matrix(1.12857,0,0,1.12857,-163.289,-151.911)">
+                    <g
+   transform="matrix(0.612309,-0.790619,0.790619,0.612309,-691.511,2295.21)"
+   id="g235">
+                        <text
+   x="1994.56px"
+   y="1852.7px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text234">Y</text>
+                    </g>
+                    <g
+   transform="matrix(0.578587,-0.815621,0.815621,0.578587,-634.064,2414.35)"
+   id="g236">
+                        <text
+   x="2019.39px"
+   y="1820.77px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text235">A</text>
+                    </g>
+                    <g
+   transform="matrix(0.537573,-0.843217,0.843217,0.537573,-557.968,2549.83)"
+   id="g237">
+                        <text
+   x="2045.77px"
+   y="1783.63px"
+   style="font-family:'ArialMT', 'Arial', sans-serif;font-size:66.667px;"
+   id="text236">C</text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs
+   id="defs241">
+        <linearGradient
+   id="_Linear1"
+   x1="0"
+   y1="0"
+   x2="1"
+   y2="0"
+   gradientUnits="userSpaceOnUse"
+   gradientTransform="matrix(2262.52,0,0,2262.52,112.151,1254.79)"><stop
+     offset="0"
+     style="stop-color:white;stop-opacity:1"
+     id="stop238" /><stop
+     offset="0"
+     style="stop-color:rgb(250,255,232);stop-opacity:1"
+     id="stop239" /><stop
+     offset="0.36"
+     style="stop-color:rgb(237,255,169);stop-opacity:1"
+     id="stop240" /><stop
+     offset="1"
+     style="stop-color:rgb(228,255,131);stop-opacity:1"
+     id="stop241" /></linearGradient>
+    </defs>
+</svg>

@@ -1,0 +1,25 @@
+#%Module1.0
+
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+
+
+set specs       [split [module-info name] /]
+set name        [lindex $specs 0]
+set version     [lindex $specs 1]
+
+conflict $name
+
+proc ModulesHelp { } {
+    global name version
+    puts stderr "\t$name - loads version $version of the $name package"
+}
+
+module-whatis "loads the $name package"

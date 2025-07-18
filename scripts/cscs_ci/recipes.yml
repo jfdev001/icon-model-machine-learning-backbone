@@ -1,0 +1,124 @@
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+#
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+include:
+  - scripts/cscs_ci/remote.yml
+
+.setup_python:
+  script:
+    - python3 -m venv .venv
+    - source .venv/bin/activate
+    - pip install -r scripts/cscs_ci/requirements.txt
+
+.set_uenv_version:
+  script:
+    - export UENV_VERSION=$(cat config/cscs/SANTIS_ENV_TAG)
+
+.setup_uenv:
+  script:
+    - !reference [.set_uenv_version, script]
+    - uenv image pull ${UENV_VERSION}
+
+.configure_with_uenv:
+  script:
+    - !reference [.set_uenv_version, script]
+    - uenv run ${UENV_VERSION} -- ./config/cscs/${CONFIG}
+
+.check_with_uenv:
+  script:
+    - uenv run ${UENV_VERSION} -- bash -c "module use /user-environment/modules && module load cdo && ./check.${EXPERIMENT}.run"
+
+.santis_create_common:
+  extends: .container-runner-lightweight-zen2
+  image: python:3.9
+  stage: .pre
+  timeout: 15m
+  variables:
+    GIT_SUBMODULE_STRATEGY: none
+  before_script:
+    - !reference [.setup_python, script]
+  script:
+    - ./scripts/cscs_ci/cscs_ci_from_yml --tag ${TAG} --builder ${BUILDER}
+  artifacts:
+    paths:
+      - pipeline.yml
+
+.trigger_common:
+  trigger:
+    include:
+      - artifact: pipeline.yml
+        job: create-pipeline
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
+.build_common_santis:
+  extends: .baremetal-runner-santis-gh200
+  stage: build
+  timeout: 3h
+  artifacts:
+    paths:
+    - ./**/spack-build-out.txt
+    - config.log
+    - run/**/*
+    - scripts/**/*
+    - make_runscripts
+    - bin/icon
+    - externals/ecrad/data
+    - externals/probtest/**/*
+    - data/**/*
+    - config/cscs/SANTIS_ENV_TAG
+    when: always
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: recursive
+    CSCS_REWRITE_RELATIVE_SUBMODULES: 'YES'
+    SLURM_TIMELIMIT: '01:00:00'
+    # needed for to pick correct header in collect.set-up.info
+    HOST: santis
+    # ICON configure fails to detect host
+    acx_cv_host_fqdn: santis
+
+
+.build_santis_cpu_nvhpc:
+  variables:
+    CONFIG: santis.cpu.nvhpc
+  extends: .build_common_santis
+  before_script:
+    - !reference [.setup_uenv, script]
+  script:
+    - !reference [.configure_with_uenv, script]
+
+.build_santis_gpu_nvhpc:
+  extends: .build_common_santis
+  variables:
+    CONFIG: santis.gpu.nvhpc
+  before_script:
+    - !reference [.setup_uenv, script]
+  script:
+    - !reference [.configure_with_uenv, script]
+
+.run_common_santis:
+  extends: .baremetal-runner-santis-gh200
+  timeout: 3h
+  stage: run
+  dependencies:
+    - Build ICON
+  before_script:
+    - !reference [.setup_python, script]
+  script:
+    - echo use_builddir=$(pwd) >> run/set-up.info
+    - ./run/make_target_runscript in_script=${CHECK} in_script=exec.iconrun out_script=check.${EXPERIMENT}.run EXPNAME=${EXPERIMENT}
+    - !reference [.set_uenv_version, script]
+    - cd run
+    - !reference [.check_with_uenv, script]
+  variables:
+    GIT_STRATEGY: none
+    SLURM_TIMELIMIT: '00:30:00'

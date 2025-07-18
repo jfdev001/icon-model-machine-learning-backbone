@@ -1,0 +1,15 @@
+time,,0,0,0
+statistic,,max,mean,min
+file_ID,variable,,,
+NetCDF:graupel_1.nc,cli,3.964088499471489e-19,3.04931487510591e-20,0.0
+NetCDF:graupel_1.nc,clw,5.354229749955885e-20,1.0164395367051598e-21,0.0
+NetCDF:graupel_1.nc,hus,0.0,0.0,0.0
+NetCDF:graupel_1.nc,prg,0.0,0.0,0.0
+NetCDF:graupel_1.nc,pri,0.0,0.0,0.0
+NetCDF:graupel_1.nc,prr,8.605636499985061e-19,2.286984067570654e-20,0.0
+NetCDF:graupel_1.nc,prs,0.0,0.0,0.0
+NetCDF:graupel_1.nc,qg,1.741429700121624e-18,5.342652636450004e-19,0.0
+NetCDF:graupel_1.nc,qr,9.999242828367512e-17,4.675518161574176e-19,0.0
+NetCDF:graupel_1.nc,qrsflux,0.0,0.0,0.0
+NetCDF:graupel_1.nc,qs,3.022065744725587e-18,1.3213581740139628e-19,0.0
+NetCDF:graupel_1.nc,ta,1.0054646967674067e-14,1.5481207060662399e-15,1.011244650943822e-14

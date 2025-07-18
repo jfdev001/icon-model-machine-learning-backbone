@@ -1,0 +1,47 @@
+image: alpine:latest
+
+stages:
+  - sync
+
+sync_master_branch:
+  stage: sync
+  # This job will only run when changes are pushed to the master branch
+  # Ensure your master branch is a Protected Branch in Settings -> Repository
+  tags:
+    - alpine
+    - dkrz
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: on_success
+  variables:
+    GIT_DEPTH: "0" # Set to 0 for a full clone
+
+  script:
+    - |
+      # ** IMPORTANT DKRZ ADAPTATION: Install git as alpine:latest is bare **
+      apk update && apk add git --no-cache
+      # Construct the URL for the public repository using the CI variable holding the token
+      # The 'oauth2' prefix is standard for Project Access Tokens and Personal Access Tokens
+      # Replace <your_gitlab_host> with your GitLab instance (e.g., gitlab.com)
+      # Replace ART-Public/ART-Master with the correct path to your public repo
+      PUBLIC_REPO_URL="https://oauth2:${PUBLIC_REPO_PUSH_TOKEN2}@gitlab.dkrz.de/ART-Public/art.git"
+
+      # Optional: Configure git user info (makes the push cleaner in history in the public repo)
+      git config user.name "GitLab CI/CD Sync" # Use a descriptive name
+      git config user.email "gitlab-ci@gitlab.dkrz.de" # Use a valid email format
+
+      # Ensure we are on the correct branch (CI usually checks out master if rule applies)
+      # git checkout master # Usually not needed as CI is on the correct branch
+
+      # Add the public repository as a remote named 'public_mirror'
+      # Use -f to handle if remote already exists
+      git remote add public_mirror $PUBLIC_REPO_URL || git remote set-url public_mirror $PUBLIC_REPO_URL
+
+      # Push the master branch to the public_mirror remote
+      # The format is <source_branch>:<target_branch>
+      # Use --force-with-lease to push master.
+      # This is recommended because the public repo's master history is entirely managed by this mirror.
+      # --force-with-lease is safer than --force.
+      # ** IMPORTANT FIX: Push the current commit SHA ($CI_COMMIT_SHA) instead of local branch 'master' **
+      # Use --force-with-lease to push.
+      git push --force public_mirror $CI_COMMIT_SHA:refs/heads/master

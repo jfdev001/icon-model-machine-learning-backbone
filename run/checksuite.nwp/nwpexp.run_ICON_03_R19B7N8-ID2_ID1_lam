@@ -1,0 +1,605 @@
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# ----------------------------------------------------------------------
+# path definitions
+# ----------------------------------------------------------------------
+
+make_and_change_to_experiment_dir # function in ../add_run_routines
+
+# Combine START and MODEL if START_MODEL is not already set.
+# START_MODEL is used to ease the execution of a machine that uses a complex
+# mpirun command with multiple binaries
+START_MODEL="${START_MODEL:=$START $MODEL}"
+
+# set icon_data_poolFolder
+icon_data_poolFolder="${icon_data_rootFolder:-/pool/data/ICON}/buildbot_data/nwp"
+
+# base directory for ICON sources, binary and auxilary data:
+ICONDIR="${basedir}" # basedir can be set with create_target_header
+
+# experiment identifier for output files
+EXP="ICON-D2_D1"    # experiment identifier
+
+# root directory for input data
+DATAROOT="${icon_data_poolFolder}/Checksuite_data"
+
+# directory for grid and extpar files
+GRIDDIR="${icon_data_poolFolder}/grids/public/edzw"
+# GRIDDIR links to /hpc/rwork0/routfor/routfox/icon/grids/public/edzw on RCL
+
+EXTPDIR="$GRIDDIR" # external parameter directory
+
+# absolute path to input directory - for the time being
+DATADIR=${DATAROOT}/ICON-D2-oper/2021060100
+LBCDIR=${DATAROOT}/ICON-D2-oper/2021060100
+
+
+# ----------------------------------------------------------------------
+# copy input data: grids, external parameters
+# ----------------------------------------------------------------------
+
+ln -sf $GRIDDIR/icon_grid_0046_R19B06_LR.nc    iconR19B6_DOM00.nc
+ln -sf $GRIDDIR/icon_grid_0047_R19B07_L.nc     iconR19B7_DOM01.nc
+ln -sf $GRIDDIR/icon_grid_0047_R19B07_L_lbc.nc iconR19B7_DOM01_lbc.nc
+ln -sf $GRIDDIR/icon_grid_0059_R19B08_LN02.nc  iconR19B8_DOM02.nc
+
+ln -sf $EXTPDIR/icon_extpar_0047_R19B07_L_20231113_tiles.nc    extpar_iconR19B7_DOM01.nc
+ln -sf $EXTPDIR/icon_extpar_0059_R19B08_LN02_20240321_tiles.nc extpar_iconR19B8_DOM02.nc
+
+# initial conditions
+ln -sf $DATADIR/R19B07_DOM01_ilaf20210601000000.grb .
+ln -sf $DATADIR/R19B07_DOM01_ilfff00005500.grb .
+
+# lateral boundary conditions
+ln -sf $LBCDIR/ilbff*.grb .
+
+# files needed for ecrad
+ln -sf $ICONDIR/externals/ecrad/data/* .
+
+# files needed for synsats
+cp ${icon_data_poolFolder}/externals/rttov/const/rt13coeffs_rttov7pred54L/*.dat .
+
+# radar data
+ln -sf $DATADIR/radar_dx.nc .
+ln -sf $DATADIR/radardata_DOM1.nc .
+ln -sf $DATADIR/blacklist_dx.nc .
+
+# map files
+ln -sf $DATADIR/map_file.* .
+
+# ----------------------------------------------------------------------
+# global namelist settings
+# ----------------------------------------------------------------------
+
+# the namelist filename
+atmo_namelist=NAMELIST_${EXP}
+
+# global timing
+start_date="2021-06-01T00:00:00Z"
+ndays_restart=60
+dt_restart=$((${ndays_restart}*86400))
+
+
+# the grid parameters
+atmo_dyn_grids="iconR19B7_DOM01.nc iconR19B8_DOM02.nc"
+atmo_rad_grids="iconR19B6_DOM00.nc"
+
+
+# ----------------------------------------------------------------------
+# create ICON master namelist
+# ----------------------------------------------------------------------
+
+# For a complete list see Namelist_overview and Namelist_overview.pdf
+
+cat > icon_master.namelist << EOF
+&master_nml
+ lrestart               = .false.
+/
+&time_nml
+ ini_datetime_string = "$start_date"
+ dt_restart          = $dt_restart
+/
+&master_model_nml
+  model_type=1
+  model_name="ATMO"
+  model_namelist_filename="$atmo_namelist"
+  model_min_rank=1
+  model_max_rank=65536
+  model_inc_rank=1
+/
+EOF
+
+
+# ----------------------------------------------------------------------
+# model namelists
+# ----------------------------------------------------------------------
+
+# reconstrcuct the grid parameters in namelist form
+dynamics_grid_filename=""
+for gridfile in ${atmo_dyn_grids}; do
+  dynamics_grid_filename="${dynamics_grid_filename} '${gridfile}',"
+done
+radiation_grid_filename=""
+for gridfile in ${atmo_rad_grids}; do
+  radiation_grid_filename="${radiation_grid_filename} '${gridfile}',"
+done
+
+plevels="5000,10000,15000,20000,25000,30000,40000,50000,70000,85000"
+
+# Variables to configure the mpirun command on the RCL
+num_io_procs=2
+num_restart_procs=0
+num_prefetch_proc=1
+num_io_procs_radar=0
+
+cat > ${atmo_namelist} << EOF
+&parallel_nml
+ nproma                  =  ${nproma}
+ nproma_sub              =  ${nproma_sub} ! loop chunk length for radiation
+ p_test_run              = .false.
+ l_test_openmp           = .true.
+ l_log_checks            = .true.
+ num_io_procs            = ${num_io_procs}
+ num_restart_procs       = ${num_restart_procs}
+ num_prefetch_proc       = ${num_prefetch_proc}
+ num_io_procs_radar      = ${num_io_procs_radar}
+ iorder_sendrecv         = 3
+ proc0_shift             = ${proc0_shift}
+ use_omp_input           = .true.
+/
+&grid_nml
+ dynamics_grid_filename  = ${dynamics_grid_filename}
+ radiation_grid_filename = ${radiation_grid_filename}
+ dynamics_parent_grid_id = 0,1
+ lredgrid_phys           = .true.
+ lfeedback               = .true.
+ l_limited_area          = .true.
+ ifeedback_type          = 2
+ start_time  = 0., 2700.,
+/
+&initicon_nml
+ init_mode             = 5
+ lread_ana             = .true.
+ dt_ana                = 3600
+ dt_iau                = 600
+ dt_shift              = -300
+ iterate_iau           = .true.
+ zpbl1                 = 500.
+ zpbl2                 = 1000.
+ dwdfg_filename        = './R<nroot0>B<jlev>_DOM<idom>_ilfff00005500.grb'
+ dwdana_filename       = './R<nroot0>B<jlev>_DOM<idom>_ilaf20210601000000.grb'
+ ana_varnames_map_file = 'map_file.ana'
+ check_ana(1)%list     = 'T_SO','FR_ICE','P','QV','T','U','V','FRESHSNW','H_SNOW'
+ check_fg(1)%list      = 't_2m_filtbias','alb_seaice','evap_pl','skt'
+ lp2cintp_incr         = .true.
+ lp2cintp_sfcana       = .true.
+ ltile_coldstart       = .false.
+ qcana_mode            = 2
+ qiana_mode            = 0  ! due to KENDA, before: 1
+ use_lakeiceana        = .true.
+ icpl_da_sfcevap       = 4
+ icpl_da_skinc         = 2
+ adjust_tso_tsnow      = .TRUE.
+ icpl_da_snowalb       = 2
+ icpl_da_sfcfric       = 1
+ icpl_da_tkhmin        = 1
+/
+&limarea_nml
+ dtime_latbc             = 3600          ! 3600.
+ init_latbc_from_fg      = .true.                 ! always
+ itype_latbc             = 1
+ latbc_boundary_grid     = 'iconR19B7_DOM01_lbc.nc'
+ latbc_varnames_map_file = 'map_file.lbc'
+ latbc_filename          = 'ilbff<ddhhmmss>.grb'
+ fac_latbc_presbiascor   = 1
+/
+&io_nml
+ itype_pres_msl               = 5        ! (1) 3: IFS-type extrapolation
+ itype_rh                     = 1         ! (1) 2: mixed phase (water and ice)
+! output_nml_dict              = 'map_file.fc'
+ lmask_boundary               = .true.
+ maxt_interval                 = 'PT06H'
+/
+&output_nml
+ filetype                     =  2                        ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                          =  1                       ! -1: write all domains
+ output_bounds                =  0., 10000000., 3600.    ! start, end, increment
+ steps_per_file               =  1
+ mode                         =  1                        ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last                 = .FALSE.
+ output_filename              = 'ICON_D2'
+ filename_format              = '<output_filename>_<ddhhmmss>'                   ! file name base
+ ml_varlist = 'u', 'v', 'w', 'temp', 'pres', 'pres_msl', 'qv', 'qc', 'qi', 'qr', 'qs', 'qg',
+'group:precip_vars','clcl','clcm','clch', 'group:additional_precip_vars','tqv','tqc','tqi','tqr','tqs','tqg', 'group:land_vars', 'freshsnow', 'albdif',
+'t_2m','td_2m','rh_2m','pres_sfc','u_10m','v_10m','gust10','ASODIFD_S','ASODIFU_S','ASODIRD_S','ALHFL_S', 'ASHFL_S', 'ASOB_S', 'ASOB_T',
+ 'ATHB_S', 'ATHB_T', 'TMAX_2M', 'TMIN_2M', 'sdi2', 'lpi', 'lpi_max', 'dbz_ctmax',
+'ceiling', 'hbas_sc', 'htop_sc', 'twater', 'q_sedim',  'TCOND_MAX', 'TCOND10_MAX', 'UH_MAX', 'VORW_CTMAX', 'W_CTMAX',
+! output_grid                  =  .TRUE.
+ stream_partitions_ml = 2
+ remap = 1
+ north_pole  = -170.,40.
+ reg_lon_def = -7.5,0.02,5.5
+ reg_lat_def = -6.3,0.02,8.
+/
+&output_nml
+ filetype                     =  2                        ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                          =  1                       ! -1: write all domains
+ output_bounds                =  0., 0., 3600.    ! start, end, increment
+ steps_per_file               =  1
+ mode                         =  1                        ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last                 = .FALSE.
+ output_filename              = 'ICON_D2'
+ filename_format              = '<output_filename>_<ddhhmmss>c'                   ! file name base
+ ml_varlist='z_ifc','topography_c','fr_land','DEPTH_LK', 'FR_LAKE', 'LAI', 'PLCOV', 'ROOTDP', 'SOILTYP',
+! output_grid                  =  .TRUE.
+ remap = 1
+ north_pole  = -170.,40.
+ reg_lon_def = -7.5,0.02,5.5
+ reg_lat_def = -6.3,0.02,8.
+/
+&output_nml
+ filetype                     =  2                        ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                          =  2                       ! -1: write all domains
+ output_bounds                =  0., 10000000., 3600.    ! start, end, increment
+ steps_per_file               =  1
+ mode                         =  1                        ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last                 = .FALSE.
+ output_filename              = 'ICON_D1'
+ filename_format              = '<output_filename>_<ddhhmmss>'                   ! file name base
+ ml_varlist = 'u', 'v', 'w', 'temp', 'pres', 'pres_msl', 'qv', 'qc', 'qi', 'qr', 'qs', 'qg',
+'group:precip_vars','clcl','clcm','clch', 'group:additional_precip_vars','tqv','tqc','tqi','tqr','tqs','tqg', 'group:land_vars', 'freshsnow', 'albdif',
+'t_2m','td_2m','rh_2m','pres_sfc','u_10m','v_10m','gust10','ASODIFD_S','ASODIFU_S','ASODIRD_S','ALHFL_S', 'ASHFL_S', 'ASOB_S', 'ASOB_T',
+ 'ATHB_S', 'ATHB_T', 'TMAX_2M', 'TMIN_2M', 'sdi2', 'lpi', 'lpi_max', 'dbz_ctmax',
+'ceiling', 'hbas_sc', 'htop_sc', 'twater', 'q_sedim',  'TCOND_MAX', 'TCOND10_MAX', 'UH_MAX', 'VORW_CTMAX', 'W_CTMAX',
+! output_grid                  =  .TRUE.
+ stream_partitions_ml = 2
+ remap = 1
+ north_pole  = -170.,40.
+ reg_lon_def = -7.5,0.02,5.5
+ reg_lat_def = -6.3,0.02,8.
+/
+&output_nml
+ filetype                     =  2                        ! output format: 2=GRIB2, 4=NETCDFv2
+ dom                          =  2                       ! -1: write all domains
+ output_bounds                =  0., 0., 3600.    ! start, end, increment
+ steps_per_file               =  1
+ mode                         =  1                        ! 1: forecast mode (relative t-axis), 2: climate mode (absolute t-axis)
+ include_last                 = .FALSE.
+ output_filename              = 'ICON_D1'
+ filename_format              = '<output_filename>_<ddhhmmss>c'                   ! file name base
+ ml_varlist = 'z_ifc','topography_c','fr_land','DEPTH_LK', 'FR_LAKE', 'LAI', 'PLCOV', 'ROOTDP', 'SOILTYP',
+! output_grid                  =  .TRUE.
+ remap = 1
+ north_pole  = -170.,40.
+ reg_lon_def = -7.5,0.02,5.5
+ reg_lat_def = -6.3,0.02,8.
+/
+&run_nml
+ dtime                 = 20              ! timestep in seconds
+ iforcing              = 3                    ! NWP forcing
+ ! check_uuid_gracefully = .true.
+ lart                  = .false.               ! ICON-ART main switch
+ ldass_lhn             = .true.          ! latent heat nudging
+ luse_radarfwo(1)      = .false.
+ ldynamics             = .true.               ! dynamics
+ ltestcase             = .false.              ! false: run with real data
+ ltimer                = .true.
+ ltransport            = .true.
+ lvert_nest            = .false.
+ msg_level             = 7          ! 7: print maximum wind speeds every 5th time steps
+ nsteps                = 360        ! 4860 for full forecast period
+ ntracer               = 5                    ! default: 0
+ num_lev               = 65           ! 65, nest the same always
+ output                = "nml"
+ timers_level          = 10       ! can be increased up to 10 for detailed timer output
+/
+&nwp_phy_nml
+inwp_gscp       = 2,2
+mu_rain         = 0.5
+rain_n0_factor  = 0.1
+lvariable_rain_n0 = .true.
+inwp_convection = 1,1,1
+lshallowconv_only = .false.,true.
+lgrayzone_deepconv= .true.,.false.
+inwp_radiation  = 4
+inwp_cldcover   = 1
+inwp_turb       = 1
+inwp_satad      = 1
+inwp_sso        = 1,1,1
+inwp_gwd        = 0,0,0
+inwp_surface    = 1
+latm_above_top  = .true.,.true.,.true.,
+ldetrain_conv_prec = .true.,.true.,.true.,
+lsgs_cond       = .true.,.false.
+efdt_min_raylfric = 7200.
+itype_z0         = 2
+icapdcycl        = 3
+icpl_aero_conv   = 1
+icpl_aero_gscp   = 1
+icpl_o3_tp       = 1
+ithermo_water    = 1
+dt_rad    = 720.
+dt_conv   = 120.,120.,60.,
+dt_sso    = 120.,120.,120.,
+dt_gwd    = 360.,360.,360.,
+/
+&nwp_tuning_nml
+itune_albedo = 1
+tune_gkwake = 0.25
+tune_gfrcrit = 0.333
+tune_gkdrag = 0.125
+tune_grcrit = 0.65
+tune_minsso_gwd = 40.
+tune_minsnowfrac = 0.3
+tune_box_liq     = 0.04
+tune_box_liq_asy = 4.0
+tune_gust_factor = 7.0
+itune_gust_diag  = 4
+tune_gustlim_agl = 1500.,1500.,1500.
+tune_gustlim_fac = 1.75,1.5,1.2
+tune_rcucov = 0.075
+tune_rhebc_land = 0.825
+tune_eiscrit    = 7.
+tune_zvz0i    = 0.85
+tune_sgsclifac = 0.5
+tune_zcsg      = 0.25
+tune_supsat_limfac = 2.0
+icpl_turb_clc  = 2
+itune_slopecorr = 1
+max_calibfac_clcl = 2.0
+/
+&turbdiff_nml
+  tkhmin        = 0.5
+  tkmmin        = 0.75
+  pat_len       = 750.
+  tur_len       = 300.
+  rlam_heat     = 10.0
+  rat_sea       = 0.8
+  alpha1        = 0.125
+  ltkesso       = .true.
+  frcsmot       = 0.
+  imode_frcsmot = 0
+  itype_sher    = 2
+  ltkeshs       = .true.
+  a_hshr        = 1.25
+  icldm_turb    = 2
+  q_crit        = 2.0
+  imode_tkesso  = 3
+/
+&lnd_nml
+  ntiles         = 3
+  nlev_snow      = 3
+  lmulti_snow    = .false.
+  itype_heatcond = 3
+  idiag_snowfrac = 20
+  itype_snowevap = 3
+  lsnowtile      = .true.
+  lseaice        = .true.
+  llake          = .true.
+  lterra_urb     = .true.
+  itype_lndtbl   = 4
+  itype_evsl     = 4
+  itype_root     = 2
+  itype_trvg     = 3
+  itype_canopy   = 2
+  cwimax_ml      = 5.e-4
+  c_soil         = 1.25
+  c_soil_urb     = 0.5
+  sstice_mode    = 2
+/
+&radiation_nml
+  irad_o3     = 79
+  irad_aero   = 6
+  albedo_type = 2          ! Modis albedo
+  direct_albedo_water = 3
+  albedo_whitecap = 1
+  islope_rad  = 0,3
+ vmr_co2    = 425.e-06 ! values representative for 2023
+ vmr_ch4    = 1900.e-09
+ vmr_n2o    = 334.0e-09
+ vmr_o2     = 0.20946
+ vmr_cfc11  = 220.e-12
+ vmr_cfc12  = 490.e-12
+/
+&nonhydrostatic_nml
+  iadv_rhotheta   = 2
+  ivctype         = 2
+  itime_scheme    = 4
+  exner_expol     = 0.6
+  vwind_offctr    = 0.2
+  damp_height     = 12250.,12250.,12250.
+  rayleigh_coeff  = 5.0,8.0,12.0
+  divdamp_fac     = 0.004
+  divdamp_order   = 24
+  divdamp_type    = 32
+  divdamp_trans_start = 12500.
+  divdamp_trans_end   = 17500.
+  igradp_method   = 3
+  l_zdiffu_t      = .true.
+  thslp_zdiffu    = 0.02
+  thhgtd_zdiffu   = 125.
+  htop_moist_proc = 22500.
+  hbot_qvsubstep  = 22500
+/
+&sleve_nml
+ min_lay_thckn   = 20.
+ itype_laydistr  = 1
+ top_height      = 22000.
+ stretch_fac     = 0.65
+ decay_scale_1   = 4000.
+ decay_scale_2   = 2500.
+ decay_exp       = 1.2
+ flat_height     = 16000.
+/
+&dynamics_nml
+ divavg_cntrwgt = 0.50
+ lcoriolis      = .true.
+ lmoist_thdyn   = .false.
+/
+&transport_nml
+ ctracer_list = '12345'
+ ivadv_tracer = 3,3,3,3,3,3
+ itype_hlimit = 3,4,4,4,4,4
+ ihadv_tracer = 52,2,2,2,2,2
+ llsq_svd       = .false.
+ beta_fct       = 1.005
+/
+&diffusion_nml
+ hdiff_order      = 5
+ itype_vn_diffu   = 1
+ itype_t_diffu    = 2
+ hdiff_efdt_ratio = 24
+ hdiff_smag_fac   = 0.025
+ lhdiff_vn        = .true.
+ lhdiff_temp      = .true.
+ lsmag_3d         = .false.,.true.
+ lhdiff_smag_w    = .false.,.true.
+ lhdiff_q         = .true.
+/
+&interpol_nml
+  nudge_zone_width = 10
+  lsq_high_ord     = 3
+  l_intp_c2l       = .true.
+  l_mono_c2l       = .true.
+  support_baryctr_intp = .true.
+/
+&gridref_nml
+ grf_intmethod_e  = 6
+ grf_intmethod_ct = 2
+ grf_tracfbk      = 2
+ denom_diffu_v    = 150.
+ fbk_relax_timescale = 900.
+/
+&extpar_nml
+ itopo                = 1
+ n_iter_smooth_topo   = 1,2,2
+ hgtdiff_max_smooth_topo = 750.,400.,200.,
+ heightdiff_threshold = 2250.,1500.,1000.,
+ itype_vegetation_cycle = 2
+ itype_lwemiss       = 2
+ pp_sso              = 2
+ read_nc_via_cdi     = .true.
+/
+&assimilation_nml
+ dace_coupling   = .false.
+ dace_debug      = 1
+ dace_time_ctrl  = 0,3600,1800 ! [s] time slices of DACE (start, stop, inc)
+ fac_lhn_down    = 0.666
+ fac_lhn_up      = 1.5
+ lhn_artif       = .true.
+ lhn_artif_only  = .false.
+ lhn_black       = .true.
+   blacklist_file  = 'blacklist_dx.nc'
+   height_file     = 'radar_dx.nc'
+   nradar          = 12       ! number of levels with radar heights within height_file
+ lhn_bright      = .true.
+ lhn_coef        = 1.0
+ lhn_diag        = .true.
+ lhn_hum_adj     = .true.
+ lhn_logscale    = .false.
+ lhn_qrs         = .true.
+ lhn_relax       = .true.
+ lhn_wweight     = .true.
+ nlhn_end        = 120 ! time steps
+ nlhn_relax      = 2
+ nlhn_start      = 0
+ nlhnverif_end   = 50000
+ nlhnverif_start = 0
+ radardata_file  = 'radardata_DOM1.nc'
+ rqrsgmax        = 0.01
+ start_fadeout   = 1.0
+ std_artif_max   = 4.
+ tt_artif_max    = 0.009
+ zlev_artif_max  = 3000.
+/
+&nudging_nml
+ nudge_type = 0
+/
+EOF
+
+cat > map_file.ana << EOF2
+# internal name     GRIB2 shortName
+theta_v             THETA_V
+rho                 DEN
+vn                  VN
+u                   U
+v                   V
+w                   W
+tke                 TKE
+temp                T
+pres                P
+qv                  QV
+qc                  QC
+qi                  QI
+qr                  QR
+qs                  QS
+t_g                 T_G
+qv_s                QV_S
+fr_seaice           FR_ICE
+t_ice               T_ICE
+h_ice               H_ICE
+t_snow              T_SNOW
+freshsnow           FRESHSNW
+w_snow              W_SNOW
+rho_snow            RHO_SNOW
+h_snow              H_SNOW
+w_i                 W_I
+w_so                W_SO
+w_so_ice            W_SO_ICE
+t_so                T_SO
+smi                 SMI
+gz0                 Z0
+pres_sfc            PS
+z_ifc               HHL
+
+t_mnw_lk            T_MNW_LK
+t_wml_lk            T_WML_LK
+h_ml_lk             H_ML_LK
+t_bot_lk            T_BOT_LK
+c_t_lk              C_T_LK
+t_b1_lk             T_B1_LK
+h_b1_lk             H_B1_LK
+EOF2
+
+#
+# configure START_MODEL_function
+#
+ICON_COMPONENT1_VH_procs=$((num_restart_procs + num_io_procs + num_prefetch_proc + num_io_procs_radar))
+
+# ----------------------------------------------------------------------
+# run the model!
+# ----------------------------------------------------------------------
+
+if [[ "$builder" = "rcl_nec" ]] && [[ "$with_openmp" = "no" ]]; then
+  LOWER_MEM_LIMIT=42150
+  UPPER_MEM_LIMIT=42450
+  set -o pipefail
+  # Check the memory consumption on NEC
+  $START_MODEL 3>&1 1>&2 2>&3 | $ICONDIR/run/checksuite.nwp/NEC.mem_check.py --lower_mem_limit "$LOWER_MEM_LIMIT" --upper_mem_limit "$UPPER_MEM_LIMIT" 3>&1 1>&2 2>&3
+  # `3>&1 1>&2 2>&3` swaps stderr and stdin so that python processes the original stderr.
+  EXIT_STATUS=$?
+
+  if [[ "$EXIT_STATUS" = "21" ]]; then
+    # Return code 21 is returned by mem_check.py if a threshold is exceeded
+    echo "---------------------------------------------------"
+    echo "                   try again                       "
+    echo "---------------------------------------------------"
+    $START_MODEL 3>&1 1>&2 2>&3 | $ICONDIR/run/checksuite.nwp/NEC.mem_check.py --lower_mem_limit "$LOWER_MEM_LIMIT" --upper_mem_limit "$UPPER_MEM_LIMIT" 3>&1 1>&2 2>&3
+    EXIT_STATUS=$?
+  fi
+
+else
+  $START_MODEL
+  EXIT_STATUS=$?
+fi
+
+echo "EXIT_STATUS: $EXIT_STATUS"
+exit $EXIT_STATUS

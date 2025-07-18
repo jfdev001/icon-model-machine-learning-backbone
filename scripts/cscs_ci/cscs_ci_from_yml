@@ -1,0 +1,30 @@
+#! /usr/bin/env python3
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+import os
+import sys
+
+import click
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "experiments"))
+from yaml_experiment_test_processor import register_experiments_for_cscs_ci
+
+
+@click.command()
+@click.option("--tag", "tag", type=str, required=True)
+@click.option("--builder", "builder", type=str, required=True)
+@click.option("--experiment", "exp", type=str)
+def main(tag, builder, exp=None):
+    register_experiments_for_cscs_ci(tag, builder, exp)
+
+
+if __name__ == "__main__":
+    main()

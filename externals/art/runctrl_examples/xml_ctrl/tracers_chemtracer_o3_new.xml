@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tracers SYSTEM "tracers.dtd">
+<tracers>
+  <chemtracer id="TR_cold">
+    <mol_weight type="real">1.000E+0</mol_weight>
+    <transport type="char"> hadv52aero </transport>
+    <lifetime type="real"> 432000 </lifetime>
+    <unit type="char">none</unit>
+    <c_solve type="char">cold</c_solve>
+  </chemtracer>	
+  <chemtracer id="TRO3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">4.800E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">1555200</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char">O3</init_name>
+    <unit type="char">mol mol-1</unit>
+    <feedback type="int"> 0 </feedback>
+    <c_solve type="char">linoz</c_solve>
+    <polarchem type="char">on</polarchem>
+    <Thet type="real">195.</Thet>
+    <lt_het type="real">864000.</lt_het>
+  </chemtracer>
+  <chemtracer id="TRO3_V3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">4.800E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">1555200</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char">O3V3</init_name>
+    <unit type="char">mol mol-1</unit>
+    <feedback type="int"> 0 </feedback>
+    <c_solve type="char">linozV3</c_solve>
+    <polarchem type="char">on</polarchem>
+    <Thet type="real">195.</Thet>
+    <lt_het type="real">864000.</lt_het>
+  </chemtracer>
+  <chemtracer id="TRNOy" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">6.301E-1</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">259200</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">simnoy</c_solve>
+    <polarchem type="char">on</polarchem>
+  </chemtracer>
+  <chemtracer id="TRN2O" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">4.401E-2</mol_weight>
+    <?source_lifetime Wypych, 2017, Atlas of Material Damage?>
+    <lifetime type="real">4730400000</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char"> N2O </init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">simnoy</c_solve>
+  </chemtracer>
+  <chemtracer id="TRCH4" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">1.604E-2</mol_weight>
+    <?source_lifetime Hayman et al., ACP, 2017 ?>
+    <lifetime type="real">286977600</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0    </init_mode>
+    <init_name type="char"> CH4 </init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO;2.*TRH2O</products>
+  </chemtracer>
+<chemtracer id="TRCO" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">2.801E-2</mol_weight>
+    <?source_lifetime Ehhalt et al., IPCC, 2001, Chapter 4 ?>
+    <lifetime type="real">5184000</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char"> CO </init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO2</products>
+  </chemtracer>
+   <chemtracer id="TRCO2" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">4.401E-2</mol_weight>
+    <?source_lifetime Houghton et al., IPCC, Cambridge University Press, 2001 ?>
+    <lifetime type="real">3153600000</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+    <products type="char">TRCO</products>
+  </chemtracer>
+ <chemtracer id="TRH2O" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">1.802E-2</mol_weight>
+    <?source_lifetime Just a placeholder (not used in the code) ?>
+    <lifetime type="real">2592000000</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char"> H2O </init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+  </chemtracer>
+  <chemtracer id="TRH2SO4" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">9.80E-2</mol_weight>
+    <?source_lifetime Fiedler et al., ACP, 2005?>
+    <lifetime type="real">1800</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+  </chemtracer>
+   <chemtracer id="TRHNO3" full="FALSE" chemtr="TRUE">
+    <tag001 type="char">chemtr</tag001>
+    <mol_weight type="real">6.30E-2</mol_weight>
+    <?source_lifetime Day et al., ACP, 2008?>
+    <lifetime type="real">21600</lifetime>
+    <transport type="char"> hadv52aero </transport>
+    <init_mode type="int"> 0 </init_mode>
+    <init_name type="char"> HNO3 </init_name>
+    <unit type="char">mol mol-1</unit>
+    <c_solve type="char">lt</c_solve>
+  </chemtracer>
+
+
+</tracers>

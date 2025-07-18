@@ -1,0 +1,8 @@
+--- # ICON probtest tolerance data
+# This file can be parsed using yaml
+# Data is stored in <icon_data_rootFolder>/buildbot_data/ref/<experiment_hash>
+icon_data_rootFolder: /hkfs/home/dataset/datasets/icon/pool/data/ICON
+builder: horeka_cpu_nvhpc
+# The list below maps each experiment to its current experiment_hash
+"dwd_run_ICON_09_R2B4N5_EPS": e6382d55def67ca08ffe69fb02e922529c3835d5
+"mch_ch_r04b09_dace_synsat": 356b31b51f19eee7473d884eee9acaa102d6c351

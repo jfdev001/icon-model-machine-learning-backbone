@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+#
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+
+set -evx
+plot_dir_base='/pool/data/ICON/buildbot_data/mkexp/log_plotting'
+sample_dir_base="${plot_dir_base}/icon_sample_logs"
+reference_dir_base="${plot_dir_base}/references"
+scratchdir="/scratch/${USER:0:1}/${USER}/log_plotting_tests"
+
+mkdir -p mkdir ${scratchdir}
+rm -r ${scratchdir}
+mkdir ${scratchdir}
+
+export PYTHONPATH=$(realpath ../../build/lib/python3.10/site-packages )
+
+prio_plots="timer_report.total.total timer_report.total.total-coupling timer_report.total.coupling timer_report.total.model_init timer_report.total.exch_data timer_report.total.total-dif_horiz timer_report.total.total-integrate_nh timer_report.total.total-normal_veloc"
+plot_format="png"
+custom_analyzer="AnalyzeTimer AnalyzeWind"
+custom_plotter="PlotTimer PlotWindSpeeds"
+
+exp_ids_mkexp="ngc4005 ngc4006"
+for exp_id in ${exp_ids_mkexp} ; do
+    sample_dir=${sample_dir_base}/${exp_id}
+    outdir=${scratchdir}/${exp_id}
+    reference_dir=${reference_dir_base}/${exp_id}
+    for year in $(grep end $sample_dir/${exp_id}.log | awk -F '[T ]' '{print $3}' | sort | uniq ) ; do
+    time python ../../run/standard_experiments/DEFAULT.mon_log.tmpl --script_dir ${sample_dir} \
+           --exp_id ${exp_id} \
+           --model_dir $(realpath ./../../) \
+           --mon_dir ${outdir} \
+           --log_dir ${sample_dir} \
+           ${year} \
+           --prioritized_plots ${prio_plots} \
+           --plot_format ${plot_format} \
+           --custom_analyzer ${custom_analyzer} \
+           --custom_plotter ${custom_plotter} \
+
+    done
+    diff -r ${outdir}/timer_data/ ${reference_dir}/timer_data
+done
+
+exp_ids_make_runscripts="NextGEMS_R2B4 aes_bubble"
+
+for exp_id in ${exp_ids_make_runscripts} ; do
+    ./plot_make_runscripts_log ${sample_dir_base}/${exp_id} ${exp_id} ${scratchdir}/${exp_id}
+    ./imagediff ${reference_dir_base}/${exp_id} ${scratchdir}/${exp_id}
+done

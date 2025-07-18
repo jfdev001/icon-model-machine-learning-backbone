@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -euo pipefail
+
+MY_DIR=$(cd "$(dirname "$0")"; pwd)
+ICON_DIR=$(cd "${MY_DIR}/../.."; pwd)
+
+# Go one step up - otherwise the there might be recursive calls in "make install"
+cd ${ICON_DIR}
+
+
+# =============================================================================
+# Build the four required binaries
+
+cat > ${ICON_DIR}/make.levante_gpu_validation << EOF
+GNUMAKEFLAGS = --no-print-directory --output-sync=line
+SHELL = /bin/bash
+
+CPU_DIR = ${ICON_DIR}/build/cpurun
+GPU_DIR = ${ICON_DIR}/build/gpurun
+CPU_LVEC_DIR = ${ICON_DIR}/build/cpurun_lvec
+GPU_LVEC_DIR = ${ICON_DIR}/build/gpurun_lvec
+
+EXTRA_ARGS = --disable-atmo --disable-jsbach --disable-quincy
+.PHONY: all cpurun gpurun cpurun_lvec gpurun_lvec
+
+all: cpurun gpurun cpurun_lvec gpurun_lvec
+
+cpurun:
+	mkdir -p \$(CPU_DIR);
+	cd \$(CPU_DIR) && ${ICON_DIR}/config/dkrz/levante.cpu.nvhpc-24.7 --prefix=${ICON_DIR}/cpurun \$(EXTRA_ARGS) 'FCFLAGS=-I/sw/spack-levante/netcdf-fortran-4.6.1-y65bmi/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays -Minfo=inline -Mnofma -D__BITID__';
+	set -o pipefail && cd \$(CPU_DIR) && \$(MAKE) |& tee make.log;
+
+cpurun_lvec:
+	mkdir -p \$(CPU_LVEC_DIR);
+	cd \$(CPU_LVEC_DIR) && ${ICON_DIR}/config/dkrz/levante.cpu.nvhpc-24.7 --prefix=${ICON_DIR}/cpurun_lvec \$(EXTRA_ARGS) 'FCFLAGS=-I/sw/spack-levante/netcdf-fortran-4.6.1-y65bmi/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays -Minfo=inline -Mnofma -D__BITID__ -D__LVECTOR__ -D__LVEC_BITID__';
+	set -o pipefail && cd \$(CPU_LVEC_DIR) && \$(MAKE) |& tee make.log;
+
+gpurun:
+	mkdir -p \$(GPU_DIR);
+	cd \$(GPU_DIR) && ${ICON_DIR}/config/dkrz/levante.gpu.nvhpc-24.7 --prefix=${ICON_DIR}/gpurun \$(EXTRA_ARGS) 'FCFLAGS=-I/sw/spack-levante/netcdf-fortran-4.6.1-y65bmi/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays -Minfo=accel,inline -acc=gpu,verystrict -Mnofma -gpu=cc80,cuda12.5,math_uniform -D__BITID__';
+	set -o pipefail && cd \$(GPU_DIR) && \$(MAKE) |& tee make.log;
+
+gpurun_lvec:
+	mkdir -p \$(GPU_LVEC_DIR);
+	cd \$(GPU_LVEC_DIR) && ${ICON_DIR}/config/dkrz/levante.gpu.nvhpc-24.7 --prefix=${ICON_DIR}/gpurun_lvec \$(EXTRA_ARGS) 'FCFLAGS=-I/sw/spack-levante/netcdf-fortran-4.6.1-y65bmi/include -g -O2 -Mrecursive -Mallocatable=03 -Mstack_arrays -Minfo=accel,inline -acc=gpu,verystrict -Mnofma -gpu=cc80,cuda12.5,math_uniform -D__BITID__ -D__LVECTOR__ -D__LVEC_BITID__';
+	set -o pipefail && cd \$(GPU_LVEC_DIR) && \$(MAKE) |& tee make.log;
+EOF
+
+# Processes for each make call in the recipes of make.levante_gpu_validation
+export MAKEFLAGS='--jobs=4 V=1'
+
+make --jobs=16 V=1 -f make.levante_gpu_validation
+
+
+# =============================================================================
+# Copy set-up.info file to the base run directory in ${ICON_DIR} where runexp expects it
+cp -v ${ICON_DIR}/build/gpurun/run/set-up.info ${ICON_DIR}/run/
+
+
+# =============================================================================
+# Check successfull creation and installation
+
+set +e
+file "${ICON_DIR}/build/cpurun/bin/icon" "${ICON_DIR}/build/gpurun/bin/icon" "${ICON_DIR}/build/cpurun_lvec/bin/icon" "${ICON_DIR}/build/gpurun_lvec/bin/icon"

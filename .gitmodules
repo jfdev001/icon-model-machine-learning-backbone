@@ -1,0 +1,50 @@
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# SPDX-License-Identifier: CC0-1.0
+[submodule "externals/mtime"]
+	path = externals/mtime
+	url = ../../icon-libraries/libmtime.git
+[submodule "externals/jsbach"]
+	path = externals/jsbach
+	url = ../../jsbach/jsbach.git
+[submodule "externals/yac"]
+	path = externals/yac
+	url = ../../dkrz-sw/YAC.git
+[submodule "externals/tixi"]
+	path = externals/tixi
+	url = ../../icon-libraries/libtixi.git
+[submodule "externals/yaxt"]
+	path = externals/yaxt
+	url = ../../dkrz-sw/yaxt.git
+[submodule "externals/rte-rrtmgp"]
+	path = externals/rte-rrtmgp
+	url = https://github.com/earth-system-radiation/rte-rrtmgp.git
+[submodule "externals/cdi"]
+	path = externals/cdi
+	url = ../../mpim-sw/libcdi.git
+[submodule "externals/sct"]
+	path = externals/sct
+	url = ../../dkrz-sw/sct.git
+[submodule "externals/ecrad"]
+	path = externals/ecrad
+	url = ../../dwd-sw/libecrad.git
+[submodule "externals/probtest"]
+	path = externals/probtest
+	url = https://github.com/MeteoSwiss/probtest.git
+[submodule "utils/mkexp"]
+	path = utils/mkexp
+	url = ../../esmenv/mkexp.git
+[submodule "externals/ppm"]
+	path = externals/ppm
+	url = ../../dkrz-sw/ppm.git
+[submodule "externals/comin"]
+	path = externals/comin
+	url = ../../icon-comin/comin.git
+[submodule "externals/hd"]
+	path = externals/hd
+	url = https://gitlab.dkrz.de/hd-model/hd-couple.git
+[submodule "externals/fortran-support"]
+	path = externals/fortran-support
+	url = ../../icon-libraries/libfortran-support.git
+[submodule "externals/iconmath"]
+	path = externals/iconmath
+	url = ../../icon-libraries/libiconmath.git

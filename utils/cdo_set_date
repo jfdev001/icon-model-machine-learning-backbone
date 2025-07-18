@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# Set correct date in climate forcing data and add February 29 if needed,
+# by duplication of February 28's data.
+# This is useful with cyclic climate forcing data
+#
+# $Id: cdo_set_date $
+#
+
+PROGRAM=$(basename $0)
+
+if [ -z "$4" ]
+then
+    exec >&2
+    echo "Oops: invalid number of parameters"
+    echo "Usage: $PROGRAM run_year clim_year input_file output_file"
+    exit 1
+fi
+
+if [ $1 -eq $2 ]; then
+    echo "$PROGRAM: Linking climate forcing file $3 to $4"
+    ln -s $3 $4
+else
+    echo "$PROGRAM: Using climate year $2 for simulation year $1 with forcing data from $3"
+    cdo -s setyear,$1 $3 $4
+
+    if [[ $(days_in_year -- $1) == 366 && $(days_in_year -- $2) == 365 ]]
+    then
+        echo "$PROGRAM: $1 is a leap year: adding Feb.29 to ${3##*/} by duplicating Feb.28."
+        cdo -s seldate,$2-02-28 $3 tmp.feb28.$$
+        cdo -s setdate,$1-02-29 tmp.feb28.$$ tmp.feb29.$$
+        cdo -s mergetime tmp.feb29.$$ $4 tmp.$4.$$
+        mv tmp.$4.$$ $4
+        rm -f tmp.feb28.$$ tmp.feb29.$$
+    fi
+fi

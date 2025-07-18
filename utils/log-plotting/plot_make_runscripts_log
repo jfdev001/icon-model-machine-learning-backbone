@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# ICON
+#
+# ---------------------------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+#
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ---------------------------------------------------------------
+
+set -evxu
+
+input_dir=$1
+exp_id=$2
+output_dir=$3
+
+LPD=$(dirname $0)
+
+
+prio_plots=${prio_plots:-"timer_report.total.total timer_report.total.total-coupling timer_report.total.coupling timer_report.total.model_init timer_report.total.exch_data timer_report.total.total-dif_horiz.png timer_report.total.total-integrate_nh timer_report.total.total-normal_veloc"}
+plot_format="png"
+custom_scripts="AnalyzeTimer AnalyzeWind"
+custom_plotter="PlotTimer PlotWindSpeeds"
+
+mkdir -p  ${output_dir}/timer_data ${output_dir}/log_plotting ${output_dir}/log_plotting/individual
+
+for x in ${input_dir}/LOG.exp.${exp_id}.run.*.o
+do
+    >&2 echo processing $x
+    job_id=$(echo $x|sed -E 's/.*run.[0]*([0-9]+).*/\1/;s/.log//')
+    ${LPD}/run_log_parser.py --job_id  $job_id  --exp_id ${exp_id} -o ${output_dir}/timer_data $x --custom_modules ${custom_scripts}
+done
+
+echo plotting total
+${LPD}/run_log_plotter.py ${output_dir}/timer_data -o ${output_dir}/log_plotting --plot_format ${plot_format} --custom_modules ${custom_plotter}
+
+echo plotting individual
+${LPD}/PlotTimer.py  ${output_dir}/timer_data -o ${output_dir}/log_plotting/individual/ --individual --plot_format ${plot_format}
+${LPD}/PlotWindSpeeds.py ${output_dir}/timer_data -o  ${output_dir}/log_plotting/individual --plot_format ${plot_format}
+
+${LPD}/build_index_html.py --exp_id ${exp_id} ${output_dir}/log_plotting --prio_plots ${prio_plots} --plot_format ${plot_format}
+${LPD}/build_index_html.py --exp_id ${exp_id} ${output_dir}/log_plotting/individual --prio_plots ${prio_plots} --plot_format ${plot_format}
+
+echo ${output_dir}/log_plotting/index.html
+echo ${output_dir}/log_plotting/individual/index.html

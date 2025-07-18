@@ -1,0 +1,53 @@
+#!/bin/ksh
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+# Marco Giorgetta, MPI-M
+# Create a new reference experiment for update checking.
+#
+exp_original=atm_qubicc_test
+modification=update
+#
+#--------------------------------------------------------------------------------
+#
+# 1. Define the experiment and the files to be checked
+
+# EXPERIMENT contains the name of the modified experiment
+#
+export EXPERIMENT=${exp_original}_${modification}
+
+# construct the experiment
+#
+rm -f exp.$EXPERIMENT
+ln -s exp.$exp_original exp.$EXPERIMENT
+
+#--------------------------------------------------------------------------------
+#
+# 2. Define the checksuite mode
+
+export MD='b' # base check only
+
+#--------------------------------------------------------------------------------
+#
+# 3. Launch the checksuite
+
+rundir=`pwd`
+cd checksuite.icon-dev
+
+./icon-dev.checksuite
+STATUS=$?
+
+check_final_status $STATUS "$EXPERIMENT"
+
+#--------------------------------------------------------------------------------
+exit

@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+# abort on error
+set -euxo pipefail
+
+cd $(dirname "${BASH_SOURCE[0]}")
+
+listname='update-ref'
+./rmlist "${listname}"
+./create_all_builders "${listname}"
+
+# To save the resources, we deactivate all builders that are triggered with
+# runBB(update-ref) but do not generate the reference data. Otherwise, they
+# produce the ICON executable for nothing:
+inactive_builders=" \
+balfrin_cpu_nvidia \
+balfrin_cpu_nvidia_mixed \
+balfrin_gpu_nvidia \
+balfrin_gpu_nvidia_mixed \
+breeze_gcc \
+breeze_gcc_openmp \
+breeze_intel \
+breeze_intel_openmp \
+breeze_nag \
+dwd_nec_coupling \
+dwd_nec_hybrid \
+dwd_nec_oper \
+horeka_cpu_nvhpc \
+horeka_gcc \
+horeka_gpu_nvhpc \
+horeka_intel \
+levante_aurora \
+levante_intel_pio \
+levante_nag_serial \
+lumi_cpu \
+lumi_gpu \
+mpimac_gcc \
+"
+./set_builder_flags Inactive --builders="${inactive_builders}" --list="${listname}"
+
+# Ensure the builders that run the update tests and require the reference data
+# are activated:
+active_builders=" \
+levante_cpu_nvhpc \
+levante_gcc \
+levante_gcc_hybrid \
+levante_gpu_nvhpc \
+levante_intel \
+levante_intel_hybrid \
+levante_intel_hybrid_mixed \
+levante_nag \
+"
+./set_builder_flags Active --builders="${active_builders}" --list="${listname}"
+
+# The runflags below are supposed to match the respective flags from the merge2rc list.
+
+add_experiments ()
+{
+  # Auxiliary function to avoid code duplication (all shell variables mentioned
+  # below are expected to be set before calling the function):
+  #   1. Adds a base experiment ${exp_base} for builders ${builders} with
+  #      runflags ${runflags} (relies on the fact that calling the ./addexp
+  #      script with an empty value of the '--runflags' argument is identical to
+  #      calling the script without the '--runflags' argument at all).
+  #   2. Adds the respective experiment ${exp_refgen} for builders ${builders}
+  #      (without the runflags) that transfers the output of the base experiment
+  #      to the storage.
+  #   3. Adds a dependency between ${exp_base} and ${exp_refgen} so that the
+  #      latter runs only once the former is finished.
+  ./addexp "${exp_base}" --builders="${builders}" --list="${listname}" --runflags="${runflags-}"
+  ./addexp "${exp_refgen}" --builders="${builders}" --list="${listname}"
+  ./adddep --from-experiment="${exp_refgen}" --to-experiment="${exp_base}" --builders="${builders}" --list="${listname}"
+}
+
+exp_base='exp.aes_bubble_test_update_base'
+exp_refgen='checksuite.icon-dev/pp.refgen_aes_bubble_test_update-ref'
+builders='levante_gcc levante_gcc_hybrid levante_intel levante_intel_hybrid levante_intel_hybrid_mixed levante_nag'
+runflags='ntasks=16 queue=shared'
+add_experiments
+builders='levante_cpu_nvhpc'
+runflags='queue=shared ntasks=16 memory=32G'
+add_experiments
+
+exp_base='checksuite.icon-dev/check.atm_qubicc_update-ref'
+exp_refgen='checksuite.icon-dev/pp.refgen_atm_qubicc_test_update-ref'
+builders='levante_gcc levante_gcc_hybrid levante_intel levante_intel_hybrid levante_intel_hybrid_mixed levante_nag'
+runflags='ntasks=16 queue=compute memory=32G'
+add_experiments
+builders='levante_cpu_nvhpc'
+runflags='queue=shared ntasks=16 memory=32G'
+add_experiments
+builders='levante_gpu_nvhpc'
+runflags='mpi_procs_pernode=3'
+add_experiments
+
+exp_base='exp.atm_cph_nest_R2B4_test_update_base'
+exp_refgen='checksuite.icon-dev/pp.refgen_atm_cph_nest_R2B4_test_update-ref'
+builders='levante_gcc levante_gcc_hybrid levante_intel levante_intel_hybrid levante_intel_hybrid_mixed levante_nag'
+runflags='ntasks=16 queue=compute memory=32G'
+add_experiments
+
+exp_base='exp.aes_amip_test_update_base'
+exp_refgen='checksuite.icon-dev/pp.refgen_aes_amip_test_update-ref'
+builders='levante_gcc levante_gcc_hybrid levante_intel levante_intel_hybrid levante_intel_hybrid_mixed levante_nag'
+runflags='ntasks=16 queue=compute memory=32G'
+add_experiments
+
+exp_base='exp.waves_R2B4_global_no_forcing_base'
+exp_refgen='checksuite.icon-dev/pp.refgen_waves_R2B4_global_no_forcing_update-ref'
+builders='levante_intel_hybrid'
+add_experiments
+
+exp_base='exp.atm_tracer_df4_base'
+exp_refgen='checksuite.icon-dev/pp.refgen_atm_tracer_df4_update-ref'
+builders='levante_nag'
+add_experiments
+
+./lslist $listname

@@ -1,0 +1,55 @@
+/* _static/colors.css */
+/*
+ICON
+
+---------------------------------------------------------------
+Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+Contact information: icon-model.org
+
+See AUTHORS.TXT for a list of authors
+See LICENSES/ for license information
+SPDX-License-Identifier: BSD-3-Clause
+---------------------------------------------------------------
+*/
+:root {
+  --teal1:   #012A2E;/*dark teal*/
+  --teal2:   #025E69;/*semi dark teal*/
+  --teal3:   #039494;/*semi bright teal*/
+  --teal4:   #9DF5F5;/*bright teal*/
+  --orangeh: #E07426;/*highlight orange*/
+  --oranged: #cc6633;/*darker orange, for mouseover*/
+}
+
+div.admonition.admonition-icontheme {
+  border-color: var(--teal1);
+}
+div.admonition.admonition-icontheme > .admonition-title {
+  background-color: var(--teal2);
+  color: white;
+}
+div.admonition.admonition-icontheme > .admonition-title:after {
+  color: var(--teal3);
+  content: "\f0ac";
+}
+
+html[data-theme="light"] {
+    --pst-color-primary: var(--teal2);
+    --pst-color-secondary: var(--orangeh);
+    --pst-violet-600: var(--oranged); /*Overwrite mouseover color for "Back to top"*/
+    --pst-color-table-row-hover-bg: var(--oranged);
+    --pst-color-link-hover: var(--orangeh);
+    --pst-color-accent: var(--orangeh);
+    --pst-color-inline-code: var(--teal1);
+    --pst-color-target: var(--orangeh);
+}
+
+html[data-theme="dark"] {
+    --pst-color-primary: var(--teal4);
+    --pst-color-secondary: var(--orangeh);
+    --pst-violet-600: var(--oranged); /*Overwrite mouseover color for "Back to top"*/
+    --pst-color-table-row-hover-bg: var(--oranged);
+    --pst-color-link-hover: var(--orangeh);
+    --pst-color-accent: var(--orangeh);
+    --pst-color-inline-code: var(--orangeh);
+    --pst-color-target: var(--teal3);
+}

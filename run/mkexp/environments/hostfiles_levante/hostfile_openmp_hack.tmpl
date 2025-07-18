@@ -1,0 +1,112 @@
+#%#- ICON
+#%#-
+#%#- ------------------------------------------
+#%#- Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+#%#- Contact information: icon-model.org
+#%#- See AUTHORS.TXT for a list of authors
+#%#- See LICENSES/ for license information
+#%#- SPDX-License-Identifier: BSD-3-Clause
+#%#- ------------------------------------------
+#%#-
+#-----------------------------------------------------------------------------
+# Hostfile Generation for openmp_hack   #TODO JD: WHAT IS THIS?
+#
+# $Id: run/mkexp/environments/hostfiles_levante/hostfile_openmp_hack.tmpl 1 2025-01-09 k202123 $
+#
+export SLURM_HOSTFILE=$EXPDIR/hst_file
+
+hostset=$(nodeset -e $SLURM_NODELIST)
+hostarr=($hostset)
+
+touch $SLURM_HOSTFILE
+rm $SLURM_HOSTFILE
+
+#FIXME
+numblocks=2
+
+#atmo comp
+for block in $(seq 1 $numblocks); do
+   for i in $(seq 0 $(($no_of_nodes-$no_io_nodes-1))); do
+      hst=${hostarr[$i]}
+      end=$(($mpi_procs_pernode/2/$numblocks))
+      for i in $(seq 1 $end); do
+          echo $hst >> $SLURM_HOSTFILE
+      done
+   done
+done
+
+#atmo out
+n_atmo_out_left=$mpi_atm_io_procs
+for i in $(seq $(($no_of_nodes-$no_io_nodes)) $(($no_of_nodes-1))); do
+   hst=${hostarr[$i]}
+   for i in $(seq 1 $(($mpi_procs_pernode))); do
+       if [ $n_atmo_out_left -gt 0 ]; then
+          echo $hst >> $SLURM_HOSTFILE
+          n_atmo_out_left=$(($n_atmo_out_left -1 ))
+       fi
+   done
+done
+
+#oce comp
+for block in $(seq 1 $numblocks); do
+   for i in $(seq 0 $(($no_of_nodes-$no_io_nodes-1))); do
+      hst=${hostarr[$i]}
+      end=$(($mpi_procs_pernode/2/$numblocks))
+      for i in $(seq 1 $end); do
+          echo $hst >> $SLURM_HOSTFILE
+      done
+   done
+done
+
+#oce out and hiopy
+n_atmo_out_left=$mpi_atm_io_procs
+for i in $(seq $(($no_of_nodes-$no_io_nodes)) $(($no_of_nodes-1))); do
+   hst=${hostarr[$i]}
+   for i in $(seq 1 $(($mpi_procs_pernode))); do
+       if [ $n_atmo_out_left -gt 0 ]; then
+          n_atmo_out_left=$(($n_atmo_out_left -1 ))
+          continue
+       fi
+       echo $hst >> $SLURM_HOSTFILE
+   done
+done
+
+
+cat << EOF > set_mask
+#!/bin/bash
+
+rank=\$SLURM_PROCID
+total_procs=\$SLURM_NTASKS
+
+mask=(0x7f 0x7f00 0x7f0000 0x7f000000 0x7f00000000 0x7f0000000000 0x7f000000000000 0x7f00000000000000 0x7f0000000000000000 0x7f000000000000000000 0x7f00000000000000000000 0x7f0000000000000000000000 0x7f000000000000000000000000 0x7f00000000000000000000000000 0x7f0000000000000000000000000000 0x7f000000000000000000000000000000 0x80 0x8000 0x800000 0x80000000 0x8000000000 0x800000000000 0x80000000000000 0x8000000000000000 0x800000000000000000 0x80000000000000000000 0x8000000000000000000000 0x800000000000000000000000 0x80000000000000000000000000 0x8000000000000000000000000000 0x800000000000000000000000000000 0x80000000000000000000000000000000)
+#more in the brownian spirit of things.
+mask=(0x7f 0x7f0000 0x7f00000000 0x7f000000000000 0x7f0000000000000000 0x7f00000000000000000000 0x7f000000000000000000000000 0x7f0000000000000000000000000000 0x7f00 0x7f000000 0x7f0000000000 0x7f00000000000000 0x7f000000000000000000 0x7f0000000000000000000000 0x7f00000000000000000000000000 0x7f000000000000000000000000000000 0x80 0x800000 0x8000000000 0x80000000000000 0x800000000000000000 0x8000000000000000000000 0x80000000000000000000000000 0x800000000000000000000000000000 0x8000 0x80000000 0x800000000000 0x8000000000000000 0x80000000000000000000 0x800000000000000000000000 0x8000000000000000000000000000 0x80000000000000000000000000000000)
+
+mask_out=(0xf 0xf0000 0xf00000000 0xf000000000000 0xf0000000000000000 0xf00000000000000000000 0xf000000000000000000000000 0xf0000000000000000000000000000 0xf0 0xf00000 0xf000000000 0xf0000000000000 0xf00000000000000000 0xf000000000000000000000 0xf0000000000000000000000000 0xf00000000000000000000000000000 0xf00 0xf000000 0xf0000000000 0xf00000000000000 0xf000000000000000000 0xf0000000000000000000000 0xf00000000000000000000000000 0xf000000000000000000000000000000 0xf000 0xf0000000 0xf00000000000 0xf000000000000000 0xf0000000000000000000 0xf00000000000000000000000 0xf000000000000000000000000000 0xf0000000000000000000000000000000)
+
+if [ \$rank -lt $mpi_atm_procs ]; then
+        export OMP_NUM_THREADS=7
+        echo atmo \${mask[\$SLURM_LOCALID]}
+        hwloc-bind \${mask[\$SLURM_LOCALID]} \$*
+#        exec \$*
+elif [ \$rank -lt $(($mpi_atm_procs +  $mpi_atm_io_procs)) ]; then
+        export OMP_NUM_THREADS=4
+        echo atmoo \${mask_out[\$SLURM_LOCALID]}
+        hwloc-bind \${mask_out[\$SLURM_LOCALID]} \$*
+elif [ \$rank -lt $(($mpi_atm_procs + $mpi_atm_io_procs + $mpi_oce_procs)) ]; then
+        export OMP_NUM_THREADS=1
+        echo oce \${mask[\$SLURM_LOCALID]}
+        hwloc-bind \${mask[\$SLURM_LOCALID]} \$*
+#        exec \$*
+elif [ \$rank -lt $(($mpi_atm_procs + $mpi_atm_io_procs + $mpi_oce_procs + $mpi_oce_io_procs)) ]; then
+        export OMP_NUM_THREADS=4
+        echo oceo \${mask_out[\$SLURM_LOCALID]}
+        hwloc-bind \${mask_out[\$SLURM_LOCALID]} \$*
+else
+        export OMP_NUM_THREADS=4
+        echo hiopy
+        hwloc-bind \${mask_out[\$SLURM_LOCALID]} ${EXPDIR}/mpmd_jobs/run_\$(( \$SLURM_PROCID -$mpi_atm_procs - $mpi_atm_io_procs - $mpi_oce_procs - $mpi_oce_io_procs))
+fi
+EOF
+chmod +x ./set_mask
+#-----------------------------------------------------------------------------

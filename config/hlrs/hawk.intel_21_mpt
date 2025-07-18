@@ -1,0 +1,257 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -eu
+unset CDPATH
+ulimit -c 0
+
+# Configure ICON directories
+script_dir=$(cd "$(dirname "$0")"; pwd)
+icon_dir=$(cd "${script_dir}/../.."; pwd)
+
+# Enviroment settings:
+export MODULEPATH=/opt/hlrs/non-spack/release/23.1.0/modulefiles/gcc/8.5.0:$MODULEPATH
+
+MODULES=(
+    intel/2021.9.0
+    openmpi/4.1.6
+    parallel-netcdf/1.12.3
+    python/3.10
+)
+
+module load "${MODULES[@]}"
+
+# -- On the HLRS machine the FYAML library is not available by default and users have to install
+#    it personally in their $HOME. Exception IMKTRO users, due to they can use the FYAML tool
+#    preinstalled for IMKTRO group.
+
+# Function to check if tool is set and the library exists:
+check_tool() {
+    local root_dir=$1
+    local libs=$2
+    local name=$3
+
+    # -- Check if root_dir exist:
+    if [[ -z "$root_dir" || ! -d "$root_dir" ]]; then
+        echo "Error: ${name}_ROOT is not set or points to an invalid directory: $root_dir"
+        exit 1
+    fi
+
+    # -- Check if either the lib or lib64 directory exists
+    if [[ -d "$root_dir/lib" ]]; then
+        lib_dir="$root_dir/lib"
+    elif [[ -d "$root_dir/lib64" ]]; then
+        lib_dir="$root_dir/lib64"
+    else
+        echo "Error: ${name}_ROOT directory '$root_dir/lib' or '$root_dir/lib64' does not exist."
+        exit 1
+    fi
+
+    # -- Check if the library exists in the lib folder:
+    for lib in $libs; do
+      lib_name=$(echo "$lib" | sed 's/^-l//')  # Strip '-l' to get the library name (e.g., "fyaml" from "-lfyaml"
+      # Check if the library file exists in the lib or lib64 folder
+      if [[ ! -f "$lib_dir/lib${lib_name}.so" && ! -f "$lib_dir/lib${lib_name}.a" ]]; then
+        echo "Error: ${name}_LIBS (${lib}) not found in '$lib_dir'."
+        exit 1
+      fi
+    done
+
+    echo "${name}_tool is properly set and the library exists."
+}
+
+# We do not use Spack to speed up the configuration. Uncomment the following
+# lines if you need to re-explore the environment using the commented spack
+# commands that you can find below.
+#
+# compiler='intel@2021.9.0'
+# mpi='openmpi@4.1.6'
+
+# MPI_ROOT=$(spack find --format='{prefix}' "${mpi}%${compiler}")
+MPI_ROOT='/opt/hlrs/non-spack/release/23.1.0/mpi/openmpi/4.1.6-intel-2021.9.0'
+
+# ZLIB_ROOT=$(spack find --format='{prefix}' "zlib%${compiler}")
+ZLIB_ROOT='/usr'
+ZLIB_LIBS='-lz'
+
+# HDF5_ROOT=$(spack find --format='{prefix}' "hdf5%${compiler} +fortran+hl ^${mpi}%${compiler}")
+HDF5_ROOT='/opt/hlrs/non-spack/rev-009_2022-09-01/io/hdf5/1.12.1-openmpi-4.1.6-intel-2021.9.0'
+HDF5_LIBS='-lhdf5_hl_fortran -lhdf5_fortran -lhdf5'
+
+# NETCDF_ROOT=$(spack find --format='{prefix}' "netcdf-c%${compiler} ^${mpi}%${compiler}")
+NETCDF_ROOT='/opt/hlrs/non-spack/rev-009_2022-09-01/io/netcdf-c/4.8.1-openmpi-4.1.6-intel-2021.9.0'
+NETCDF_LIBS='-lnetcdf'
+
+# NETCDFF_ROOT=$(spack find --format='{prefix}' "netcdf-fortran%${compiler} ^${mpi}%${compiler}")
+NETCDFF_ROOT='/opt/hlrs/non-spack/rev-009_2022-09-01/io/netcdf-fortran/4.5.4-openmpi-4.1.6-intel-2021.9.0'
+NETCDFF_LIBS='-lnetcdff'
+
+lapack_provider=mkl
+case $lapack_provider in
+  netlib)
+    # needed for bit-identical results for atmosphere
+    #
+    # NETLIB_LAPACK_ROOT=$(spack find --format='{prefix}' "netlib-lapack%${compiler}")
+    NETLIB_LAPACK_ROOT='/sw/spack-levante/netlib-lapack-3.9.1-rwhcz7'
+    BLAS_LAPACK_BUILD_ENV="export LD_LIBRARY_PATH=\"${NETLIB_LAPACK_ROOT}/lib64:\${LD_LIBRARY_PATH}\";"
+    BLAS_LAPACK_LDFLAGS="-L${NETLIB_LAPACK_ROOT}/lib64"
+    BLAS_LAPACK_LIBS='-llapack -lblas'
+    ;;
+  mkl)
+    # does NOT provide bit-identical results when changing nproma/mpi for atmo, BUT for ocean
+    #
+    # MKL_ROOT=$(spack find --format='{prefix}/mkl/{version}' "intel-oneapi-mkl@2022.0.1")
+    MKL_ROOT='/opt/hlrs/non-spack/release/23.1.0/compiler/intel/2023.1.0/mkl/2023.1.0'
+    BLAS_LAPACK_BUILD_ENV="export LD_LIBRARY_PATH=\"${MKL_ROOT}/lib/intel64:\${LD_LIBRARY_PATH}\";"
+    BLAS_LAPACK_LDFLAGS=" -L${MKL_ROOT}/lib/intel64"
+    # Alternative configuration, which prevents us from running 'make' in the
+    # subfolders of the bundled libraries (due to the peculiarities of the MKL
+    # installation on the machine) but is closer to how the compiler developers
+    # see it should be done:
+    # BLAS_LAPACK_BUILD_ENV="export MKLROOT=\"${MKL_ROOT}\";"
+    # BLAS_LAPACK_LDFLAGS="-qmkl=sequential -Wl,-rpath -Wl,${MKL_ROOT}/lib/intel64"
+    BLAS_LAPACK_LIBS='-lmkl_blas95_ilp64 -lmkl_lapack95_ilp64'
+    ;;
+  *)
+    echo "ERROR: unknown LAPACK provider '$lapack_provider'" >&2
+    exit 1
+    ;;
+esac
+
+# ECCODES_ROOT=$(spack find --format='{prefix}' "eccodes%${compiler} +fortran")
+ECCODES_ROOT='/opt/hlrs/non-spack/rev-009_2022-09-01/tools/eccodes/2.23.0-openmpi-4.1.6-intel-2021.9.0'
+ECCODES_LIBS='-leccodes_f90 -leccodes'
+
+# AEC_LIBS:
+AEC_ROOT='/opt/hlrs/non-spack/rev-009_2022-09-01/io/libaec/1.0.6-intel-2023.1.0-izzsninf'
+AEC_LIBS="-laec"
+
+# XML2_ROOT=$(spack find --format='{prefix}' "libxml2%${compiler}")
+XML2_ROOT='/usr'
+XML2_LIBS='-lxml2'
+
+# FYAML_ROOT=$(spack find --format='{prefix}' "libfyaml%${compiler}")
+# -- You have to install FYML software in you home. HLRS doesn´t have it a standard module
+FYAML_ROOT='/zhome/academic/HLRS/imk/imkevch/libfyaml/build'
+FYAML_LIBS='-lfyaml'
+
+# Call the checks (HDF5, NETCDF, NETCDFF, ECCODES, AEC, XML2, FYAML):
+check_tool "$HDF5_ROOT" "$HDF5_LIBS" "HDF5"
+check_tool "$NETCDF_ROOT" "$NETCDF_LIBS" "NETCDF"
+check_tool "$NETCDFF_ROOT" "$NETCDFF_LIBS" "NETCDFF"
+check_tool "$ECCODES_ROOT" "$ECCODES_LIBS" "ECCODES"
+check_tool "$AEC_ROOT" "$AEC_LIBS" "AEC"
+check_tool "$FYAML_ROOT" "$FYAML_LIBS" "FYAML"
+
+################################################################################
+
+BUILD_ENV="export LD_LIBRARY_PATH=\"${FYAML_ROOT}/lib:${HDF5_ROOT}/lib:${NETCDF_ROOT}/lib:${NETCDFF_ROOT}/lib:${ECCODES_ROOT}/lib64:\${LD_LIBRARY_PATH}\"; export PATH=\"${HDF5_ROOT}/bin:\${PATH}\"; ${BLAS_LAPACK_BUILD_ENV}"
+
+ARCH="-m64 -march=core-avx2 -mtune=core-avx2"
+
+CC="${MPI_ROOT}/bin/mpicc"
+CFLAGS="-g -gdwarf-4 -qno-opt-dynamic-align ${ARCH} -qmkl"
+CPPFLAGS="-I${HDF5_ROOT}/include -I${NETCDF_ROOT}/include -I${ECCODES_ROOT}/include -I${XML2_ROOT}/include/libxml2 -I${MKL_ROOT}/include -I${FYAML_ROOT}/include"
+
+FC="${MPI_ROOT}/bin/mpif90"
+FCFLAGS="-I${HDF5_ROOT}/include -I${NETCDFF_ROOT}/include -I${ECCODES_ROOT}/include ${ARCH} -g -gdwarf-4 -pc64 -fp-model source -I${MKL_ROOT}/include -qmkl"
+
+ICON_FCFLAGS='-DDO_NOT_COMBINE_PUT_AND_NOCHECK'
+ICON_OCEAN_FCFLAGS='-O3 -assume norealloc_lhs -reentrancy threaded -qopt-report-file=stdout -qopt-report=0 -qopt-report-phase=vec'
+
+LDFLAGS="-L${HDF5_ROOT}/lib -L${NETCDF_ROOT}/lib -L${NETCDFF_ROOT}/lib ${BLAS_LAPACK_LDFLAGS} -L${ECCODES_ROOT}/lib64 -L${MKL_ROOT}/lib/intel64 -L${AEC_ROOT}/lib64 -L${FYAML_ROOT}/lib"
+LIBS="-Wl,--disable-new-dtags -Wl,--as-needed ${XML2_LIBS} ${FYAML_LIBS} ${ECCODES_LIBS} ${BLAS_LAPACK_LIBS} ${AEC_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS} ${ZLIB_LIBS}"
+
+AR="$($CC -show | sed 's: .*$::;s:/[^/]*$::')/xiar"
+
+MPI_LAUNCH="${MPI_ROOT}/bin/mpiexec"
+
+EXTRA_CONFIG_ARGS='--enable-intel-consistency --enable-vectorized-lrtm --enable-parallel-netcdf --enable-grib2 --enable-fcgroup-OCEAN=src/hamocc:src/ocean:src/sea_ice'
+EXTRA_CONFIG_ARGS="${EXTRA_CONFIG_ARGS} --enable-yaxt --enable-art --enable-ecrad --enable-waves"
+
+# as long as all openmpi released have an error we need to disable mpi checking
+EXTRA_CONFIG_ARGS="${EXTRA_CONFIG_ARGS} --disable-mpi-checks"
+
+ICON_BUNDLED_CFLAGS='-O2 -ftz -fPIC'
+ICON_YAC_CFLAGS=$ICON_BUNDLED_CFLAGS
+ICON_CDI_CFLAGS=$ICON_BUNDLED_CFLAGS
+ICON_ECRAD_FCFLAGS='-qno-opt-dynamic-align -no-fma -fpe0'
+
+# performance vs. bitidentity
+#   "-no-prec-sqrt -no-prec-div -fast-transcendentals" violates bit identity
+#   "-fma" does NOT violate bit-identity
+flag_set=default
+case $flag_set in
+  default)
+    CFLAGS="${CFLAGS} -fma -ip -pc64 -std=gnu99"
+    ICON_CFLAGS='-O3 -ftz'
+    ICON_FCFLAGS="${ICON_FCFLAGS} -O3 -ftz -qoverride-limits -assume realloc_lhs -align array64byte -fma -ip -D__SWAPDIM -DOCE_SOLVE_OMP"
+    ;;
+  experimental) # THIS IS NOT RECOMMENDED: (a) no bit-identity (b) no numerical stability guarantied (c) building takes very long
+    FAST="-ipo -O3 -no-prec-div  -fp-model fast=2 -fast-transcendentals -no-prec-sqrt"
+    CFLAGS="${CFLAGS} -fma -ip -pc64 -std=gnu99"
+    ICON_CFLAGS='-O3 -ftz'
+    ICON_BUNDLED_CFLAGS=${ICON_CFLAGS}
+    ICON_FCFLAGS="${ICON_FCFLAGS} -qoverride-limits -assume realloc_lhs -align array64byte -fma -ip -D__SWAPDIM -DOCE_SOLVE_OMP ${FAST}"
+    ICON_OCEAN_FCFLAGS="${ICON_OCEAN_FCFLAGS} ${FAST}"
+    ;;
+  *)
+    echo "ERROR: unknown flag set '$flag_set'" >&2
+    exit 1
+    ;;
+esac
+
+################################################################################
+
+"${icon_dir}/configure" \
+AR="${AR}" \
+BUILD_ENV="${BUILD_ENV}" \
+CC="${CC}" \
+CFLAGS="${CFLAGS}" \
+CPPFLAGS="${CPPFLAGS}" \
+FC="${FC}" \
+FCFLAGS="${FCFLAGS}" \
+ICON_BUNDLED_CFLAGS="${ICON_BUNDLED_CFLAGS}" \
+ICON_CDI_CFLAGS="${ICON_CDI_CFLAGS}" \
+ICON_CFLAGS="${ICON_CFLAGS}" \
+ICON_ECRAD_FCFLAGS="${ICON_ECRAD_FCFLAGS}" \
+ICON_FCFLAGS="${ICON_FCFLAGS}" \
+ICON_OCEAN_FCFLAGS="${ICON_OCEAN_FCFLAGS}" \
+ICON_YAC_CFLAGS="${ICON_YAC_CFLAGS}" \
+LDFLAGS="${LDFLAGS}" \
+LIBS="${LIBS}" \
+MPI_LAUNCH="${MPI_LAUNCH}" \
+${EXTRA_CONFIG_ARGS} \
+"$@"
+
+for arg in "$@"; do
+  case $arg in
+    -help | --help | --hel | --he | -h | -help=r* | --help=r* | --hel=r* | --he=r* | -hr* | -help=s* | --help=s* | --hel=s* | --he=s* | -hs*)
+      test -n "${EXTRA_CONFIG_ARGS}" && echo '' && echo "This wrapper script ('$0') calls the configure script with the following extra arguments, which might override the default values listed above: ${EXTRA_CONFIG_ARGS}"
+      exit 0 ;;
+  esac
+done
+
+# Copy runscript-related files when building out-of-source:
+if test $(pwd) != $(cd "${icon_dir}"; pwd); then
+  echo "Copying runscript input files from the source directory..."
+  rsync -uavz ${icon_dir}/run . --exclude='*.in' --exclude='.*' --exclude='standard_*' --exclude=mkexp
+  ln -sf -t run/ ${icon_dir}/run/{standard_*,mkexp}
+  rsync -uavz ${icon_dir}/externals . --exclude='.git' --exclude='*.f90' --exclude='*.F90' --exclude='*.c' --exclude='*.h' --exclude='*.Po' --exclude='tests' --exclude='*.mod' --exclude='*.o'
+  rsync -uavz ${icon_dir}/make_runscripts .
+  rsync -uavz ${icon_dir}/scripts .
+  ln -sf ${icon_dir}/data
+  ln -sf ${icon_dir}/vertical_coord_tables
+fi
+
+# -- Get ICON-binary file (you can uncomment this line for activation):
+make -j 8

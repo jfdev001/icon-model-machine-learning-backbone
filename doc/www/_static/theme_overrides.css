@@ -1,0 +1,34 @@
+/*
+ICON
+
+---------------------------------------------------------------
+Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+Contact information: icon-model.org
+
+See AUTHORS.TXT for a list of authors
+See LICENSES/ for license information
+SPDX-License-Identifier: BSD-3-Clause
+---------------------------------------------------------------
+ */
+
+/* override table width restrictions */
+@media screen and (min-width: 767px) {
+
+    .wy-table-responsive table td {
+        /* !important prevents the common CSS stylesheets from overriding
+           this as on RTD they are loaded after this stylesheet */
+        white-space: normal !important;
+    }
+
+    .wy-table-responsive {
+        overflow: visible !important;
+    }
+}
+
+
+/* alignment is not defined by the theme */
+.align-left {
+    float: left;
+    margin-right: 1em;
+
+}

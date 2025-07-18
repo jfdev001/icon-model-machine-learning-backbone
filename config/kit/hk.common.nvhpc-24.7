@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# ICON
+#
+# ------------------------------------------
+# Copyright (C) 2004-2025, DWD, MPI-M, DKRZ, KIT, ETH, MeteoSwiss
+# Contact information: icon-model.org
+# See AUTHORS.TXT for a list of authors
+# See LICENSES/ for license information
+# SPDX-License-Identifier: BSD-3-Clause
+# ------------------------------------------
+
+set -eu
+unset CDPATH
+ulimit -c 0
+
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+ICON_DIR=$(cd "${SCRIPT_DIR}/../.."; pwd)
+
+BUILDENV_ROOT='/hkfs/home/dataset/datasets/icon/sw/buildenv'
+BUILDENV='nvidia-24.7'
+
+NVHPC_ROOT="${BUILDENV_ROOT}/${BUILDENV}/opt/hpc_sdk/Linux_x86_64/24.7"
+
+NVHPC_COMPILERS="${NVHPC_ROOT}/compilers"
+NVHPC_LIBS='-lstdc++ -llapack -lblas -lnvf'
+
+CUDA_ROOT="${NVHPC_ROOT}/cuda/12.5"
+CUDA_LIBS='-lcudart'
+
+MPI_ROOT="${NVHPC_ROOT}/comm_libs/12.5/hpcx/latest/ompi/"
+MPI_FORTRAN_MOD_DIR="${MPI_ROOT}/lib"
+MPI_LIBS='-lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lmpi'
+
+# Libraries from the BUILDENV
+HDF5_LIBS='-lhdf5_hl -lhdf5 -lhdf5_hl_fortran -lhdf5_fortran'
+NETCDF_LIBS='-lnetcdf'
+NETCDFF_LIBS='-lnetcdff'
+ECCODES_LIBS='-leccodes -leccodes_f90'
+FYAML_LIBS='-lfyaml'
+
+SERIALBOX2_ROOT="${BUILDENV_ROOT}/${BUILDENV}/opt/serialbox"
+SERIALBOX2_LIBS='-lSerialboxFortran -lSerialboxC -lSerialboxCore'
+SB2PP="/usr/bin/python2 ${SERIALBOX2_ROOT}/python/pp_ser/pp_ser.py"
+
+# Libraries from the system
+XML2_INCLUDE_DIR='/usr/include/libxml2'
+XML2_LIBS='-lxml2'
+ZLIB_LIBS='-lz'
+
+# RTTOV: optional feature will be activated if ${RTTOV_ROOT}/lib and ${RTTOV_ROOT}/include
+# are readable for the current user! The system installation has restricted permissions
+# and only grants read access to users in the 'hk-project-glori-init' group.
+RTTOV_ROOT="${BUILDENV_ROOT}/${BUILDENV}/opt/rttov13"
+RTTOV_LIBS='-lrttov13'
+
+################################################################################
+
+BUILD_ENV="export LD_LIBRARY_PATH=\"${NVHPC_COMPILERS}/lib:${MPI_ROOT}/lib:${CUDA_ROOT}/lib64:${BUILDENV_ROOT}/${BUILDENV}/lib:${BUILDENV_ROOT}/${BUILDENV}/lib64:${SERIALBOX2_ROOT}/lib:/usr/lib64:/usr/lib\";export PATH=\"${BUILDENV_ROOT}/bin:/usr/bin\"; unset CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH INCLUDE LIBRARY_PATH;"
+
+CC="${NVHPC_COMPILERS}/bin/nvc"
+FC="${NVHPC_COMPILERS}/bin/nvfortran"
+CUDACXX="${NVHPC_COMPILERS}/bin/nvcc"
+AR='/usr/bin/ar'
+
+# 2025-03-14: currently mch_ch_r04b09_dace_synsat segfaults with -O2 in FCFLAGS.
+FCFLAGS="-I${MPI_ROOT}/include -I${MPI_FORTRAN_MOD_DIR} -I${BUILDENV_ROOT}/${BUILDENV}/include -I${SERIALBOX2_ROOT}/include -Mpreprocess -g -O -Mrecursive -Mallocatable=03 -Minfo=accel,inline -Mstack_arrays ${HK_GPU_FCFLAGS}"
+CFLAGS="-std=c99 -g -O2 -I${BUILDENV_ROOT}/${BUILDENV}/include -I${BUILDENV_ROOT}/generic/include"
+CPPFLAGS="-I${MPI_ROOT}/include -I${BUILDENV_ROOT}/${BUILDENV}/include -I${BUILDENV_ROOT}/generic/include -I${XML2_INCLUDE_DIR}"
+
+CUDAFLAGS='--std=c++14 -arch=sm_80 -g -O3'
+
+LDFLAGS="-L${NVHPC_COMPILERS}/lib -L${MPI_ROOT}/lib -L${CUDA_ROOT}/lib64 -L${BUILDENV_ROOT}/${BUILDENV}/lib -L${BUILDENV_ROOT}/${BUILDENV}/lib64 -L${SERIALBOX2_ROOT}/lib"
+LIBS="-Wl,--disable-new-dtags -Wl,--as-needed ${NVHPC_LIBS} ${MPI_LIBS} ${CUDA_LIBS} ${HDF5_LIBS} ${NETCDF_LIBS} ${NETCDFF_LIBS} ${ECCODES_LIBS} ${FYAML_LIBS} ${SERIALBOX2_LIBS} ${XML2_LIBS} ${ZLIB_LIBS} -lrt"
+
+
+MPI_LAUNCH="${MPI_ROOT}/bin/mpirun --bind-to none ${HK_GPU_MPIRUN_FLAGS}" # --bind-to none required because of issue https://github.com/open-mpi/ompi/issues/12470
+
+EXTRA_CONFIG_ARGS='--disable-loop-exchange --enable-coupling --enable-grib2 --enable-art --enable-ecrad --enable-emvorado --enable-dace --disable-mpi-checks'
+
+# Enable RTTOV if installation is available
+if [[ -r "${RTTOV_ROOT}/lib" ]] && [[ -r "${RTTOV_ROOT}/include" ]]; then
+    echo "Enabling RTTOV with RTTOV_ROOT=${RTTOV_ROOT}"
+    LDFLAGS+=" -L${RTTOV_ROOT}/lib"
+    LIBS+=" ${RTTOV_LIBS}"
+    FCFLAGS+=" -I${RTTOV_ROOT}/include"
+    EXTRA_CONFIG_ARGS+=' --enable-rttov'
+else
+    echo "Disabling RTTOV due to missing read access for ${RTTOV_ROOT}."
+    EXTRA_CONFIG_ARGS+=' --disable-rttov'
+fi
+
+################################################################################
+
+"${ICON_DIR}/configure" \
+BUILD_ENV="${BUILD_ENV}" \
+AR="${AR}" \
+CC="${CC}" \
+FC="${FC}" \
+CFLAGS="${CFLAGS}" \
+CPPFLAGS="${CPPFLAGS}" \
+FCFLAGS="${FCFLAGS}" \
+LDFLAGS="${LDFLAGS}" \
+LIBS="${LIBS}" \
+MPI_LAUNCH="${MPI_LAUNCH}" \
+CUDACXX="$CUDACXX" \
+CUDAFLAGS="$CUDAFLAGS" \
+SB2PP="${SB2PP}" \
+${EXTRA_CONFIG_ARGS} \
+"$@"
+
+for arg in "$@"; do
+  case $arg in
+    -help | --help | --hel | --he | -h | -help=r* | --help=r* | --hel=r* | --he=r* | -hr* | -help=s* | --help=s* | --hel=s* | --he=s* | -hs*)
+      test -n "${EXTRA_CONFIG_ARGS}" && echo '' && echo "This wrapper script ('$0') calls the configure script with the following extra arguments, which might override the default values listed above: ${EXTRA_CONFIG_ARGS}"
+      exit 0 ;;
+  esac
+done
+
+# Copy runscript-related files when building out-of-source:
+if test $(pwd) != $(cd "${ICON_DIR}"; pwd); then
+  echo 'Copying runscript input files from the source directory...'
+  rsync -uavz ${ICON_DIR}/run . --exclude='*.in' --exclude='.*' --exclude='standard_*'
+  ln -sf -t run/ ${ICON_DIR}/run/standard_*
+  ln -sf set-up.info run/SETUP.config
+  rsync -uavz ${ICON_DIR}/externals . --exclude='.git' --exclude='*.f90' --exclude='*.F90' --exclude='*.c' --exclude='*.h' --exclude='*.Po' --exclude='tests' --exclude='*.mod' --exclude='*.o'
+  rsync -uavz ${ICON_DIR}/make_runscripts .
+  rsync -uavz ${ICON_DIR}/scripts .
+  ln -sf ${ICON_DIR}/data
+  ln -sf ${ICON_DIR}/vertical_coord_tables
+fi
