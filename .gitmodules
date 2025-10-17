@@ -48,3 +48,6 @@
 [submodule "externals/iconmath"]
 	path = externals/iconmath
 	url = ../../icon-libraries/libiconmath.git
+[submodule "externals/FTorch"]
+	path = externals/FTorch
+	url = https://github.com/Cambridge-ICCS/FTorch.git
