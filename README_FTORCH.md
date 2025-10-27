@@ -6,6 +6,14 @@ modify the `configure.ac`.
 FTorch is built with cmake. If you add FTorch as a submodule, then you can 
 end up just building it by itself. 
 
+To install FTorch, you will need a working PyTorch or LibTorch installation.
+To that end, I suggest installing a CPU PyTorch version since this is the 
+most straightforward:
+
+```shell 
+# TODO
+```
+
 Once built with FTorch, just configure and build and then attempt to import 
 the FTorch library into some module in the upper atmosphere directory 
 (or elsewhere...).
