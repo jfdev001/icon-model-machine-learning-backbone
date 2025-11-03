@@ -1,0 +1,415 @@
+#!/usr/bin/bash
+# @brief Setup FTorch for a different version of ICON.
+#
+# @note Only needed if you want to setup FTorch with a version of ICON like
+#       `icon-nwp/uaicon-dev-iap`.
+
+# Validate you are in the ICON project directory
+is_icon_src_project=$(find . -type f -name "icon.f90")
+is_icon_project_root=$(ls | grep externals)
+if [[ -z ${is_icon_src_project} || -z ${is_icon_project_root} ]] 
+then
+    echo "ERROR: Could not found 'icon.f90' and/or the 'externals' directory." 
+    echo "Make sure you are in the ICON project directory. Make sure you are"
+    echo "not in an ICON build directory."
+    exit 1 
+fi
+
+# Validate Torch installation
+if [[ -z ${Torch_DIR} ]] 
+then
+    echo "ERROR: 'Torch_DIR' is not defined"
+    echo "Please export Torch_DIR with a path to a valid Torch installation"
+    echo "E.g.,"
+    echo "export Torch_DIR=/path/to/.venv/lib/python3.12/site-packages/torch"
+    exit 1 
+else
+    has_torch_config=$(find ${Torch_DIR} -type f -name "TorchConfig.cmake")
+    if [[ -z ${has_torch_config} ]]
+    then
+        echo "ERROR: Cannot find 'TorchConfig.cmake' in Torch_DIR=${Torch_DIR}"
+        echo "Please check that you have a valid Torch installation."
+        exit 1 
+    fi
+fi
+
+echo "BEGIN: update configure.ac and run/create_target_header to support FTorch"
+
+# Add FTorch to the submodules 
+git submodule add https://github.com/Cambridge-ICCS/FTorch.git externals/FTorch
+
+# Get the externals 
+git submodule update --init 
+
+# Checkout a tested version of FTorch
+(cd externals/FTorch && git checkout -b stable ef44cf6d70edef38003dec41ee7a1b496922a1a5)
+
+# Make changes to configure.ac in the appropriate places 
+note="Flag for enabling FTorch... used by preprocessor directive!"
+ftorch_enable=$(cat << EOF
+#
+# NOTE: $note
+# 
+AC_ARG_ENABLE([ftorch],
+  [AS_HELP_STRING([--enable-ftorch],
+     [enable FTORCH @<:@default=no@:>@])],
+  [AS_IF([test x"\$enableval" != xno], [enable_ftorch=yes])],
+  [enable_ftorch=no])
+EOF
+)
+
+enable_comin_line_no=$(grep -Rnw "\-\-enable\-comin" configure.ac | head -c 3)
+insert=$((enable_comin_line_no + 4))
+
+if [[ -z $(grep "${note}" configure.ac) ]]
+then
+    echo "Adding enable ftorch logic to configure.ac"
+    awk -v n="$insert" -v text="$ftorch_enable" '
+    NR == n { print text }
+    { print }
+    ' configure.ac > tmp 
+    mv tmp configure.ac
+fi
+
+# add preprocessor argument 
+note="Preprocessor directive for FTorch"
+ftorch_preprocessor=$(cat << EOF
+#
+# NOTE: $note 
+#
+AS_VAR_IF([enable_ftorch], [yes],
+  [AS_VAR_APPEND([FCFLAGS], [" \${FC_PP_DEF}__FTORCH"])])
+EOF
+)
+
+enable_comin_preproc_line_no=$(grep -Rnw ".*NO_ICON_COMIN.*" configure.ac | head -c 4)
+insert=$((enable_comin_preproc_line_no + 2))
+
+if [[ -z $(grep "${note}" configure.ac) ]]
+then
+    echo "Adding add ftorch preprocessor logic to configure.ac"
+    awk -v n="$insert" -v text="$ftorch_preprocessor" '
+    NR == n { print text }
+    { print }
+    ' configure.ac > tmp 
+    mv tmp configure.ac
+fi
+
+## Update the ftorch flag
+note="Provides external ftorch flag for config"
+ftorch_flag=$(cat << EOF
+#
+# NOTE: $note
+#
+AC_ARG_WITH([external-ftorch],
+  [AS_HELP_STRING([--with-external-ftorch],
+     [use external FTORCH library @<:@default=no@:>@])],
+  [AS_IF([test x"\$withval" != xno], [with_external_ftorch=yes])],
+  [with_external_ftorch=no])
+EOF
+)
+with_external_mtime_line_no=$(grep -Rnw "with_external_mtime=no" configure.ac | head -c 3)
+insert=$((with_external_mtime_line_no + 1))
+
+if [[ -z $(grep "${note}" configure.ac) ]]
+then
+    echo "Adding ftorch flag logic to configure.ac"
+    awk -v n="$insert" -v text="$ftorch_flag" '
+    NR == n { print text }
+    { print }
+    ' configure.ac > tmp 
+    mv tmp configure.ac
+fi
+
+## Update ftorch with external 
+note="Provides check for FTorch functionality"
+ftorch_with_external="$(cat << EOF
+# 
+# NOTE: $note
+#
+AS_VAR_IF([with_external_ftorch], [yes],
+  [AC_CACHE_CHECK([whether the FTORCH library is available],
+     [icon_cv_have_ftorch],
+     [icon_cv_have_ftorch=no
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
+      ! From https://github.com/Cambridge-ICCS/FTorch/blob/ef44cf6d70edef38003dec41ee7a1b496922a1a5/examples/1_Tensor/tensor_manipulation.f90
+      use ftorch, only: torch_kCPU, torch_kFloat32, torch_tensor, &
+        torch_tensor_delete, torch_tensor_ones
+
+      use, intrinsic :: iso_c_binding, only: c_int64_t
+
+      ! Import the real32 type for 32-bit floating point numbers
+      use, intrinsic :: iso_fortran_env, only: sp => real32
+
+      implicit none
+
+      ! Define some tensors
+      type(torch_tensor) :: a
+
+      ! Variables for constructing tensors with torch_tensor_ones
+      integer, parameter :: ndims = 2
+      integer(c_int64_t), dimension(2), parameter :: tensor_shape = [2, 3]
+
+      ! Create a tensor of ones
+      ! -----------------------
+      call torch_tensor_ones(a, ndims, tensor_shape, torch_kFloat32, torch_kCPU)
+      call torch_tensor_delete(a)]])],
+        [icon_cv_have_ftorch=yes])])
+   AS_VAR_IF([icon_cv_have_ftorch], [no],
+     [AC_MSG_FAILURE([unable to link a test program using FTORCH dnl
+You need to set FCFLAGS, LDFLAGS and LIBS manually.])])])
+EOF
+)"
+
+icon_cv_have_mtime_line_no=$(grep -Rnw "icon_cv_have_mtime=yes" configure.ac | head -c 4)
+insert=$((icon_cv_have_mtime_line_no + 5))
+
+if [[ -z $(grep "${note}" configure.ac) ]]
+then
+    echo "Adding ftorch with external logic to configure.ac"
+    awk -v n="$insert" -v text="$ftorch_with_external" '
+    NR == n { print text }
+    { print }
+    ' configure.ac > tmp 
+    mv tmp configure.ac
+fi
+
+## Update ftorch without external 
+# insert 2 lines after that 
+note="Provides build options for FTorch if FTorch is built by ICON"
+ftorch_without_external=$(cat << EOF
+# 
+# NOTE: $note
+# 
+# TODO: Currently builds FTorch as shared lib (i.e., produces libftorch.so)...
+# if you migrate to static lib, then you will need to change bundled libs 
+# append to libftorch.a and possibly handle providing ICON flags for LibTorch
+#
+AS_VAR_IF([with_external_ftorch], [no],
+  [icon_subdir_srcdir="\$srcdir/externals/FTorch"
+   icon_subdir_unique_file="src/ftorch.F90"
+   AS_IF([test ! -r "\$icon_subdir_srcdir/\$icon_subdir_unique_file"],
+     [AC_MSG_ERROR([unable to find sources of the bundled version of FTORCH dnl
+library (\$icon_subdir_unique_file) in '\$icon_subdir_srcdir': provide an dnl
+external version of FTORCH library (--with-external-ftorch) by setting CFLAGS, dnl
+FCFLAGS, LDFLAGS and LIBS accordingly])])
+   AC_ARG_VAR([ICON_FTORCH_FCFLAGS],
+     [Fortran compiler flags to be appended to FCFLAGS when configuring the
+bundled version of FTORCH library @<:@default=\$ICON_BUNDLED_FCFLAGS@:>@])dnl
+   ICON_FTORCH_FCFLAGS=\${ICON_FTORCH_FCFLAGS-\$ICON_BUNDLED_FCFLAGS}
+   AC_ARG_VAR([ICON_FTORCH_CFLAGS],
+     [C compiler flags to be appended to CFLAGS when configuring the bundled
+version of FTORCH library @<:@default=\$ICON_BUNDLED_CFLAGS@:>@])dnl
+   ICON_FTORCH_CFLAGS=\${ICON_FTORCH_CFLAGS-\$ICON_BUNDLED_CFLAGS}
+   ACX_SUBDIR_INIT_CMAKE([externals/FTorch],
+     [no-run no-adjust-compilers no-adjust-utilities], [externals/FTorch/build],
+     ['\${CMAKE}'])
+   ACX_SUBDIR_REMOVE_ARGS([externals/FTorch/build],
+     [-DCMAKE_C_FLAGS=*|-DCMAKE_Fortran_FLAGS=*|-DCMAKE_CXX_*=*])
+   ACX_SUBDIR_APPEND_ARGS([externals/FTorch/build],
+     [-DPython3_EXECUTABLE="\$PYTHON"],
+     [-DCMAKE_AR="\$AR"], [-DCMAKE_RANLIB="\$RANLIB"],
+     [-DCMAKE_C_FLAGS="\$subdir_CFLAGS \$ICON_FTORCH_CFLAGS \$subdir_CPPFLAGS"],
+     [-DCMAKE_CXX_FLAGS=dnl
+"\$subdir_CXXFLAGS \$ICON_COMIN_CXXFLAGS \$subdir_CPPFLAGS"],
+     [-DCMAKE_Fortran_FLAGS="\$subdir_FCFLAGS \$ICON_FTORCH_FCFLAGS"],
+     [-DCMAKE_BUILD_TYPE=Release],
+     [-DCMAKE_PREFIX_PATH="\$bundled_CMAKE_PREFIX_PATH"],
+     [-DBUILD_SHARED_LIBS=ON])
+   AS_VAR_APPEND([bundled_CMAKE_PREFIX_PATH],
+     ["\${bundled_CMAKE_PREFIX_PATH:+";"}dnl
+\${icon_abs_top_builddir}/externals/FTorch/build"])
+   AS_VAR_APPEND([bundled_includes],
+     ["\${FC_MOD_IN}externals/FTorch/build/modules "])
+   BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so \$BUNDLED_LIBFILES"
+   AS_VAR_APPEND([icon_pvcs_subdirs], [' externals/FTorch'])])
+EOF
+)
+libmtime_line_no=$(grep -Rnw "libmtime\.a" configure.ac | head -c 4)
+insert=$((libmtime_line_no + 2))
+
+if [[ -z $(grep "${note}" configure.ac) ]]
+then
+    echo "Adding ftorch without external logic to configure.ac"
+    awk -v n="$insert" -v text="$ftorch_without_external" '
+    NR == n { print text }
+    { print }
+    ' configure.ac > tmp
+    mv tmp configure.ac
+fi
+
+## Make changes to target header to add FTorch ld library update in runscripts
+note="Define the FTorch library since ICON dynamic linker needs this"
+create_target_header=$(cat << EOF
+    # $note 
+    path_to_current_script="\${BASH_SOURCE[0]}"
+    icon_project_dir=\$(dirname \$(dirname \$path_to_current_script))
+    icon_externals_dir=\${icon_project_dir}/externals
+    # NOTE: assumes FTorch built as shared library
+    FTorch_SHARED_LIB=\$(find \${icon_project_dir} -type f -name "libftorch.so")
+    FTorch_DIR=\$(dirname \${FTorch_SHARED_LIB})
+    SKIP_FTORCH_IN_RUNSCRIPT=\${SKIP_FTORCH_IN_RUNSCRIPT:-0}
+    if [[ -z \${FTorch_SHARED_LIB} || ! -f \${FTorch_SHARED_LIB} ]] && [[ \$SKIP_FTORCH_IN_RUNSCRIPT -eq 0 ]]
+    then
+        echo "ERROR: Unable to find libftorch.so and therefore unable to make"
+        echo "runscripts that support using FTorch!"
+        echo "FTorch_DIR automatically found was '\${FTorch_Dir}'"
+        echo "If you want to force building the runscripts, set the"
+        echo "SKIP_FTORCH_IN_RUNSCRIPT environment variable to 1 by doing"
+        echo "export SKIP_FTORCH_IN_RUNSCRIPT=1"
+        echo "Then, you can re-run make_runscripts --all"
+        echo "If you do this, and use FTorch in any ICON codes that might be"
+        echo "relevant to an autogenerated runscript, that run may fail!"
+        exit 1 
+    fi
+EOF
+)
+start_header_line_no=$(grep -Rnw "start_header\(\)" run/create_target_header | head -c 2)
+insert=$((start_header_line_no + 2))
+
+if [[ -z $(grep "${note}" run/create_target_header) ]]
+then
+    echo "Adding ftorch load library logic to run/create_target_header"
+    awk -v n="$insert" -v text="$create_target_header" '
+    NR == n { print text }
+    { print }
+    ' run/create_target_header > tmp
+    mv tmp run/create_target_header
+fi
+
+note="FTorch lib in path so ICON can link during runtime"
+export_ld_library_ftorch=$(cat << EOF
+# --------------------------------------------------
+# NOTE: $note 
+# --------------------------------------------------
+export LD_LIBRARY_PATH=\${FTorch_DIR}:\\\\\${LD_LIBRARY_PATH}
+EOF
+)
+
+line_no=$(grep -Rnw "export OMP_NUM_THREADS" run/create_target_header | head -c 3)
+insert=$((line_no - 5))
+
+if [[ -z $(grep "${note}" run/create_target_header) ]]
+then
+    echo "Adding export for ftorch library to run/create_target_header"
+    awk -v n="$insert" -v text="$export_ld_library_ftorch" '
+    NR == n { print text }
+    { print }
+    ' run/create_target_header > tmp
+    mv tmp run/create_target_header
+fi
+
+
+# Add a dummy program to the IO
+note="Use FTorch"
+ftorch_use=$(cat << EOF
+#ifdef __FTORCH
+  ! NOTE: $note 
+  USE ftorch, ONLY: assignment(=), operator(+), torch_kCPU, torch_kFloat32, &
+    torch_tensor, torch_tensor_delete, torch_tensor_ones, &
+    torch_tensor_from_array
+
+  USE, INTRINSIC :: iso_c_binding, only: c_int64_t
+
+  ! Import the real32 TYPE for 32-bit floating point numbers
+  USE, INTRINSIC :: iso_fortran_env, only: sp => real32
+#endif
+EOF
+)
+
+line_no=$(grep -Rnw "MODULE mo_output_event_handler" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+insert=$((line_no + 2))
+
+if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+then
+    echo "Adding ftorch use statements"
+    awk -v n="$insert" -v text="$ftorch_use" '
+    NR == n { print text }
+    { print }
+    ' src/io/shared/mo_output_event_handler.f90 > tmp
+    mv tmp src/io/shared/mo_output_event_handler.f90
+fi
+
+# define the subroutine
+note="Dummy ftorch routine"
+ftorch_subroutine=$(cat << EOF
+#ifdef __FTORCH
+  ! NOTE: $note 
+  SUBROUTINE hello_ftorch(dst)
+      INTEGER, INTENT(IN) :: dst 
+
+      ! Set working precision for reals to be 32-bit floats
+      INTEGER, PARAMETER :: wp = sp
+
+      ! Define some tensors
+      TYPE(torch_tensor) :: a, b, c
+
+      ! Variables for constructing tensors with torch_tensor_ones
+      INTEGER, PARAMETER :: ndims = 2
+      INTEGER(c_int64_t), DIMENSION(2), PARAMETER :: tensor_shape = [2, 3]
+
+      ! Variables for constructing tensors with torch_tensor_from_array
+      REAL(wp), DIMENSION(2,3), TARGET :: in_data, out_data
+
+      ! Create tensors, perform simple operations, then output result
+      WRITE (dst, '(3a)') "mo_output_event_handler: hello ftorch"
+
+      CALL torch_tensor_ones(a, ndims, tensor_shape, torch_kFloat32, torch_kCPU)
+      in_data(:,:) = reshape([1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp], [2,3])
+      CALL torch_tensor_from_array(b, in_data, torch_kCPU)
+      CALL torch_tensor_from_array(c, out_data, torch_kCPU)
+
+      c = a + b
+      WRITE(dst, '(3a)') "mo_output_event_handler: sum of tensors"
+      WRITE(dst, *) out_data
+      WRITE(dst, '(3a)') "mo_output_event_handler: expected output: reshape([2, 3, 4, 5, 6, 7], [2,3])"
+
+      CALL torch_tensor_delete(a)
+      CALL torch_tensor_delete(b)
+      CALL torch_tensor_delete(c)
+  END SUBROUTINE hello_ftorch
+#endif
+EOF
+)
+
+line_no=$(grep -Rnw "CONTAINS" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+insert=$((line_no + 1))
+
+if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+then
+    echo "Adding ftorch dummy subroutine"
+    awk -v n="$insert" -v text="$ftorch_subroutine" '
+    NR == n { print text }
+    { print }
+    ' src/io/shared/mo_output_event_handler.f90 > tmp
+    mv tmp src/io/shared/mo_output_event_handler.f90
+fi
+
+# call ftorch dummy routine
+note="Call ftorch dummy routine"
+call_hello_ftorch=$(cat << EOF
+#ifdef __FTORCH
+      ! NOTE: $note
+      CALL hello_ftorch(dst)
+#endif 
+EOF
+)
+
+line_no=$(grep -Rnw ".*does not write ready files.*" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+insert=$((line_no))
+
+if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+then
+    echo "Adding call to ftorch dummy routine"
+    awk -v n="$insert" -v text="$call_hello_ftorch" '
+    NR == n { print text }
+    { print }
+    ' src/io/shared/mo_output_event_handler.f90 > tmp
+    mv tmp src/io/shared/mo_output_event_handler.f90
+fi
+
+
+echo "Reconfiguring project"
+autoreconf -fvi
+
+echo "COMPLETE!"
