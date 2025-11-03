@@ -12,14 +12,16 @@ version of ICON with FTorch. Be aware that for private versions of ICON (e.g.,
 version of ICON](#Setup-with-a-different-version-of-ICON), though the steps 
 are mostly the same, so it is advisable to read the public version setup first.
 
-## General setup with a public version of ICON
+## Getting the code 
 
-To get started with a public version of ICON, do the following:
+To get started with a fork public version of ICON, do the following:
 
 ```shell 
-# get fork of public ICON
-git clone --branch jfrazier/integrate-ftorch --depth 1 \
-    https://gitlab.dkrz.de/b383137/icon-model-with-ftorch.git 
+# Get fork of public ICON
+git clone https://gitlab.dkrz.de/b383137/icon-model-with-ftorch.git 
+
+# Checkout the tested commit 
+git checkout -b stable cc1e064cf1ba37fb3d835e79bf1059d1ffe2d0d8
 
 # Cache the path to the icon model source directory
 icon_model_src=$(readlink -f icon-model-with-ftorch)
@@ -31,12 +33,7 @@ cd icon-model-with-ftorch
 git submodule update --init 
 ```
 
-In this repository, I have already made the necessary additions to the
-`configure.ac` to facilitate building ICON with FTorch. Since this repository
-is based on the public release of ICON, you may need to make adjustments
-in `configure.ac` pertaining to FTorch into the `configure.ac` of **your** ICON
-repository (i.e., you may be using `icon-nwp/uaicon-iap-dev` which might rely
-on a different version of `configure.ac`). 
+## Setting up Torch
 
 Now, to build FTorch, you will need a working PyTorch or LibTorch installation.
 To that end, we install a PyTorch[CPU] version since this is the 
@@ -78,6 +75,15 @@ module load pytorch/2.5.1
 export Torch_DIR=$(dirname $(python -c "import torch; print(torch.__file__)"))
 ```
 
+Note, you could also just use the C++ library LibTorch if you want a more
+lightweight approach. The CPU only version is available
+[here](https://docs.pytorch.org/cppdocs/installing.html). Remember, as in the
+previous steps, you will need to `export Torch_DIR` with something like 
+
+```shell 
+export Torch_DIR=/path/to/libtorch
+```
+
 ## On a local system using Docker
 
 Once you've got the PyTorch dependencies, you can configure and compile ICON in
@@ -99,7 +105,7 @@ mkdir icon-build
 
 # Configure ICON with FTorch 
 cd icon-build
-$HOME/icon-src/config/generic/gcc --without-external-ftorch
+$HOME/icon-src/config/generic/gcc --without-external-ftorch --enable-ftorch
 
 # Compile ICON 
 make -j8
@@ -113,7 +119,7 @@ functionality (even though config and compilation succeeds).
 
 ## On Levante 
 
-The same setup described in [General setup with a public version of ICON](#General-setup-with-a-public-version-of-ICON) is necessary before performing the below steps,
+The same setup described in [Setting up Torch](#Setting-up-Torch) is necessary before performing the below steps,
 which are nearly identical to the steps in [On a local system using Docker](#On-a-local-system-using-Docker).
 
 ```shell 
@@ -128,7 +134,7 @@ icon_build_dir=$(readlink -f icon-builds/icon-model-with-ftorch)
 
 # Configure ICON with FTorch  (TODO: try with intel as well)
 cd icon-build/icon-model-with-ftorch
-${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch
+${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch
 
 # Compile ICON 
 make -j8
@@ -147,7 +153,7 @@ is linked properly to ICON:
 #SBATCH --mail-type=ALL
 
 # Run the test job (takes < 1 minute and uses only 1 compute node)
-${icon_build_dir}/run/exp.atm_tracer_Hadley.run
+sbatch ${icon_build_dir}/run/exp.atm_tracer_Hadley.run
 ```
 
 **IMPORTANT**: Any new runscripts you write need to modify the
@@ -168,7 +174,6 @@ FTorch_DIR=${icon_build_dir}/externals/FTorch/build
 ```
 
 More details on internal coupling of ICON with FTorch in the next section.
-
 
 ## Internally coupling ICON with FTorch 
 
@@ -210,7 +215,7 @@ reconfigure **and** recompile like so:
 
 ```shell
 cd ${icon_build_dir}
-${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch && make -j8
+${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch && make -j8
 ```
 
 Currently, to ensure the the test case in section [On Levante](#On-Levante)
@@ -222,7 +227,101 @@ For more FTorch examples, see
 
 ## Setup with a different version of ICON
 
-TODO
+In the current repository, I have already made the necessary additions to the
+to facilitate building ICON with FTorch. *However*, if you are using a
+different version of ICON (e.g., `icon-nwp`), you will need to update the
+`externals/`, `configure.ac`, and `run/create_target_header` in order to
+support FTorch. Since those that have access to a different version of ICON
+will also have access to the DKRZ gitlab in general, this section does not
+apply to the general public is for ICON developers only.
+
+To illustrate the necessary changes to integrate FTorch into a different
+version of ICON, we select the `icon-nwp/uaicon-iap-dev` branch 
+and the commit `881b54a9d12a17f8e5a5a6930f86d3c3ce5aa19c` corresponding 
+to 2025-07-02. At the time of this writing (2025-10-31), that branch
+still exists, but may not in the future due to refactoring efforts.
+
+To get access to this version of ICON, do the following:
+
+```shell
+# Switch to a directory with sufficient space (e.g., datawave)
+cd /work/bm1233/${USER}
+
+# Make a build directory for out of source ICON builds 
+mkdir -p icon-builds/uaicon-with-ftorch
+
+# Cache the path to the ICON build directory 
+icon_build_dir=$(readlink -f icon-builds/uaicon-with-ftorch)
+
+# Make a directory for ICON source codes 
+mkdir -p icon-srcs
+
+# Get the uaicon codebase 
+cd icon-srcs 
+git clone git@gitlab.dkrz.de:icon/icon-nwp.git uaicon 
+
+# Cache the path to the uaicon source code 
+icon_model_src=$(readlink -f uaicon)
+
+# Change to the source dir and use a specific uaicon version 
+cd uaicon 
+git checkout -b uaicon-iap-dev origin/uaicon-iap-dev
+git checkout -b uaicon-iap-dev-2025-07-02 881b54a9d12a17f8e5a5a6930f86d3c3ce5aa19c
+```
+
+At this point, if you do not have a version of PyTorch/LibTorch installed, you 
+can follow the instructions in section [Setting up Torch](#Setting-up-Torch).
+
+If you end up going with the `.venv` approach to setting up Torch, make sure 
+you add this to your `.gitignore` with 
+
+```shell
+echo ".venv" >> .gitignore
+```
+
+To integrate the necessary changes into an arbitrary ICON project, add the
+`setup_ftorch` script in the current repository to the other repository of
+interest.
+
+```shell 
+# assuming in e.g., ${icon_model_src} like uaicon
+wget https://gitlab.dkrz.de/b383137/icon-model-with-ftorch/-/raw/release-2025.04-public/setup_ftorch
+./setup_ftorch
+```
+
+Then, as before, you build your version of ICON in a separate build directory, 
+making sure to enable the FTorch components:
+
+```shell
+cd ${icon_build_dir}
+${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch
+```
+
+Note that `setup_ftorch` will also add a dummy hello ftorch program to 
+`src/io/shared/mo_output_event_handler.f90` in order to verify that FTorch 
+works correctly. You can delete that dummy logic if you wish. It only calls 
+a dummy ftorch program at the very beginning of the model start so it does not
+add anything computationally expensive.
+
+If you happen to be on Levante, you can call the below example run script 
+and check the LOG file for the substring `hello ftorch` to verify your 
+FTorch installation works:
+
+```shell
+cd ${icon_build_dir}
+./make_runscripts --all
+
+# NOTE: if you want to get notifications on your jobs completion status,
+# make sure to add the following fields to the below run script:
+#SBATCH --mail-user=YOUR_EMAIL_HERE
+#SBATCH --mail-type=ALL
+
+# Run the test job (takes < 1 minute and uses only 1 compute node)
+sbatch run/exp.atm_tracer_Hadley.run
+```
+
+That concludes the section on setting up a different version of ICON with 
+FTorch.
 
 # Brief Description of ICON Build System
 

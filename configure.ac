@@ -224,6 +224,15 @@ AC_ARG_ENABLE([comin],
   [AS_IF([test x"$enableval" != xno], [enable_comin=yes])],
   [enable_comin=no])
 
+#
+# NOTE: Flag for enabling FTorch... used by preprocessor directive!
+#
+AC_ARG_ENABLE([ftorch],
+  [AS_HELP_STRING([--enable-ftorch],
+     [enable FTORCH @<:@default=no@:>@])],
+  [AS_IF([test x"$enableval" != xno], [enable_ftorch=yes])],
+  [enable_ftorch=no])
+
 AC_ARG_ENABLE([hd],
 [  --enable-hd             enable the Hydrological Discharge (HD) model. The
                           value of the argument must be one of the following
@@ -1048,6 +1057,12 @@ AS_VAR_IF([enable_art_gpl], [yes],
 
 AS_VAR_IF([enable_comin], [no],
   [AS_VAR_APPEND([FCFLAGS], [" ${FC_PP_DEF}__NO_ICON_COMIN__"])])
+
+#
+# NOTE: Preprocessor directive for FTorch
+#
+AS_VAR_IF([enable_ftorch], [yes],
+  [AS_VAR_APPEND([FCFLAGS], [" ${FC_PP_DEF}__FTORCH"])])
 
 AS_VAR_IF([enable_acm_license], [yes],
   [AS_VAR_APPEND([FCFLAGS], [" ${FC_PP_DEF}HAVE_ACM_LICENSE"])])

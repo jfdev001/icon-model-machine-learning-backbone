@@ -105,8 +105,10 @@
 
 MODULE mo_output_event_handler
 
+#ifdef __FTORCH
   ! NOTE: Dummy function that should not be used in production
   USE mo_upatmo_iondrag_machine_learning_model, ONLY: hello_ftorch
+#endif
 
 #ifndef NOMPI
   USE mpi
@@ -354,8 +356,10 @@ CONTAINS
     IF (check_write_readyfile(event)) THEN
       WRITE (dst,'(3a)') 'output "', TRIM(event%event_data%name), '", writes ready files:'
     ELSE
+#ifdef __FTORCH
       ! NOTE: Dummy call that should be removed
       CALL hello_ftorch(dst)
+#endif 
       WRITE (dst,'(3a)') 'output "', TRIM(event%event_data%name), '", does not write ready files:'
     END IF
 
