@@ -9,7 +9,7 @@ a Fortran codebase---in this case we focus on ICON.
 **IMPORTANT**: The first part of this readme focuses on building the *public*
 version of ICON with FTorch. Be aware that for private versions of ICON (e.g.,
 `icon-nwp/uaicon-iap-dev`) you will need to check [Setup with a different
-version of ICON](#Setup-with-a-different-version-of-ICON), though the steps 
+version of ICON](#setup-with-a-different-version-of-icon), though the steps 
 are mostly the same, so it is advisable to read the public version setup first.
 
 ## Getting the code 
@@ -119,8 +119,8 @@ functionality (even though config and compilation succeeds).
 
 ## On Levante 
 
-The same setup described in [Setting up Torch](#Setting-up-Torch) is necessary before performing the below steps,
-which are nearly identical to the steps in [On a local system using Docker](#On-a-local-system-using-Docker).
+The same setup described in [Setting up Torch](#setting-up-torch) is necessary before performing the below steps,
+which are nearly identical to the steps in [On a local system using Docker](#on-a-local-system-using-docker).
 
 ```shell 
 # Switch to a directory with sufficient space (e.g., datawave)
@@ -218,7 +218,7 @@ cd ${icon_build_dir}
 ${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch && make -j8
 ```
 
-Currently, to ensure the the test case in section [On Levante](#On-Levante)
+Currently, to ensure the the test case in section [On Levante](#on-levante)
 works, I have added a dummy call to an FTorch function in the 
 `src/io/shared/mo_output_event_handler.f90`. That call serves no other purpose.
 
@@ -270,7 +270,7 @@ git checkout -b uaicon-iap-dev-2025-07-02 881b54a9d12a17f8e5a5a6930f86d3c3ce5aa1
 ```
 
 At this point, if you do not have a version of PyTorch/LibTorch installed, you 
-can follow the instructions in section [Setting up Torch](#Setting-up-Torch).
+can follow the instructions in section [Setting up Torch](#setting-up-torch).
 
 If you end up going with the `.venv` approach to setting up Torch, make sure 
 you add this to your `.gitignore` with 
