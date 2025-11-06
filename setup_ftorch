@@ -1,8 +1,11 @@
 #!/usr/bin/bash
 # @brief Setup FTorch for a different version of ICON.
 #
-# @note Only needed if you want to setup FTorch with a version of ICON like
-#       `icon-nwp/uaicon-dev-iap`.
+# @description Only needed if you want to setup FTorch with a version of ICON
+# like `icon-nwp/uaicon-dev-iap`. This script modifies the `configure.ac`,
+# `externals`, and `run/create_target_header`, and
+# `${mo_output_event_handler_path}` in order to facilitate building
+# ICON with FTorch.
 
 # Validate you are in the ICON project directory
 is_icon_src_project=$(find . -type f -name "icon.f90")
@@ -44,90 +47,40 @@ git submodule update --init
 # Checkout a tested version of FTorch
 (cd externals/FTorch && git checkout -b stable ef44cf6d70edef38003dec41ee7a1b496922a1a5)
 
-# Make changes to configure.ac in the appropriate places 
-note="Flag for enabling FTorch... used by preprocessor directive!"
-ftorch_enable=$(cat << EOF
+# Make changes to configure.ac to suppor FTorch
+note="BEGIN FTorch in one place"
+ftorch_configure=$(cat << EOF
+###########################
+# $note 
+###########################
 #
-# NOTE: $note
-# 
+# NOTE: Flag for enabling FTorch... used by preprocessor directive!
+#
 AC_ARG_ENABLE([ftorch],
   [AS_HELP_STRING([--enable-ftorch],
      [enable FTORCH @<:@default=no@:>@])],
   [AS_IF([test x"\$enableval" != xno], [enable_ftorch=yes])],
   [enable_ftorch=no])
-EOF
-)
 
-enable_comin_line_no=$(grep -Rnw "\-\-enable\-comin" configure.ac | head -c 3)
-insert=$((enable_comin_line_no + 4))
-
-if [[ -z $(grep "${note}" configure.ac) ]]
-then
-    echo "Adding enable ftorch logic to configure.ac"
-    awk -v n="$insert" -v text="$ftorch_enable" '
-    NR == n { print text }
-    { print }
-    ' configure.ac > tmp 
-    mv tmp configure.ac
-fi
-
-# add preprocessor argument 
-note="Preprocessor directive for FTorch"
-ftorch_preprocessor=$(cat << EOF
 #
-# NOTE: $note 
-#
-AS_VAR_IF([enable_ftorch], [yes],
-  [AS_VAR_APPEND([FCFLAGS], [" \${FC_PP_DEF}__FTORCH"])])
-EOF
-)
-
-enable_comin_preproc_line_no=$(grep -Rnw ".*NO_ICON_COMIN.*" configure.ac | head -c 4)
-insert=$((enable_comin_preproc_line_no + 2))
-
-if [[ -z $(grep "${note}" configure.ac) ]]
-then
-    echo "Adding add ftorch preprocessor logic to configure.ac"
-    awk -v n="$insert" -v text="$ftorch_preprocessor" '
-    NR == n { print text }
-    { print }
-    ' configure.ac > tmp 
-    mv tmp configure.ac
-fi
-
-## Update the ftorch flag
-note="Provides external ftorch flag for config"
-ftorch_flag=$(cat << EOF
-#
-# NOTE: $note
+# NOTE: Provides external ftorch flag for config 
 #
 AC_ARG_WITH([external-ftorch],
   [AS_HELP_STRING([--with-external-ftorch],
      [use external FTORCH library @<:@default=no@:>@])],
   [AS_IF([test x"\$withval" != xno], [with_external_ftorch=yes])],
   [with_external_ftorch=no])
-EOF
-)
-with_external_mtime_line_no=$(grep -Rnw "with_external_mtime=no" configure.ac | head -c 3)
-insert=$((with_external_mtime_line_no + 1))
 
-if [[ -z $(grep "${note}" configure.ac) ]]
-then
-    echo "Adding ftorch flag logic to configure.ac"
-    awk -v n="$insert" -v text="$ftorch_flag" '
-    NR == n { print text }
-    { print }
-    ' configure.ac > tmp 
-    mv tmp configure.ac
-fi
-
-## Update ftorch with external 
-note="Provides check for FTorch functionality"
-ftorch_with_external="$(cat << EOF
-# 
-# NOTE: $note
 #
-AS_VAR_IF([with_external_ftorch], [yes],
+# NOTE: Preprocessor directive for FTorch
+#
+AS_VAR_IF([enable_ftorch], [yes],
+  [AS_VAR_APPEND([FCFLAGS], [" \${FC_PP_DEF}__FTORCH"])])
+
+# 
+# NOTE: Provides check for FTorch functionality
+#
+AS_IF([test "x\$enable_ftorch" = xyes && test "x\$with_external_ftorch" = xyes],
   [AC_CACHE_CHECK([whether the FTORCH library is available],
      [icon_cv_have_ftorch],
      [icon_cv_have_ftorch=no
@@ -158,34 +111,15 @@ AS_VAR_IF([with_external_ftorch], [yes],
    AS_VAR_IF([icon_cv_have_ftorch], [no],
      [AC_MSG_FAILURE([unable to link a test program using FTORCH dnl
 You need to set FCFLAGS, LDFLAGS and LIBS manually.])])])
-EOF
-)"
 
-icon_cv_have_mtime_line_no=$(grep -Rnw "icon_cv_have_mtime=yes" configure.ac | head -c 4)
-insert=$((icon_cv_have_mtime_line_no + 5))
-
-if [[ -z $(grep "${note}" configure.ac) ]]
-then
-    echo "Adding ftorch with external logic to configure.ac"
-    awk -v n="$insert" -v text="$ftorch_with_external" '
-    NR == n { print text }
-    { print }
-    ' configure.ac > tmp 
-    mv tmp configure.ac
-fi
-
-## Update ftorch without external 
-# insert 2 lines after that 
-note="Provides build options for FTorch if FTorch is built by ICON"
-ftorch_without_external=$(cat << EOF
 # 
-# NOTE: $note
+# NOTE: Provides build options for FTorch if FTorch is built by ICON 
 # 
 # TODO: Currently builds FTorch as shared lib (i.e., produces libftorch.so)...
 # if you migrate to static lib, then you will need to change bundled libs 
 # append to libftorch.a and possibly handle providing ICON flags for LibTorch
 #
-AS_VAR_IF([with_external_ftorch], [no],
+AS_IF([test "x\$enable_ftorch" = xyes && test "x\$with_external_ftorch" = xno],
   [icon_subdir_srcdir="\$srcdir/externals/FTorch"
    icon_subdir_unique_file="src/ftorch.F90"
    AS_IF([test ! -r "\$icon_subdir_srcdir/\$icon_subdir_unique_file"],
@@ -223,31 +157,38 @@ version of FTORCH library @<:@default=\$ICON_BUNDLED_CFLAGS@:>@])dnl
      ["\${FC_MOD_IN}externals/FTorch/build/modules "])
    BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so \$BUNDLED_LIBFILES"
    AS_VAR_APPEND([icon_pvcs_subdirs], [' externals/FTorch'])])
+
+###########################
+# END FTorch in one place 
+###########################
 EOF
 )
-libmtime_line_no=$(grep -Rnw "libmtime\.a" configure.ac | head -c 4)
-insert=$((libmtime_line_no + 2))
 
+line_no=$(grep -n 'FCFLAGS=\"\${bundled_includes}\${FCFLAGS}\"' configure.ac | grep -oP "^\d+(?=:)")
+insert=$(( line_no - 2))
 if [[ -z $(grep "${note}" configure.ac) ]]
 then
-    echo "Adding ftorch without external logic to configure.ac"
-    awk -v n="$insert" -v text="$ftorch_without_external" '
+    echo "Adding ftorch configuration"
+    awk -v n="$insert" -v text="$ftorch_configure" '
     NR == n { print text }
     { print }
-    ' configure.ac > tmp
+    ' configure.ac > tmp 
     mv tmp configure.ac
+
+    echo "Reconfiguring project"
+    autoreconf -fvi
 fi
 
-## Make changes to target header to add FTorch ld library update in runscripts
+
+# Make changes to target header to add FTorch ld library update in runscripts
 note="Define the FTorch library since ICON dynamic linker needs this"
 create_target_header=$(cat << EOF
     # $note 
     path_to_current_script="\${BASH_SOURCE[0]}"
     icon_project_dir=\$(dirname \$(dirname \$path_to_current_script))
     icon_externals_dir=\${icon_project_dir}/externals
-    ftorch_enabled=\$(grep -o "\\\\-\\\\-enable\\\\-ftorch" \${icon_project_dir}/config.log)
-    FTorch_Dir="FTorch_dummy"
-    if [[ -n \${ftorch_enabled} ]]
+    FTorch_DIR="FTorch_dummy"
+    if [[ -n \$(grep -o "\\\\-\\\\-enable\\\\-ftorch" \${icon_project_dir}/config.log) ]]
     then
         # NOTE: assumes FTorch built as shared library
         FTorch_SHARED_LIB=\$(find \${icon_project_dir} -type f -name "libftorch.so")
@@ -268,9 +209,10 @@ create_target_header=$(cat << EOF
     fi
 EOF
 )
-start_header_line_no=$(grep -Rnw "start_header\(\)" run/create_target_header | head -c 2)
-insert=$((start_header_line_no + 2))
 
+line_nos=($(grep -n "start_header\(\)" run/create_target_header | grep -oP "^\d+(?=:)"))
+line_no="${line_nos[0]}"
+insert=$((line_no + 2))
 if [[ -z $(grep "${note}" run/create_target_header) ]]
 then
     echo "Adding ftorch load library logic to run/create_target_header"
@@ -290,9 +232,8 @@ export LD_LIBRARY_PATH=\${FTorch_DIR}:\\\\\${LD_LIBRARY_PATH}
 EOF
 )
 
-line_no=$(grep -Rnw "export OMP_NUM_THREADS" run/create_target_header | head -c 3)
+line_no=$(grep -n "export OMP_NUM_THREADS" run/create_target_header | grep -oP "^\d+(?=:)")
 insert=$((line_no - 5))
-
 if [[ -z $(grep "${note}" run/create_target_header) ]]
 then
     echo "Adding export for ftorch library to run/create_target_header"
@@ -303,8 +244,8 @@ then
     mv tmp run/create_target_header
 fi
 
-
 # Add a dummy program to the IO
+mo_output_event_handler_path="src/io/shared/mo_output_event_handler.f90"
 note="Use FTorch"
 ftorch_use=$(cat << EOF
 #ifdef __FTORCH
@@ -321,17 +262,17 @@ ftorch_use=$(cat << EOF
 EOF
 )
 
-line_no=$(grep -Rnw "MODULE mo_output_event_handler" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+line_nos=($(grep -n "MODULE mo_output_event_handler" ${mo_output_event_handler_path} | grep -oP "^\d+(?=:)"))
+line_no="${line_nos[0]}"
 insert=$((line_no + 2))
-
-if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+if [[ -z $(grep "${note}" ${mo_output_event_handler_path}) ]]
 then
     echo "Adding ftorch use statements"
     awk -v n="$insert" -v text="$ftorch_use" '
     NR == n { print text }
     { print }
-    ' src/io/shared/mo_output_event_handler.f90 > tmp
-    mv tmp src/io/shared/mo_output_event_handler.f90
+    ' ${mo_output_event_handler_path} > tmp
+    mv tmp ${mo_output_event_handler_path}
 fi
 
 # define the subroutine
@@ -376,17 +317,17 @@ ftorch_subroutine=$(cat << EOF
 EOF
 )
 
-line_no=$(grep -Rnw "CONTAINS" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+line_nos=($(grep -n "CONTAINS" ${mo_output_event_handler_path} | grep -oP "^\d+(?=:)"))
+line_no="${line_nos[0]}"
 insert=$((line_no + 1))
-
-if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+if [[ -z $(grep "${note}" ${mo_output_event_handler_path}) ]]
 then
     echo "Adding ftorch dummy subroutine"
     awk -v n="$insert" -v text="$ftorch_subroutine" '
     NR == n { print text }
     { print }
-    ' src/io/shared/mo_output_event_handler.f90 > tmp
-    mv tmp src/io/shared/mo_output_event_handler.f90
+    ' ${mo_output_event_handler_path} > tmp
+    mv tmp ${mo_output_event_handler_path}
 fi
 
 # call ftorch dummy routine
@@ -399,21 +340,16 @@ call_hello_ftorch=$(cat << EOF
 EOF
 )
 
-line_no=$(grep -Rnw ".*does not write ready files.*" src/io/shared/mo_output_event_handler.f90 | head -c 3)
+line_no=$(grep -n ".*does not write ready files.*"  ${mo_output_event_handler_path} | grep -oP "^\d+(?=:)")
 insert=$((line_no))
-
-if [[ -z $(grep "${note}" src/io/shared/mo_output_event_handler.f90) ]]
+if [[ -z $(grep "${note}" ${mo_output_event_handler_path}) ]]
 then
     echo "Adding call to ftorch dummy routine"
     awk -v n="$insert" -v text="$call_hello_ftorch" '
     NR == n { print text }
     { print }
-    ' src/io/shared/mo_output_event_handler.f90 > tmp
-    mv tmp src/io/shared/mo_output_event_handler.f90
+    ' ${mo_output_event_handler_path} > tmp
+    mv tmp ${mo_output_event_handler_path}
 fi
-
-
-echo "Reconfiguring project"
-autoreconf -fvi
 
 echo "COMPLETE!"
