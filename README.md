@@ -105,7 +105,7 @@ mkdir icon-build
 
 # Configure ICON with FTorch 
 cd icon-build
-$HOME/icon-src/config/generic/gcc --without-external-ftorch --enable-ftorch
+$HOME/icon-src/config/generic/gcc --enable-ftorch
 
 # Compile ICON 
 make -j8
@@ -134,7 +134,7 @@ icon_build_dir=$(readlink -f icon-builds/icon-model-with-ftorch)
 
 # Configure ICON with FTorch  (TODO: try with intel as well)
 cd icon-build/icon-model-with-ftorch
-${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch
+${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
 
 # Compile ICON 
 make -j8
@@ -215,7 +215,7 @@ reconfigure **and** recompile like so:
 
 ```shell
 cd ${icon_build_dir}
-${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch && make -j8
+${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch && make -j8
 ```
 
 Currently, to ensure the the test case in section [On Levante](#on-levante)
@@ -297,7 +297,7 @@ making sure to enable the FTorch components:
 
 ```shell
 cd ${icon_build_dir}
-${icon_model_src}/config/dkrz/levante.gcc --without-external-ftorch --enable-ftorch
+${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
 ```
 
 Note that `setup_ftorch` will also add a dummy hello ftorch program to 

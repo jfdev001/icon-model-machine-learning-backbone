@@ -22,7 +22,9 @@ fi
 if [[ -z ${Torch_DIR} ]] 
 then
     echo "ERROR: 'Torch_DIR' is not defined"
-    echo "Please export Torch_DIR with a path to a valid Torch installation"
+    echo "Please export Torch_DIR with a path to a valid Torch installation."
+    echo "Note: Make sure Torch_DIR is also defined with compiling ICON in the"
+    echo "the build directory."
     echo "E.g.,"
     echo "export Torch_DIR=/path/to/.venv/lib/python3.12/site-packages/torch"
     exit 1 
