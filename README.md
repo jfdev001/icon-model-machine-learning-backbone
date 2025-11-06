@@ -20,9 +20,6 @@ To get started with a fork public version of ICON, do the following:
 # Get fork of public ICON
 git clone https://gitlab.dkrz.de/b383137/icon-model-with-ftorch.git 
 
-# Checkout the tested commit 
-git checkout -b stable cc1e064cf1ba37fb3d835e79bf1059d1ffe2d0d8
-
 # Cache the path to the icon model source directory
 icon_model_src=$(readlink -f icon-model-with-ftorch)
 
