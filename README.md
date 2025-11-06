@@ -248,6 +248,9 @@ To get access to this version of ICON, do the following:
 cd /work/bm1233/${USER}
 
 # Make a build directory for out of source ICON builds 
+# NOTE: If this directory already exists, it would be wise to delete it 
+# since if you attempt to re-compile sources of potentially mismatched UAICON
+# versions/config files, you will get errors
 mkdir -p icon-builds/uaicon-with-ftorch
 
 # Cache the path to the ICON build directory 
@@ -258,13 +261,13 @@ mkdir -p icon-srcs
 
 # Get the uaicon codebase 
 cd icon-srcs 
-git clone git@gitlab.dkrz.de:icon/icon-nwp.git uaicon 
+git clone git@gitlab.dkrz.de:icon/icon-nwp.git uaicon-with-ftorch
 
 # Cache the path to the uaicon source code 
-icon_model_src=$(readlink -f uaicon)
+icon_model_src=$(readlink -f uaicon-with-ftorch)
 
 # Change to the source dir and use a specific uaicon version 
-cd uaicon 
+cd uaicon-with-ftorch
 git checkout -b uaicon-iap-dev origin/uaicon-iap-dev
 git checkout -b uaicon-iap-dev-2025-07-02 881b54a9d12a17f8e5a5a6930f86d3c3ce5aa19c
 ```

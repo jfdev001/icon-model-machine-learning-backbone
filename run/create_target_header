@@ -62,9 +62,8 @@ start_header()
     path_to_current_script="${BASH_SOURCE[0]}"
     icon_project_dir=$(dirname $(dirname $path_to_current_script))
     icon_externals_dir=${icon_project_dir}/externals
-    ftorch_enabled=$(grep -o "\-\-enable\-ftorch" ${icon_project_dir}/config.log)
-    FTorch_Dir="FTorch_dummy"
-    if [[ -n ${ftorch_enabled} ]]
+    FTorch_DIR="FTorch_dummy"
+    if [[ -n $(grep -o "\-\-enable\-ftorch" ${icon_project_dir}/config.log) ]]
     then
         # NOTE: assumes FTorch built as shared library
         FTorch_SHARED_LIB=$(find ${icon_project_dir} -type f -name "libftorch.so")
