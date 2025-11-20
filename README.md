@@ -138,7 +138,7 @@ ${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
 make -j8
 
 # Make the run scripts 
-./make_runscripts --all
+./make_runscripts atm_tracer_Hadley
 ```
 
 On Levante, sufficient data exists to run a test case to verify that FTorch 
@@ -306,7 +306,7 @@ FTorch installation works:
 
 ```shell
 cd ${icon_build_dir}
-./make_runscripts --all
+./make_runscripts atm_tracer_Hadley
 
 # Run the test job (takes < 1 minute and uses only 1 compute node)
 email=YOUR_EMAIL_HERE # modify this!
