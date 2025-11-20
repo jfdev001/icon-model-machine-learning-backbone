@@ -116,8 +116,9 @@ functionality (even though config and compilation succeeds).
 
 ## On Levante 
 
-The same setup described in [Setting up Torch](#setting-up-torch) is necessary before performing the below steps,
-which are nearly identical to the steps in [On a local system using Docker](#on-a-local-system-using-docker).
+The same setup described in [Setting up Torch](#setting-up-torch) is necessary
+before performing the below steps, which are nearly identical to the steps in
+[On a local system using Docker](#on-a-local-system-using-docker).
 
 ```shell 
 # Switch to a directory with sufficient space (e.g., datawave)
@@ -144,13 +145,9 @@ On Levante, sufficient data exists to run a test case to verify that FTorch
 is linked properly to ICON:
 
 ```shell
-# NOTE: if you want to get notifications on your jobs completion status,
-# make sure to add the following fields to the below run script:
-#SBATCH --mail-user=YOUR_EMAIL_HERE
-#SBATCH --mail-type=ALL
-
 # Run the test job (takes < 1 minute and uses only 1 compute node)
-sbatch ${icon_build_dir}/run/exp.atm_tracer_Hadley.run
+email=YOUR_EMAIL_HERE # modify this!
+sbatch --mail-user=${email} --mail-type=ALL ${icon_build_dir}/run/exp.atm_tracer_Hadley.run}
 ```
 
 **IMPORTANT**: Any new runscripts you write need to modify the
@@ -180,7 +177,7 @@ the ICON codebase itself. Using a dedicated coupler such as
 [ComIn](https://gmd.copernicus.org/articles/18/1001/2025/) is not ideal due to
 its implementation of MPI blocking during coupling, which could cause
 significant performance penalties. More practically, ComIn may not work with a
-non-standard version of ICON (e.g., `icon-nwp/uaicon-iap-dev`).
+non-standard version of ICON if you've made significant local changes.
 
 As an example of the internal coupling approach, you might create a file
 containing your key machine learning model logic (i.e., this might be
@@ -311,13 +308,9 @@ FTorch installation works:
 cd ${icon_build_dir}
 ./make_runscripts --all
 
-# NOTE: if you want to get notifications on your jobs completion status,
-# make sure to add the following fields to the below run script:
-#SBATCH --mail-user=YOUR_EMAIL_HERE
-#SBATCH --mail-type=ALL
-
 # Run the test job (takes < 1 minute and uses only 1 compute node)
-sbatch run/exp.atm_tracer_Hadley.run
+email=YOUR_EMAIL_HERE # modify this!
+sbatch --mail-user=${email} --mail-type=ALL run/exp.atm_tracer_Hadley.run
 ```
 
 That concludes the section on setting up a different version of ICON with 
@@ -364,15 +357,10 @@ From a developer perspective you only need to be concerned with `configure.ac`
 if you are adding configuration for a category (1) external. It is not relevant
 for FTorch, but should you wish to add an external that is tightly coupled to
 to ICON (e.g., something similar to ART), then you would have to modify 
-both `icon.mk.in` and `configure.ac`.
+both `icon.mk.in` *and* `configure.ac`.
 Should you make any changes to any configuration scripts, make sure to call
 
 ```shell
 # assuming in ICON repo
 autoreconf --force --install --verbose 
 ```
-
-# References 
-* [iap/misc-issues#17: On which configuration files one needs to
-change](https://igit.iap-kborn.de/icon-iap/misc-tasks/-/issues/17)
-
