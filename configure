@@ -11471,6 +11471,7 @@ esac
    as_fn_append bundled_CMAKE_PREFIX_PATH "${bundled_CMAKE_PREFIX_PATH:+";"}${icon_abs_top_builddir}/externals/FTorch/build"
    as_fn_append bundled_includes "${FC_MOD_IN}externals/FTorch/build/modules "
    BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so $BUNDLED_LIBFILES"
+      as_fn_append LDFLAGS " -Wl,-rpath,$ac_abs_top_builddir/externals/FTorch/build"
    as_fn_append icon_pvcs_subdirs ' externals/FTorch'
 fi
 

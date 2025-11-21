@@ -2885,6 +2885,8 @@ ${icon_abs_top_builddir}/externals/FTorch/build"])
    AS_VAR_APPEND([bundled_includes],
      ["${FC_MOD_IN}externals/FTorch/build/modules "])
    BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so $BUNDLED_LIBFILES"
+   dnl Make sure ICON executable has FTorch in RPATH
+   AS_VAR_APPEND([LDFLAGS], [" -Wl,-rpath,$ac_abs_top_builddir/externals/FTorch/build"])
    AS_VAR_APPEND([icon_pvcs_subdirs], [' externals/FTorch'])])
 
 ###########################
