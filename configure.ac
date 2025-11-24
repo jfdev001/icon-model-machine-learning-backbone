@@ -2810,7 +2810,10 @@ AS_VAR_IF([enable_ftorch], [yes],
 # NOTE: Provides check for FTorch functionality
 #
 AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes],
-  [AC_CACHE_CHECK([whether the FTORCH library is available],
+  [AS_VAR_APPEND([FCFLAGS], [" ${ftorch_FCFLAGS}"])
+     AS_VAR_APPEND([LDFLAGS], [" ${ftorch_LDFLAGS} -Wl,-rpath,${ftorch_LIBDIR}"])
+     AS_VAR_APPEND([LIBS], [" ${ftorch_LIBS}"])
+     AC_CACHE_CHECK([whether the FTORCH library is available],
      [icon_cv_have_ftorch],
      [icon_cv_have_ftorch=no
       AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
@@ -2839,7 +2842,9 @@ AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes],
         [icon_cv_have_ftorch=yes])])
    AS_VAR_IF([icon_cv_have_ftorch], [no],
      [AC_MSG_FAILURE([unable to link a test program using FTORCH dnl
-You need to set FCFLAGS, LDFLAGS and LIBS manually.])])])
+You need to provide ftorch_FCFLAGS, ftorch_LDFLAGS, ftorch_LIBS, and ftorch_LIBDIR during dnl
+configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS dnl
+and LIBS manually.])])])
 
 # 
 # NOTE: Provides build options for FTorch if FTorch is built by ICON 
