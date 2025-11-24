@@ -130,7 +130,7 @@ mkdir -p icon-builds/icon-model-with-ftorch
 # Cache the path to the ICON build directory 
 icon_build_dir=$(readlink -f icon-builds/icon-model-with-ftorch)
 
-# Configure ICON with FTorch  (TODO: try with intel as well)
+# Configure ICON with FTorch
 cd icon-build/icon-model-with-ftorch
 ${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
 
@@ -147,10 +147,41 @@ is linked properly to ICON:
 ```shell
 # Run the test job (takes < 1 minute and uses only 1 compute node)
 email=YOUR_EMAIL_HERE # modify this!
-sbatch --mail-user=${email} --mail-type=ALL ${icon_build_dir}/run/exp.atm_tracer_Hadley.run}
+sbatch --mail-user=${email} --mail-type=ALL run/exp.atm_tracer_Hadley.run
 ```
 
-More details on internal coupling of ICON with FTorch in the next section.
+## Configuring ICON with your own FTorch installation
+
+The previous section relies on the ICON build system to compile FTorch. If you
+prefer, you can build FTorch separately, but then you must manually provide
+`FCFLAGS`,`LDFLAGS`, `LIBS` as well as `LIBDIR` (to embed FTorch in the ICON
+application `RPATH` so that FTorch is discoverable) during configuration
+(assuming on DKRZ Levante):
+
+```shell
+# change to build directory 
+cd ${icon_build_dir}
+
+# configure using an external FTorch installation...
+# assumes you have already installed FTorch
+# see https://github.com/Cambridge-ICCS/FTorch?tab=readme-ov-file#installation
+ftorch_dir=</path/to/FTorch/installed>
+${icon_model_src}/config/dkrz/levante.gcc \
+    --enable-ftorch --with-external-ftorch \
+    ftorch_FCFLAGS="-I${ftorch_dir}/include -I${ftorch_dir}/include/ftorch" \
+    ftorch_LDFLAGS="-L${ftorch_dir}/lib64" ftorch_LIBDIR="${ftorch_dir}/lib64" \
+    ftorch_LIBS="lftorch"
+
+# compile as usual
+make -j8
+
+# Make the run scripts 
+./make_runscripts atm_tracer_Hadley
+
+# Run the test job (takes < 1 minute and uses only 1 compute node)
+email=YOUR_EMAIL_HERE # modify this!
+sbatch --mail-user=${email} --mail-type=ALL run/exp.atm_tracer_Hadley.run
+```
 
 ## Internally coupling ICON with FTorch 
 
