@@ -11361,7 +11361,7 @@ fi
 #
 if test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes; then :
   as_fn_append FCFLAGS " ${ftorch_FCFLAGS}"
-     as_fn_append LDFLAGS " ${ftorch_LDFLAGS} -Wl,-rpath,${ftorch_LIBDIR}"
+     as_fn_append LDFLAGS " -L${ftorch_LIBDIR} -Wl,-rpath,${ftorch_LIBDIR}"
      as_fn_append LIBS " ${ftorch_LIBS}"
      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the FTORCH library is available" >&5
 $as_echo_n "checking whether the FTORCH library is available... " >&6; }
@@ -11407,7 +11407,7 @@ $as_echo "$icon_cv_have_ftorch" >&6; }
    if test "x$icon_cv_have_ftorch" = xno; then :
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "unable to link a test program using FTORCH You need to provide ftorch_FCFLAGS, ftorch_LDFLAGS, ftorch_LIBS, and ftorch_LIBDIR during configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS and LIBS manually.
+as_fn_error $? "unable to link a test program using FTORCH You need to provide ftorch_FCFLAGS, ftorch_LIBS, ftorch_LIBDIR during configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS and LIBS manually.
 See \`config.log' for more details
 ${icon_usr_note}" "$LINENO" 5; }
 fi
