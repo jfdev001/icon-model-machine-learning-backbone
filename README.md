@@ -154,7 +154,7 @@ sbatch --mail-user=${email} --mail-type=ALL run/exp.atm_tracer_Hadley.run
 
 The previous section relies on the ICON build system to compile FTorch. If you
 prefer, you can build FTorch separately, but then you must manually provide
-`FCFLAGS`,`LDFLAGS`, `LIBS` as well as `LIBDIR` (to embed FTorch in the ICON
+`FCFLAGS`,`LIBS` as well as `LIBDIR` (to embed FTorch in the ICON
 application `RPATH` so that FTorch is discoverable) during configuration
 (assuming on DKRZ Levante):
 
@@ -169,7 +169,7 @@ ftorch_dir=</path/to/FTorch/installed>
 ${icon_model_src}/config/dkrz/levante.gcc \
     --enable-ftorch --with-external-ftorch \
     ftorch_FCFLAGS="-I${ftorch_dir}/include -I${ftorch_dir}/include/ftorch" \
-    ftorch_LDFLAGS="-L${ftorch_dir}/lib64" ftorch_LIBDIR="${ftorch_dir}/lib64" \
+    ftorch_LIBDIR="${ftorch_dir}/lib64" \
     ftorch_LIBS="lftorch"
 
 # compile as usual

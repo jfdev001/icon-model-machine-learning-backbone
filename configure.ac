@@ -2811,7 +2811,7 @@ AS_VAR_IF([enable_ftorch], [yes],
 #
 AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes],
   [AS_VAR_APPEND([FCFLAGS], [" ${ftorch_FCFLAGS}"])
-     AS_VAR_APPEND([LDFLAGS], [" ${ftorch_LDFLAGS} -Wl,-rpath,${ftorch_LIBDIR}"])
+     AS_VAR_APPEND([LDFLAGS], [" -L${ftorch_LIBDIR} -Wl,-rpath,${ftorch_LIBDIR}"])
      AS_VAR_APPEND([LIBS], [" ${ftorch_LIBS}"])
      AC_CACHE_CHECK([whether the FTORCH library is available],
      [icon_cv_have_ftorch],
@@ -2842,7 +2842,7 @@ AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes],
         [icon_cv_have_ftorch=yes])])
    AS_VAR_IF([icon_cv_have_ftorch], [no],
      [AC_MSG_FAILURE([unable to link a test program using FTORCH dnl
-You need to provide ftorch_FCFLAGS, ftorch_LDFLAGS, ftorch_LIBS, and ftorch_LIBDIR during dnl
+You need to provide ftorch_FCFLAGS, ftorch_LIBS, ftorch_LIBDIR during dnl
 configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS dnl
 and LIBS manually.])])])
 
