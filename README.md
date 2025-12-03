@@ -34,7 +34,7 @@ git submodule update --init
 
 Now, to build FTorch, you will need a working PyTorch or LibTorch installation.
 To that end, we install a PyTorch[CPU] version since this is the 
-most straightforward. Note, I have not yet tested ICON with PyTorch[GPU].
+most straightforward. Note, we have not yet tested ICON with PyTorch[GPU].
 
 ```shell 
 # setup virtual environment
@@ -226,21 +226,24 @@ ${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch && make -j8
 ```
 
 Currently, to ensure the the test case in section [On Levante](#on-levante)
-works, I have added a dummy call to an FTorch function in the 
+works, we have added a dummy call to an FTorch function in the 
 `src/io/shared/mo_output_event_handler.f90`. That call serves no other purpose.
 
 For more FTorch examples, see
 [FTorch/examples](https://github.com/Cambridge-ICCS/FTorch/tree/ef44cf6d70edef38003dec41ee7a1b496922a1a5/examples).
 
-## Setup with a different version of ICON
+## Setup FTorch with a different version of ICON
 
-In the current repository, I have already made the necessary additions to the
+In the current repository, we have already made the necessary additions to the
 to facilitate building ICON with FTorch. *However*, if you are using a
-different version of ICON (e.g., `icon-nwp`), you will need to update the
-`externals/` and `configure.ac` in order to support FTorch. Since those that
-have access to a different version of ICON will also have access to the DKRZ
-gitlab in general, this section does not apply to the general public is for
-ICON developers only.
+different version of ICON (e.g., `icon-nwp`), you will need to either (a)
+update the `externals/` and `configure.ac` in order to support FTorch for which
+we provide instructions in [The Automated Approach](#the-automated-approach) or
+(b) make the minimum set of modifications to your existing ICON configuration
+following the instructions in [The Manual Approach](#the-manual-approach).
+Since those that have access to a different version of ICON will also have
+access to the DKRZ gitlab in general, this section does not apply to the
+general public and is therefore targeted specifically toward ICON developers.
 
 To illustrate the necessary changes to integrate FTorch into a different
 version of ICON, we select the `icon-nwp/uaicon-iap-dev` branch 
@@ -282,13 +285,15 @@ git checkout -b uaicon-iap-dev-2025-07-02 881b54a9d12a17f8e5a5a6930f86d3c3ce5aa1
 At this point, if you do not have a version of PyTorch/LibTorch installed, you 
 can follow the instructions in section [Setting up Torch](#setting-up-torch).
 
-If you end up going with the `.venv` approach to setting up Torch, make sure 
-you add this to your `.gitignore` with 
+If you end up going with the `.venv` approach to setting up Torch and setup the 
+`.venv` in your ICON project directory, make sure you add this to your
+`.gitignore` with 
 
 ```shell
 echo ".venv" >> .gitignore
 ```
 
+### The Automated Approach
 To integrate the necessary changes into an arbitrary ICON project, add the
 `setup_ftorch` script in the current repository to the other repository of
 interest.
@@ -304,7 +309,7 @@ making sure to enable the FTorch components:
 
 ```shell
 cd ${icon_build_dir}
-${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
+${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch && make -j8
 ```
 
 Note that `setup_ftorch` will also add a dummy hello ftorch program to 
@@ -325,9 +330,133 @@ cd ${icon_build_dir}
 email=YOUR_EMAIL_HERE # modify this!
 sbatch --mail-user=${email} --mail-type=ALL run/exp.atm_tracer_Hadley.run
 ```
+### The Manual Approach
 
-That concludes the section on setting up a different version of ICON with 
-FTorch.
+If do not wish to use the automated approach, we describe here the minimum
+modifications you must make in order to compile ICON with FTorch support. We
+assume that you are not using the code in the present repository, and would
+just like to manually update *your* local ICON code's configuration to suport
+FTorch. You can just modify one of the `config/<target>/<config file>`
+(henceforth called ICON config files) files directly and add the appropriate
+`FCFLAGS`, `LDFLAGS`, and `LIBS` corresponding to FTorch.
+
+For the manual approach, you will need to compile FTorch using the *same* tools
+you are using to compile ICON. So, you cannot compile FTorch with Intel
+compilers and then compile ICON with GNU compilers. This means that you need to
+pay attention to the compilers specified in the ICON config files. For example,
+if you wish to build FTorch using the same compilers as
+`config/dkrz/levante.gcc`, inspecting that file shows that the `MPI_ROOT`
+variable can be used to determine what the corresponding C, C++, and Fortran
+compilers are that you must use to build FTorch:
+
+```shell
+# @file levante.gcc
+...
+...
+MPI_ROOT='/sw/spack-levante/openmpi-4.1.2-mnmady'
+...
+...
+CC="${MPI_ROOT}/bin/mpicc"
+...
+...
+CXX=$("${MPI_ROOT}/bin/mpicxx" -show | sed 's: .*$::')
+...
+...
+FC="${MPI_ROOT}/bin/mpif90"
+```
+
+You could then use these compilers to build FTorch accordingly:
+
+```shell
+# Change to your icon model project directory
+cd ${icon_model_src}
+
+# Get FTorch source code (placed in externals directory for convenience)
+mkdir externals
+cd externals 
+git clone --depth 1 https://github.com/Cambridge-ICCS/FTorch.git
+
+# Define compilers for FTorch based on levante.gcc 
+MPI_ROOT="/sw/spack-levante/openmpi-4.1.2-mnmady"
+CC="${MPI_ROOT}/bin/mpicc"
+CXX="${MPI_ROOT}/bin/mpicxx"
+FC="${MPI_ROOT}/bin/mpif90"
+
+# Build FTorch -- assumes PyTorch installed in a venv in the ICON project dir
+cd FTorch
+mkdir build
+cd build
+
+python_version=$(python -c "import sys; print('.'.join(sys.version.split('.')[:2]))")
+export Torch_DIR=${icon_model_src}/.venv/lib/python${python_version}/site-packages/torch
+
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(pwd)/installed -DCMAKE_Fortran_COMPILER=${FC} -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX}
+cmake --build . --target install
+```
+
+We suggest that you make a modification to one of the files in the `src/`
+directory such that the `USE ftorch` statement is included. This way, when 
+you compile ICON in the next steps, you know that you can use FTorch in your 
+codebase.
+
+You must also modify the base configuration file that you wish to use to add
+the appropriate flags to support FTorch. For example, you might update
+`config/dkrz/levante.gcc` as follows:
+
+```shell
+# @file levante.gcc
+...
+...
+# FTorch configuration
+FTORCH_ROOT="${icon_dir}/externals/FTorch/build/installed"
+FTORCH_LIBDIR="${FTORCH_ROOT}/lib64"
+FTORCH_LIBS="-lftorch"
+FTORCH_LDFLAGS="-L${FTORCH_LIBDIR}"
+FTORCH_INCLUDEDIR="${FTORCH_ROOT}/include"
+FTORCH_MODULEDIR="${FTORCH_INCLUDEDIR}/ftorch"
+FTORCH_FCFLAGS="-I${FTORCH_INCLUDEDIR} -I${FTORCH_MODULEDIR}"
+...
+...
+BUILD_ENV="export LD_LIBRARY_PATH=\"${FTORCH_LIBDIR}:${FYAML_ROOT}/lib:${HDF5_ROOT}/lib:${NETCDF_ROOT}/lib:${NETCDFF_ROOT}/lib:${ECCODES_ROOT}/lib64:\${LD_LIBRARY_PATH}\"; export PATH=\"${HDF5_ROOT}/bin:\${PATH}\"; ${BLAS_LAPACK_BUILD_ENV}"
+...
+...
+FCFLAGS="${FTORCH_FCFLAGS} -I${HDF5_ROOT}/include -I${NETCDFF_ROOT}/include -I${ECCODES_ROOT}/include -fmodule-private -fimplicit-none -fmax-identifier-length=63 -Wall -Wcharacter-truncation -Wconversion -Wunderflow -Wunused-parameter -Wno-surprising -fall-intrinsics -g -march=native -mpc64"
+...
+...
+LDFLAGS="${FTORCH_LDFLAGS} -L${HDF5_ROOT}/lib -L${NETCDF_ROOT}/lib -L${NETCDFF_ROOT}/lib ${BLAS_LAPACK_LDFLAGS} -L${ECCODES_ROOT}/lib64 -L${FYAML_ROOT}/lib"
+LIBS="-Wl,--disable-new-dtags -Wl,--as-needed ${XML2_LIBS} ${FYAML_LIBS} ${ECCODES_LIBS} ${BLAS_LAPACK_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS} ${ZLIB_LIBS} ${STDCPP_LIBS} ${FTORCH_LIBS}"
+```
+
+Then, as before, you configure and compile your version of ICON in a separate
+build directory:
+
+```shell
+icon_build_dir=/path/to/icon-builds/icon-local # CHANGE THIS ACCORDINGLY!
+cd ${icon_build_dir}
+${icon_model_src}/config/dkrz/levante.gcc && make -j8
+```
+
+Note that we do not pass the `--enable-ftorch` flag since we assume the
+`configure.ac` is the default `configure.ac` which does not have the
+appropriate modifications to support this flag.
+
+One last addition, if you are using and FTorch version on or after commit 
+`ddfd35a5b0b0874f05aa7345f06ae25a8c35a4a8`, then this means there is support
+for `pkg-config`. This means you do not have to define the `LDFLAGS`, `LIBS`,
+and `FCFLAGS` manually, but rather can rely on querying the flags that the 
+authors of the FTorch library have specified are necessary for compiling.
+Therefore, `config/dkrz/levante.gcc` might instead look like the following:
+
+```shell
+# FTorch configuration
+FTORCH_PKG_CONFIG="${icon_dir}/externals/FTorch/build/installed/lib64/pkgconfig"
+export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${FTORCH_PKG_CONFIG}"
+FTORCH_LIBS="$(pkg-config --libs-only-l ftorch)"
+FTORCH_LDFLAGS="$(pkg-config --libs-only-L ftorch)"
+# regex that returns -L${FTORCH_LIBDIR}
+FTORCH_LIBDIR=$(echo ${FTORCH_LDFLAGS} | grep -oP "(?<=-L)[^]+[[:space:]]*" | head -n 1)
+FTORCH_FCFLAGS="$(pkg-config --cflags ftorch)"
+```
 
 # Brief Description of ICON Build System
 
