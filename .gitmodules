@@ -2,52 +2,52 @@
 # SPDX-License-Identifier: CC0-1.0
 [submodule "externals/mtime"]
 	path = externals/mtime
-	url = ../../icon-libraries/libmtime.git
+	url = https://gitlab.dkrz.de/icon-libraries/libmtime.git
 [submodule "externals/jsbach"]
 	path = externals/jsbach
-	url = ../../jsbach/jsbach.git
+	url = https://gitlab.dkrz.de/jsbach/jsbach.git
 [submodule "externals/yac"]
 	path = externals/yac
-	url = ../../dkrz-sw/YAC.git
+	url = https://gitlab.dkrz.de/dkrz-sw/YAC.git
 [submodule "externals/tixi"]
 	path = externals/tixi
-	url = ../../icon-libraries/libtixi.git
+	url = https://gitlab.dkrz.de/icon-libraries/libtixi.git
 [submodule "externals/yaxt"]
 	path = externals/yaxt
-	url = ../../dkrz-sw/yaxt.git
+	url = https://gitlab.dkrz.de/dkrz-sw/yaxt.git
 [submodule "externals/rte-rrtmgp"]
 	path = externals/rte-rrtmgp
 	url = https://github.com/earth-system-radiation/rte-rrtmgp.git
 [submodule "externals/cdi"]
 	path = externals/cdi
-	url = ../../mpim-sw/libcdi.git
+	url = https://gitlab.dkrz.de/mpim-sw/libcdi.git
 [submodule "externals/sct"]
 	path = externals/sct
-	url = ../../dkrz-sw/sct.git
+	url = https://gitlab.dkrz.de/dkrz-sw/sct.git
 [submodule "externals/ecrad"]
 	path = externals/ecrad
-	url = ../../dwd-sw/libecrad.git
+	url = https://gitlab.dkrz.de/dwd-sw/libecrad.git
 [submodule "externals/probtest"]
 	path = externals/probtest
 	url = https://github.com/MeteoSwiss/probtest.git
 [submodule "utils/mkexp"]
 	path = utils/mkexp
-	url = ../../esmenv/mkexp.git
+	url = https://gitlab.dkrz.de/esmenv/mkexp.git
 [submodule "externals/ppm"]
 	path = externals/ppm
-	url = ../../dkrz-sw/ppm.git
+	url = https://gitlab.dkrz.de/dkrz-sw/ppm.git
 [submodule "externals/comin"]
 	path = externals/comin
-	url = ../../icon-comin/comin.git
+	url = https://gitlab.dkrz.de/icon-comin/comin.git
 [submodule "externals/hd"]
 	path = externals/hd
 	url = https://gitlab.dkrz.de/hd-model/hd-couple.git
 [submodule "externals/fortran-support"]
 	path = externals/fortran-support
-	url = ../../icon-libraries/libfortran-support.git
+	url = https://gitlab.dkrz.de/icon-libraries/libfortran-support.git
 [submodule "externals/iconmath"]
 	path = externals/iconmath
-	url = ../../icon-libraries/libiconmath.git
+	url = https://gitlab.dkrz.de/icon-libraries/libiconmath.git
 [submodule "externals/FTorch"]
 	path = externals/FTorch
 	url = https://github.com/Cambridge-ICCS/FTorch.git
