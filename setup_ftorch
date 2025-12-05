@@ -3,7 +3,7 @@
 #
 # @description Only needed if you want to setup FTorch with a version of ICON
 # like `icon-nwp/uaicon-dev-iap`. Modifies auotools build to facilitate 
-# building ICON with FTorch
+# building ICON with FTorch.
 
 # Validate you are in the ICON project directory
 is_icon_src_project=$(find . -type f -name "icon.f90")
