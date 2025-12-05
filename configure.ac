@@ -2779,6 +2779,124 @@ BUNDLED_LIBFILES=dnl
 "externals/iconmath/build/src/interpolation/libiconmath-interpolation.a dnl
 $BUNDLED_LIBFILES"
 AS_VAR_APPEND([icon_pvcs_subdirs], [' externals/iconmath'])
+###########################
+# BEGIN FTorch in one place 
+###########################
+#
+# NOTE: Flag for enabling FTorch... used by preprocessor directive!
+#
+AC_ARG_ENABLE([ftorch],
+  [AS_HELP_STRING([--enable-ftorch],
+     [enable FTORCH @<:@default=no@:>@])],
+  [AS_IF([test x"$enableval" != xno], [enable_ftorch=yes])],
+  [enable_ftorch=no])
+
+#
+# NOTE: Provides external ftorch flag for config 
+#
+AC_ARG_WITH([external-ftorch],
+  [AS_HELP_STRING([--with-external-ftorch],
+     [use external FTORCH library @<:@default=no@:>@])],
+  [AS_IF([test x"$withval" != xno], [with_external_ftorch=yes])],
+  [with_external_ftorch=no])
+
+#
+# NOTE: Preprocessor directive for FTorch
+#
+AS_VAR_IF([enable_ftorch], [yes],
+  [AS_VAR_APPEND([FCFLAGS], [" ${FC_PP_DEF}__FTORCH"])])
+
+# 
+# NOTE: Provides check for FTorch functionality
+#
+AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes],
+  [AS_VAR_APPEND([FCFLAGS], [" ${ftorch_FCFLAGS}"])
+     AS_VAR_APPEND([LDFLAGS], [" -L${ftorch_LIBDIR} -Wl,-rpath,${ftorch_LIBDIR}"])
+     AS_VAR_APPEND([LIBS], [" ${ftorch_LIBS}"])
+     AC_CACHE_CHECK([whether the FTORCH library is available],
+     [icon_cv_have_ftorch],
+     [icon_cv_have_ftorch=no
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
+      ! From https://github.com/Cambridge-ICCS/FTorch/blob/ef44cf6d70edef38003dec41ee7a1b496922a1a5/examples/1_Tensor/tensor_manipulation.f90
+      use ftorch, only: torch_kCPU, torch_kFloat32, torch_tensor, &
+        torch_tensor_delete, torch_tensor_ones
+
+      use, intrinsic :: iso_c_binding, only: c_int64_t
+
+      ! Import the real32 type for 32-bit floating point numbers
+      use, intrinsic :: iso_fortran_env, only: sp => real32
+
+      implicit none
+
+      ! Define some tensors
+      type(torch_tensor) :: a
+
+      ! Variables for constructing tensors with torch_tensor_ones
+      integer, parameter :: ndims = 2
+      integer(c_int64_t), dimension(2), parameter :: tensor_shape = [2, 3]
+
+      ! Create a tensor of ones
+      ! -----------------------
+      call torch_tensor_ones(a, ndims, tensor_shape, torch_kFloat32, torch_kCPU)
+      call torch_tensor_delete(a)]])],
+        [icon_cv_have_ftorch=yes])])
+   AS_VAR_IF([icon_cv_have_ftorch], [no],
+     [AC_MSG_FAILURE([unable to link a test program using FTORCH dnl
+You need to provide ftorch_FCFLAGS, ftorch_LIBS, ftorch_LIBDIR during dnl
+configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS dnl
+and LIBS manually.])])])
+
+# 
+# NOTE: Provides build options for FTorch if FTorch is built by ICON 
+# 
+# TODO: Currently builds FTorch as shared lib (i.e., produces libftorch.so)...
+# if you migrate to static lib, then you will need to change bundled libs 
+# append to libftorch.a and possibly handle providing ICON flags for LibTorch
+#
+AS_IF([test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xno],
+  [icon_subdir_srcdir="$srcdir/externals/FTorch"
+   icon_subdir_unique_file="src/ftorch.F90"
+   AS_IF([test ! -r "$icon_subdir_srcdir/$icon_subdir_unique_file"],
+     [AC_MSG_ERROR([unable to find sources of the bundled version of FTORCH dnl
+library ($icon_subdir_unique_file) in '$icon_subdir_srcdir': provide an dnl
+external version of FTORCH library (--with-external-ftorch) by setting CFLAGS, dnl
+FCFLAGS, LDFLAGS and LIBS accordingly])])
+   AC_ARG_VAR([ICON_FTORCH_FCFLAGS],
+     [Fortran compiler flags to be appended to FCFLAGS when configuring the
+bundled version of FTORCH library @<:@default=$ICON_BUNDLED_FCFLAGS@:>@])dnl
+   ICON_FTORCH_FCFLAGS=${ICON_FTORCH_FCFLAGS-$ICON_BUNDLED_FCFLAGS}
+   AC_ARG_VAR([ICON_FTORCH_CFLAGS],
+     [C compiler flags to be appended to CFLAGS when configuring the bundled
+version of FTORCH library @<:@default=$ICON_BUNDLED_CFLAGS@:>@])dnl
+   ICON_FTORCH_CFLAGS=${ICON_FTORCH_CFLAGS-$ICON_BUNDLED_CFLAGS}
+   ACX_SUBDIR_INIT_CMAKE([externals/FTorch],
+     [no-run no-adjust-compilers no-adjust-utilities], [externals/FTorch/build],
+     ['${CMAKE}'])
+   ACX_SUBDIR_REMOVE_ARGS([externals/FTorch/build],
+     [-DCMAKE_C_FLAGS=*|-DCMAKE_Fortran_FLAGS=*|-DCMAKE_CXX_*=*])
+   ACX_SUBDIR_APPEND_ARGS([externals/FTorch/build],
+     [-DPython3_EXECUTABLE="$PYTHON"],
+     [-DCMAKE_AR="$AR"], [-DCMAKE_RANLIB="$RANLIB"],
+     [-DCMAKE_C_FLAGS="$subdir_CFLAGS $ICON_FTORCH_CFLAGS $subdir_CPPFLAGS"],
+     [-DCMAKE_CXX_FLAGS=dnl
+"$subdir_CXXFLAGS $ICON_COMIN_CXXFLAGS $subdir_CPPFLAGS"],
+     [-DCMAKE_Fortran_FLAGS="$subdir_FCFLAGS $ICON_FTORCH_FCFLAGS"],
+     [-DCMAKE_BUILD_TYPE=Release],
+     [-DCMAKE_PREFIX_PATH="$bundled_CMAKE_PREFIX_PATH"],
+     [-DBUILD_SHARED_LIBS=ON])
+   AS_VAR_APPEND([bundled_CMAKE_PREFIX_PATH],
+     ["${bundled_CMAKE_PREFIX_PATH:+";"}dnl
+${icon_abs_top_builddir}/externals/FTorch/build"])
+   AS_VAR_APPEND([bundled_includes],
+     ["${FC_MOD_IN}externals/FTorch/build/modules "])
+   BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so $BUNDLED_LIBFILES"
+   dnl Make sure ICON executable has FTorch in RPATH
+   AS_VAR_APPEND([LDFLAGS], [" -Wl,-rpath,$ac_abs_top_builddir/externals/FTorch/build"])
+   AS_VAR_APPEND([icon_pvcs_subdirs], [' externals/FTorch'])])
+
+###########################
+# END FTorch in one place 
+###########################
 
 dnl Prepend the include search flags to FCFLAGS:
 FCFLAGS="${bundled_includes}${FCFLAGS}"

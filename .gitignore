@@ -8,10 +8,19 @@
 # SPDX-License-Identifier: CC0-1.0
 # ---------------------------------------------------------------
 
+# python stuff 
+.venv 
+
+# editor stuff 
+*.swp
+
 # Autoreconf stage files:
 /aclocal.m4
 /autom4te.cache
 /config.h.in~
+
+# ignore temporary config stage files 
+*~ 
 
 # Configure stage files:
 *.c.d

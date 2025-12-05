@@ -608,6 +608,8 @@ DEFAULT_VERBOSITY
 icon_bundled_cmake_builddirs
 icon_bundled_builddirs
 ICON_HD_FCFLAGS
+ICON_FTORCH_CFLAGS
+ICON_FTORCH_FCFLAGS
 ICON_ICONMATH_FCFLAGS
 ICON_FORTRAN_SUPPORT_CFLAGS
 ICON_FORTRAN_SUPPORT_FCFLAGS
@@ -805,6 +807,8 @@ with_external_yac
 with_external_tixi
 with_external_fortran_support
 with_external_comin
+enable_ftorch
+with_external_ftorch
 '
       ac_precious_vars='build_alias
 host_alias
@@ -859,6 +863,8 @@ ICON_COMIN_CXXFLAGS
 ICON_FORTRAN_SUPPORT_FCFLAGS
 ICON_FORTRAN_SUPPORT_CFLAGS
 ICON_ICONMATH_FCFLAGS
+ICON_FTORCH_FCFLAGS
+ICON_FTORCH_CFLAGS
 ICON_HD_FCFLAGS'
 ac_subdirs_all='externals/rte-rrtmgp
 externals/ecrad
@@ -1656,6 +1662,7 @@ Optimization Features:
                                          files of the group from the
                                          environment variable ICON_<NAME>_PATH
                             no           disable the group
+  --enable-ftorch         enable FTORCH [default=no]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1673,6 +1680,7 @@ Optional Packages:
   --with-external-fortran-support
                           use external FORTRAN-SUPPORT library [default=no]
   --with-external-comin   use external COMIN library [default=no]
+  --with-external-ftorch  use external FTORCH library [default=no]
 
 Some influential environment variables:
   BUILD_ENV   initialization code to set up the building environment (must be
@@ -1805,6 +1813,13 @@ Some influential environment variables:
               Fortran compiler flags to be appended to FCFLAGS when
               configuring the bundled version of ICONMATH library
               [default=$ICON_BUNDLED_FCFLAGS]
+  ICON_FTORCH_FCFLAGS
+              Fortran compiler flags to be appended to FCFLAGS when
+              configuring the bundled version of FTORCH library
+              [default=$ICON_BUNDLED_FCFLAGS]
+  ICON_FTORCH_CFLAGS
+              C compiler flags to be appended to CFLAGS when configuring the
+              bundled version of FTORCH library [default=$ICON_BUNDLED_CFLAGS]
   ICON_HD_FCFLAGS
               Fortran compiler flags to be appended to FCFLAGS when
               configuring the bundled version of HD model
@@ -11304,6 +11319,168 @@ BUNDLED_LIBFILES="externals/iconmath/build/src/horizontal/libiconmath-horizontal
 as_fn_append bundled_includes "${FC_MOD_IN}externals/iconmath/build/src/interpolation/mod "
 BUNDLED_LIBFILES="externals/iconmath/build/src/interpolation/libiconmath-interpolation.a $BUNDLED_LIBFILES"
 as_fn_append icon_pvcs_subdirs ' externals/iconmath'
+###########################
+# BEGIN FTorch in one place
+###########################
+#
+# NOTE: Flag for enabling FTorch... used by preprocessor directive!
+#
+# Check whether --enable-ftorch was given.
+if test "${enable_ftorch+set}" = set; then :
+  enableval=$enable_ftorch; if test x"$enableval" != xno; then :
+  enable_ftorch=yes
+fi
+else
+  enable_ftorch=no
+fi
+
+
+#
+# NOTE: Provides external ftorch flag for config
+#
+
+# Check whether --with-external-ftorch was given.
+if test "${with_external_ftorch+set}" = set; then :
+  withval=$with_external_ftorch; if test x"$withval" != xno; then :
+  with_external_ftorch=yes
+fi
+else
+  with_external_ftorch=no
+fi
+
+
+#
+# NOTE: Preprocessor directive for FTorch
+#
+if test "x$enable_ftorch" = xyes; then :
+  as_fn_append FCFLAGS " ${FC_PP_DEF}__FTORCH"
+fi
+
+#
+# NOTE: Provides check for FTorch functionality
+#
+if test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xyes; then :
+  as_fn_append FCFLAGS " ${ftorch_FCFLAGS}"
+     as_fn_append LDFLAGS " -L${ftorch_LIBDIR} -Wl,-rpath,${ftorch_LIBDIR}"
+     as_fn_append LIBS " ${ftorch_LIBS}"
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the FTORCH library is available" >&5
+$as_echo_n "checking whether the FTORCH library is available... " >&6; }
+if ${icon_cv_have_ftorch+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  icon_cv_have_ftorch=no
+      cat > conftest.$ac_ext <<_ACEOF
+      program main
+
+      ! From https://github.com/Cambridge-ICCS/FTorch/blob/ef44cf6d70edef38003dec41ee7a1b496922a1a5/examples/1_Tensor/tensor_manipulation.f90
+      use ftorch, only: torch_kCPU, torch_kFloat32, torch_tensor, &
+        torch_tensor_delete, torch_tensor_ones
+
+      use, intrinsic :: iso_c_binding, only: c_int64_t
+
+      ! Import the real32 type for 32-bit floating point numbers
+      use, intrinsic :: iso_fortran_env, only: sp => real32
+
+      implicit none
+
+      ! Define some tensors
+      type(torch_tensor) :: a
+
+      ! Variables for constructing tensors with torch_tensor_ones
+      integer, parameter :: ndims = 2
+      integer(c_int64_t), dimension(2), parameter :: tensor_shape = [2, 3]
+
+      ! Create a tensor of ones
+      ! -----------------------
+      call torch_tensor_ones(a, ndims, tensor_shape, torch_kFloat32, torch_kCPU)
+      call torch_tensor_delete(a)
+      end
+_ACEOF
+if ac_fn_fc_try_link "$LINENO"; then :
+  icon_cv_have_ftorch=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $icon_cv_have_ftorch" >&5
+$as_echo "$icon_cv_have_ftorch" >&6; }
+   if test "x$icon_cv_have_ftorch" = xno; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "unable to link a test program using FTORCH You need to provide ftorch_FCFLAGS, ftorch_LIBS, ftorch_LIBDIR during configuration OR modify the config/*/<platform>.<compiler> FCFLAGS, LDFLAGS and LIBS manually.
+See \`config.log' for more details
+${icon_usr_note}" "$LINENO" 5; }
+fi
+fi
+
+#
+# NOTE: Provides build options for FTorch if FTorch is built by ICON
+#
+# TODO: Currently builds FTorch as shared lib (i.e., produces libftorch.so)...
+# if you migrate to static lib, then you will need to change bundled libs
+# append to libftorch.a and possibly handle providing ICON flags for LibTorch
+#
+if test "x$enable_ftorch" = xyes && test "x$with_external_ftorch" = xno; then :
+  icon_subdir_srcdir="$srcdir/externals/FTorch"
+   icon_subdir_unique_file="src/ftorch.F90"
+   if test ! -r "$icon_subdir_srcdir/$icon_subdir_unique_file"; then :
+  as_fn_error $? "unable to find sources of the bundled version of FTORCH library ($icon_subdir_unique_file) in '$icon_subdir_srcdir': provide an external version of FTORCH library (--with-external-ftorch) by setting CFLAGS, FCFLAGS, LDFLAGS and LIBS accordingly" "$LINENO" 5
+fi
+      ICON_FTORCH_FCFLAGS=${ICON_FTORCH_FCFLAGS-$ICON_BUNDLED_FCFLAGS}
+      ICON_FTORCH_CFLAGS=${ICON_FTORCH_CFLAGS-$ICON_BUNDLED_CFLAGS}
+                        acx_subdir_run_cmd_externals_FTorch_build="'${CMAKE}'"
+   acx_subdir_build_type_externals_FTorch_build='cmake'
+                                             acx_subdir_pre_adjust_cmake_args_nocomps_noutils
+      acx_subdir_run_args_externals_FTorch_build=$acx_subdir_pre_adjusted_cmake_args_nocomps_noutils
+         acx_subdir_srcdirs_fn "externals/FTorch/build"
+      acx_tmp="$ac_top_srcdir/externals/FTorch"
+      case $acx_tmp in #(
+  *\'*) :
+    acx_tmp=`$as_echo "$acx_tmp" | sed "s/'/'\\\\\\\\''/g"` ;; #(
+  *) :
+     ;;
+esac
+      as_fn_append acx_subdir_run_args_externals_FTorch_build " '$acx_tmp'"
+      as_fn_append extra_build_subdirs " externals/FTorch/build"
+   acx_subdir_run_externals_FTorch_build=no
+   eval "set dummy $acx_subdir_run_args_externals_FTorch_build"; shift
+   acx_subdir_run_args_externals_FTorch_build=
+   while test $# != 0; do
+     acx_tmp=$1
+     case $acx_tmp in #(
+  -DCMAKE_C_FLAGS=*|-DCMAKE_Fortran_FLAGS=*|-DCMAKE_CXX_*=*) :
+     ;; #(
+  *) :
+           case $acx_tmp in #(
+  *\'*) :
+    acx_tmp=`$as_echo "$acx_tmp" | sed "s/'/'\\\\\\\\''/g"` ;; #(
+  *) :
+     ;;
+esac
+        as_fn_append acx_subdir_run_args_externals_FTorch_build " '$acx_tmp'" ;;
+esac
+     shift
+   done
+   set dummy -DPython3_EXECUTABLE="$PYTHON" -DCMAKE_AR="$AR" -DCMAKE_RANLIB="$RANLIB" -DCMAKE_C_FLAGS="$subdir_CFLAGS $ICON_FTORCH_CFLAGS $subdir_CPPFLAGS" -DCMAKE_CXX_FLAGS="$subdir_CXXFLAGS $ICON_COMIN_CXXFLAGS $subdir_CPPFLAGS" -DCMAKE_Fortran_FLAGS="$subdir_FCFLAGS $ICON_FTORCH_FCFLAGS" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$bundled_CMAKE_PREFIX_PATH" -DBUILD_SHARED_LIBS=ON; shift
+   for acx_tmp; do
+     case $acx_tmp in #(
+  *\'*) :
+    acx_tmp=`$as_echo "$acx_tmp" | sed "s/'/'\\\\\\\\''/g"` ;; #(
+  *) :
+     ;;
+esac
+     as_fn_append acx_subdir_run_args_externals_FTorch_build " '$acx_tmp'"
+   done
+   as_fn_append bundled_CMAKE_PREFIX_PATH "${bundled_CMAKE_PREFIX_PATH:+";"}${icon_abs_top_builddir}/externals/FTorch/build"
+   as_fn_append bundled_includes "${FC_MOD_IN}externals/FTorch/build/modules "
+   BUNDLED_LIBFILES="externals/FTorch/build/libftorch.so $BUNDLED_LIBFILES"
+      as_fn_append LDFLAGS " -Wl,-rpath,$ac_abs_top_builddir/externals/FTorch/build"
+   as_fn_append icon_pvcs_subdirs ' externals/FTorch'
+fi
+
+###########################
+# END FTorch in one place
+###########################
 
 FCFLAGS="${bundled_includes}${FCFLAGS}"
 
