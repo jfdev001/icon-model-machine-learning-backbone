@@ -129,6 +129,12 @@ cd /work/bm1233/${USER}
 # Make a directory for ICON source codes 
 mkdir icon-srcs
 
+# Make a build directory for out of source ICON builds 
+mkdir -p icon-builds/icon-model-machine-learning-backbone
+
+# Cache the path to the ICON build directory 
+icon_build_dir=$(readlink -f icon-builds/icon-model-machine-learning-backbone)
+
 # Get fork of public ICON
 cd icon-srcs 
 git clone https://github.com/jfdev001/icon-model-machine-learning-backbone.git
@@ -136,14 +142,8 @@ git clone https://github.com/jfdev001/icon-model-machine-learning-backbone.git
 # Cache the path to the icon model source directory
 icon_model_src=$(readlink -f icon-model-machine-learning-backbone)
 
-# Make a build directory for out of source ICON builds 
-mkdir -p icon-builds/icon-model-machine-learning-backbone
-
-# Cache the path to the ICON build directory 
-icon_build_dir=$(readlink -f icon-builds/icon-model-machine-learning-backbone)
-
 # Configure ICON with FTorch
-cd icon-build/icon-model-machine-learning-backbone
+cd ${icon_build_dir}
 ${icon_model_src}/config/dkrz/levante.gcc --enable-ftorch
 
 # Compile ICON 
@@ -182,7 +182,7 @@ ${icon_model_src}/config/dkrz/levante.gcc \
     --enable-ftorch --with-external-ftorch \
     ftorch_FCFLAGS="-I${ftorch_dir}/include -I${ftorch_dir}/include/ftorch" \
     ftorch_LIBDIR="${ftorch_dir}/lib64" \
-    ftorch_LIBS="lftorch"
+    ftorch_LIBS="-lftorch"
 
 # compile as usual
 make -j8
