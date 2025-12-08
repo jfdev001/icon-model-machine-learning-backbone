@@ -44,8 +44,20 @@ git submodule add https://github.com/Cambridge-ICCS/FTorch.git externals/FTorch
 # Get the externals 
 git submodule update --init 
 
-# Checkout a tested version of FTorch
-(cd externals/FTorch && git checkout -b stable ef44cf6d70edef38003dec41ee7a1b496922a1a5)
+# Get the version of FTorch in the main repository
+main_repo_externals_url="https://github.com/jfdev001/icon-model-machine-learning-backbone/tree/release-2025.04-public/externals"
+main_repo_externals_response=$(curl ${main_repo_externals_url})
+main_repo_ftorch_commit=$(echo "${main_repo_externals_response}" | grep -oP '(?<=FTorch @ )[^"]+')
+default_ftorch_commit="ddfd35a" # a stable default FTorch version
+if [[ -z ${main_repo_ftorch_commit} ]]
+then
+    echo "WARNING: Unable to determine FTorch version used in ${main_repo_externals_url}"
+    echo "Using default FTorch commit: ${default_ftorch_commit} instead..."
+    main_repo_ftorch_commit=${default_ftorch_commit}
+fi
+
+# Checkout FTorch
+(cd externals/FTorch && git checkout -b stable ${main_repo_ftorch_commit})
 
 # Make changes to configure.ac to support FTorch
 note="BEGIN FTorch in one place"
