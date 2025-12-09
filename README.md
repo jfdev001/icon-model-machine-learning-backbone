@@ -118,6 +118,9 @@ succeed. For further ICON usage documentation, see
 
 ## On Levante 
 
+This section is relevant for users of the [Levante HPC system at
+DKRZ](https://docs.dkrz.de/doc/levante/index.html).
+
 The same setup described in [Setting up Torch](#setting-up-torch) is necessary
 before performing the below steps, which are nearly identical to the steps in
 [On a local system using Docker](#on-a-local-system-using-docker).
@@ -208,8 +211,8 @@ As an example of the internal coupling approach, you might create a file
 containing your key machine learning model logic (i.e., this might be model
 loading, any preprocessing etc.). You might define a new routine called `Unet`
 in a file called
-`src/upper_atmosphere/mo_upatmo_iondrag_machine_learning_model`, which could be
-subsequently imported in another file as shown below:
+`src/upper_atmosphere/mo_upatmo_iondrag_machine_learning_model.f90`, which
+could be subsequently imported in another file as shown below:
 
 ```fortran 
 ! @file src/upper_atmosphere/mo_upatmo_phy_iondrag.f90
@@ -247,16 +250,16 @@ For more FTorch examples, see
 
 ## Setup FTorch with a different version of ICON
 
-In the current repository, we have already made the necessary additions to the
-to facilitate building ICON with FTorch. *However*, if you are using a
-different version of ICON (e.g., `icon-nwp`), you will need to either (a)
-update the `externals/` and `configure.ac` in order to support FTorch for which
-we provide instructions in [The automated approach](#the-automated-approach) or
-(b) make the minimum set of modifications to your existing ICON configuration
-following the instructions in [The manual approach](#the-manual-approach).
-Since those that have access to a different version of ICON will also have
-access to the DKRZ gitlab in general, this section does not apply to the
-general public and is therefore targeted specifically toward ICON developers.
+In the current repository, we have already made the necessary additions to
+facilitate building ICON with FTorch. *However*, if you are using a different
+version of ICON (e.g., `icon-nwp`), you will need to either (a) update the
+`externals/` and `configure.ac` in order to support FTorch for which we provide
+instructions in [The automated approach](#the-automated-approach) or (b) make
+the minimum set of modifications to your existing ICON configuration following
+the instructions in [The manual approach](#the-manual-approach). Since those
+that have access to a different version of ICON will also have access to the
+DKRZ gitlab in general, this section does not apply to the general public and
+is therefore targeted specifically toward ICON developers.
 
 To illustrate the necessary changes to integrate FTorch into a different
 version of ICON, we select the `icon-nwp/uaicon-iap-dev` branch 
