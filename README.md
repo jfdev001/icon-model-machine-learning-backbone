@@ -1,9 +1,9 @@
 # Building ICON with FTorch
 
 The purpose of this repository is to illustrate how one can build the
-[ICON](https://gitlab.dkrz.de/icon/icon-model) model with support for
+[ICON](https://gitlab.dkrz.de/icon/icon-model) numerical weather prediction and climate model with support for
 [FTorch](https://github.com/Cambridge-ICCS/FTorch) as an external library. The
-goal is to faciliate including machine learning models built using PyTorch into
+goal is to provide boilerplate for including machine learning models built using PyTorch into
 a Fortran codebase---in this case we focus on ICON. 
 
 **IMPORTANT**: The first part of this readme focuses on building the *public*
