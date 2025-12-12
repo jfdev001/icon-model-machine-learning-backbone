@@ -385,7 +385,7 @@ FC="${MPI_ROOT}/bin/mpif90"
 ```
 
 You must then use these compilers to build FTorch accordingly (make sure you
-have a Torch installation available, see [Setting up Torch](#setting-up-torch):
+have a Torch installation available, see [Setting up Torch](#setting-up-torch)):
 
 ```shell
 # You must define your icon source and build directories... the below paths
@@ -446,7 +446,7 @@ FCFLAGS="${FTORCH_FCFLAGS} -I${HDF5_ROOT}/include -I${NETCDFF_ROOT}/include -I${
 
 LDFLAGS="${FTORCH_LDFLAGS} -L${HDF5_ROOT}/lib -L${NETCDF_ROOT}/lib -L${NETCDFF_ROOT}/lib ${BLAS_LAPACK_LDFLAGS} -L${ECCODES_ROOT}/lib64 -L${FYAML_ROOT}/lib"
 
-LIBS="-Wl,--disable-new-dtags -Wl,--as-needed ${XML2_LIBS} ${FYAML_LIBS} ${ECCODES_LIBS} ${BLAS_LAPACK_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS} ${ZLIB_LIBS} ${STDCPP_LIBS} ${FTORCH_LIBS}"
+LIBS="-Wl,--disable-new-dtags -Wl,--as-needed ${FTORCH_LIBS} ${XML2_LIBS} ${FYAML_LIBS} ${ECCODES_LIBS} ${BLAS_LAPACK_LIBS} ${NETCDFF_LIBS} ${NETCDF_LIBS} ${HDF5_LIBS} ${ZLIB_LIBS} ${STDCPP_LIBS}"
 ```
 
 Then, configure and compile your version of ICON in a separate build directory:
@@ -460,7 +460,7 @@ Note that we do not pass the `--enable-ftorch` flag since we assume the
 `configure.ac` is the default `configure.ac` which does not have the
 appropriate modifications to support this flag.
 
-One last addition, if you are using an FTorch version on or after commit
+One last addition: if you are using an FTorch version on or after commit
 `ddfd35a5b0b0874f05aa7345f06ae25a8c35a4a8`, FTorch has a pkg config file. This
 means you do not have to define the `LDFLAGS`, `LIBS`, and `FCFLAGS` manually,
 but rather can rely on querying the flags that the authors of the FTorch
@@ -473,8 +473,10 @@ FTORCH_PKG_CONFIG="${icon_dir}/externals/FTorch/build/installed/lib64/pkgconfig"
 export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:${FTORCH_PKG_CONFIG}"
 FTORCH_LIBS="$(pkg-config --libs-only-l ftorch)"
 FTORCH_LDFLAGS="$(pkg-config --libs-only-L ftorch)"
-# regex that returns -L${FTORCH_LIBDIR}
-FTORCH_LIBDIR=$(echo ${FTORCH_LDFLAGS} | grep -oP "(?<=-L)[^]+[[:space:]]*" | head -n 1)
+# regex that returns the first -L${FTORCH_LIBDIR} by matching characters
+# until 1 or more spaces is encountered... e.g., for
+# -L/path/lib -Wl,-rpath,/path/lib, the regex returns /path/lib
+FTORCH_LIBDIR=$(echo ${FTORCH_LDFLAGS} | grep -oP "(?<=-L)[^\s]+" | head -n 1)
 FTORCH_FCFLAGS="$(pkg-config --cflags ftorch)"
 ```
 
