@@ -256,10 +256,11 @@ version of ICON (e.g., `icon-nwp`), you will need to either (a) update the
 `externals/` and `configure.ac` in order to support FTorch for which we provide
 instructions in [The automated approach](#the-automated-approach) or (b) make
 the minimum set of modifications to your existing ICON configuration following
-the instructions in [The manual approach](#the-manual-approach). Since those
-that have access to a different version of ICON will also have access to the
-DKRZ gitlab in general, this section does not apply to the general public and
-is therefore targeted specifically toward ICON developers.
+the instructions in [The manual approach](#the-manual-approach).
+
+The example in this section assumes access to DKRZ's Levante; however, if
+you simply substitute this example with your local or HPC system's
+ICON, the instructions still apply.
 
 To illustrate the necessary changes to integrate FTorch into a different
 version of ICON, we select the `icon-nwp/uaicon-iap-dev` branch 
@@ -285,7 +286,8 @@ icon_build_dir=$(readlink -f icon-builds/uaicon-with-ftorch)
 # Make a directory for ICON source codes 
 mkdir icon-srcs
 
-# Get the uaicon codebase 
+# Get the uaicon codebase -- this will fail if you do not
+# have developer/report access to the DKRZ gitlab 
 cd icon-srcs 
 git clone git@gitlab.dkrz.de:icon/icon-nwp.git uaicon-with-ftorch
 
